@@ -1,9 +1,6 @@
-from django.db import models
-
-# Create your models here.
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.utils.text import slugify
+from django.core.exceptions import ValidationError
 
 
 class CustomUser(AbstractUser):
@@ -13,8 +10,6 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return self.username
 
-
-from django.core.exceptions import ValidationError
 
 class StudentProfile(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
@@ -30,7 +25,7 @@ class StudentProfile(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean()  # Ensure clean() is called on save
         if not self.faculty_number:
-            self.faculty_number = f'STD-{self.user.id:05}'
+            self.faculty_number = f'F-{self.user.id:05}'
         super().save(*args, **kwargs)
 
     def __str__(self):

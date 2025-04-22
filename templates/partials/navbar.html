@@ -1,0 +1,27 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+    <a class="navbar-brand" href="/">MiniLMS</a>
+    <div class="collapse navbar-collapse">
+      <ul class="navbar-nav ms-auto">
+        {% if user.is_authenticated %}
+          <li class="nav-item">
+{#            <a class="nav-link" href="{% url 'logout' %}">Logout</a>#}
+          </li>
+        {% else %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'login' %}">Login</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="registerDropdown" data-bs-toggle="dropdown">
+              Register
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="{% url 'register_student' %}">Student</a></li>
+              <li><a class="dropdown-item" href="{% url 'register_teacher' %}">Teacher</a></li>
+            </ul>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>

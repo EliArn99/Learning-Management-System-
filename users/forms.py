@@ -1,33 +1,47 @@
+# users/forms.py
+
 from django import forms
-from users.models import StudentProfile, TeacherProfile
+from django.contrib.auth.forms import UserCreationForm
+from .models import CustomUser, StudentProfile, TeacherProfile
 
-class StudentProfileForm(forms.ModelForm):
+
+class StudentRegisterForm(UserCreationForm):
+    age = forms.IntegerField(min_value=18)
+    achievements = forms.CharField(widget=forms.Textarea, required=False)
+
     class Meta:
-        model = StudentProfile
-        fields = ['age', 'achievements']
-        widgets = {
-            'age': forms.NumberInput(attrs={'class': 'form-control'}),
-            'achievements': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'List any achievements...'}),
-        }
+        model = CustomUser
+        fields = ['username', 'email', 'password1', 'password2']
 
-    def clean_age(self):
-        age = self.cleaned_data.get('age')
-        if age and age < 18:
-            raise forms.ValidationError("Student must be at least 18 years old.")
-        return age
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.is_student = True
+        if commit:
+            user.save()
+            StudentProfile.objects.create(
+                user=user,
+                age=self.cleaned_data['age'],
+                achievements=self.cleaned_data.get('achievements', '')
+            )
+        return user
 
 
-class TeacherProfileForm(forms.ModelForm):
+class TeacherRegisterForm(UserCreationForm):
+    age = forms.IntegerField(min_value=25)
+    education = forms.CharField()
+
     class Meta:
-        model = TeacherProfile
-        fields = ['age', 'education']
-        widgets = {
-            'age': forms.NumberInput(attrs={'class': 'form-control'}),
-            'education': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Your highest degree'}),
-        }
+        model = CustomUser
+        fields = ['username', 'email', 'password1', 'password2']
 
-    def clean_age(self):
-        age = self.cleaned_data.get('age')
-        if age and age < 25:
-            raise forms.ValidationError("Teacher must be at least 25 years old.")
-        return age
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.is_teacher = True
+        if commit:
+            user.save()
+            TeacherProfile.objects.create(
+                user=user,
+                age=self.cleaned_data['age'],
+                education=self.cleaned_data['education']
+            )
+        return user

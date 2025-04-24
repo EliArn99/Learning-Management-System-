@@ -83,9 +83,9 @@ WSGI_APPLICATION = 'mini_lms.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "",
-        "USER": "",
-        "PASSWORD": "",
+        "NAME": "mini_lms",
+        "USER": "Eli",
+        "PASSWORD": "Arnautskaj",
         "HOST": "127.0.0.1",
         "PORT": "5432",
     }
@@ -135,5 +135,6 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/login/'
+LOGIN_URL = '/users/login/'          # ← Пътят, където е твоят custom login
+LOGIN_REDIRECT_URL = '/'             # накъде да идваш след логин
+LOGOUT_REDIRECT_URL = '/users/login/'

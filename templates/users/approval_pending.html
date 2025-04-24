@@ -1,8 +1,13 @@
-<!-- templates/users/approval_pending.html -->
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% block content %}
-<div class="alert alert-info">
-    <h4>Your account is awaiting admin approval.</h4>
-    Please wait while an administrator reviews your registration.
+<div class="text-center py-5">
+  <h1 class="display-6 fw-semibold mb-3">
+    <i class="bi bi-hourglass-split me-2"></i> Заявката чака одобрение
+  </h1>
+  <p class="lead">Администраторът ще потвърди профила ви скоро. Ще получите имейл.</p>
+
+  <a href="{% url 'users:login' %}" class="btn btn-primary mt-4">
+    <i class="bi bi-box-arrow-in-right me-1"></i> Върни се към Login
+  </a>
 </div>
 {% endblock %}

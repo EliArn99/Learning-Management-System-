@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from dashboards.views import home  # добави това горе
+from users.views import login_view
 
 urlpatterns = [
     path('', home, name='home'),
@@ -28,5 +29,6 @@ urlpatterns = [
 
     path('messages/', include('messaging.urls')),
     path('users/', include('users.urls')),
+    path('accounts/login/', login_view),   # пряк път
 
 ]

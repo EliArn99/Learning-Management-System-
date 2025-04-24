@@ -12,12 +12,13 @@ urlpatterns = [
     path('approval-pending/', views.approval_pending_view, name='approval_pending'),
     path('register/student/', views.register_student, name='register_student'),
     path('register/teacher/', views.register_teacher, name='register_teacher'),
-
-
-]
-
-
-urlpatterns += [
     path('login/', user_views.custom_login_view, name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
+
 ]
+
+#
+# urlpatterns += [
+#     path('login/', user_views.custom_login_view, name='login'),
+#     path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
+# ]

@@ -2,6 +2,7 @@
 {% block content %}
 <div class="container mt-4">
   <h2 class="mb-4">Login</h2>
+
   <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
@@ -11,7 +12,12 @@
   <hr>
 
   <p>Нямаш акаунт?</p>
-  <a href="{% url 'student_register' %}" class="btn btn-outline-success">Регистрация като студент</a>
-  <a href="{% url 'teacher_register' %}" class="btn btn-outline-info">Регистрация като преподавател</a>
+  <!-- използваме namespace 'users' -->
+  <a href="{% url 'users:register_student' %}" class="btn btn-outline-success">
+      Регистрация като студент
+  </a>
+  <a href="{% url 'users:register_teacher' %}" class="btn btn-outline-info">
+      Регистрация като преподавател
+  </a>
 </div>
 {% endblock %}

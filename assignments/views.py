@@ -26,3 +26,27 @@ def my_assignments_view(request):
         })
 
     return render(request, 'assignments/my_assignments.html', {'assignments_with_status': assignments_with_status})
+
+
+@login_required
+def submit_assignment_view(request):
+    if request.method == 'POST':
+        form = AssignmentSubmissionForm(request.POST, request.FILES)
+        if form.is_valid():
+            assignment = form.cleaned_data['assignment']
+            student_profile = get_object_or_404(StudentProfile, user=request.user)
+
+            # Проверка: има ли вече предаване за това задание?
+            existing_submission = Submission.objects.filter(assignment=assignment, student=student_profile).first()
+            if existing_submission:
+                messages.error(request, "Вече сте предали това задание!")
+                return redirect('assignments:my_assignments')
+
+            assignment_submission = form.save(commit=False)
+            assignment_submission.student = student_profile
+            assignment_submission.save()
+            messages.success(request, "Успешно предадохте заданието!")
+            return redirect('assignments:my_assignments')
+    else:
+        form = AssignmentSubmissionForm()
+    return render(request, 'assignments/submit_assignment.html', {'form': form})

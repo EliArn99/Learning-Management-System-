@@ -23,3 +23,9 @@ class AssignmentForm(forms.ModelForm):
         if due_date and due_date < timezone.now():
             raise forms.ValidationError("Due date cannot be in the past.")
         return due_date
+
+
+class AssignmentSubmissionForm(forms.ModelForm):
+    class Meta:
+        model = Submission
+        fields = ['assignment', 'file']

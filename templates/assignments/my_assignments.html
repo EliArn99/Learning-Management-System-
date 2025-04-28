@@ -1,1 +1,34 @@
-<h1>my-assignments</h1>
+<h1>Моите задания</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th>Заглавие</th>
+            <th>Краен срок</th>
+            <th>Статус</th>
+            <th>Оценка</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in assignments_with_status %}
+        <tr>
+            <td>{{ item.assignment.title }}</td>
+            <td>{{ item.assignment.due_date }}</td>
+            <td>
+                {% if item.submission %}
+                    Предадено на {{ item.submission.submitted_at }}
+                {% else %}
+                    Не е предадено
+                {% endif %}
+            </td>
+            <td>
+                {% if item.submission and item.submission.grade %}
+                    {{ item.submission.grade }}
+                {% else %}
+                    Няма оценка
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

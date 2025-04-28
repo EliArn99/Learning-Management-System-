@@ -50,3 +50,9 @@ def submit_assignment_view(request):
     else:
         form = AssignmentSubmissionForm()
     return render(request, 'assignments/submit_assignment.html', {'form': form})
+
+
+@login_required
+def assignment_detail_view(request, pk):
+    assignment = get_object_or_404(Assignment, pk=pk)
+    return render(request, 'assignments/assignment_detail.html', {'assignment': assignment})

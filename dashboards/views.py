@@ -12,5 +12,13 @@ def teacher_dashboard_view(request):
     return render(request, 'dashboards/teacher_dashboard.html')
 
 
+@login_required
 def student_dashboard_view(request):
-    return render(request, 'dashboards/student_dashboard.html')
+    student = request.user.studentprofile
+    courses = Course.objects.filter(students=student)
+    assignments = Assignment.objects.filter(course__in=courses)
+
+    return render(request, 'dashboards/student_dashboard.html', {
+        'courses': courses,
+        'assignments': assignments,
+    })

@@ -1,1 +1,42 @@
-<h1>teacher_dashboard</h1>
+<!-- templates/teachers/teacher_dashboard.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="dashboard-container">
+    <h1>Добре дошъл, {{ request.user.first_name }}!</h1>
+
+    <div class="dashboard-section">
+        <h2>Твоите курсове</h2>
+        <ul class="dashboard-list">
+            {% for course in courses %}
+                <li>
+                    <strong>{{ course.name }}</strong> ({{ course.university_name }})<br>
+                    <a href="{% url 'courses:course_detail' course.id %}">Виж курс</a>
+                </li>
+            {% empty %}
+                <li>Нямате създадени курсове.</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="dashboard-section">
+        <h2>Задания за оценяване</h2>
+        <ul class="dashboard-list">
+            {% for submission in submissions %}
+                <li>
+                    {{ submission.assignment.title }} -
+                    {{ submission.student.user.username }} -
+                    {% if submission.grade %}
+                        <span style="color: green;">Оценено: {{ submission.grade }}</span>
+                    {% else %}
+                        <a href="{% url 'assignments:grade_submission' submission.id %}">Оцени</a>
+                    {% endif %}
+                </li>
+            {% empty %}
+                <li>Няма предадени задания.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

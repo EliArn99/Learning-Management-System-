@@ -24,3 +24,22 @@ def my_courses_view(request):
         courses = []
     return render(request, 'courses/my_courses.html', {'courses': courses})
 
+@login_required
+def create_course_view(request):
+    if not request.user.is_teacher:
+        messages.error(request, "Само преподавател може да създава курс.")
+        return redirect('courses:course_list')
+
+    if request.method == "POST":
+        form = CourseForm(request.POST)
+        if form.is_valid():
+            course = form.save(commit=False)
+            course.teacher = request.user.teacherprofile
+            course.save()
+            messages.success(request, "Курсът е създаден успешно!")
+            return redirect('courses:course_detail', slug=course.slug)
+    else:
+        form = CourseForm()
+
+    return render(request, "courses/create_course.html", {"form": form})
+

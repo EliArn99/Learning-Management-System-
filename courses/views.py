@@ -43,3 +43,42 @@ def create_course_view(request):
 
     return render(request, "courses/create_course.html", {"form": form})
 
+
+
+# ---------- детайли за курс + записване ----------
+@login_required
+def course_detail_view(request, slug):
+    course = get_object_or_404(Course, slug=slug)
+    is_enrolled = False
+    if request.user.is_student:
+        is_enrolled = Enrollment.objects.filter(student=request.user.studentprofile, course=course).exists()
+
+    # студент иска да се запише
+    if request.user.is_student and request.method == 'POST' and not is_enrolled:
+        enroll_form = EnrollmentForm(data={'student': request.user.studentprofile.id,
+                                           'course': course.id})
+        if enroll_form.is_valid():
+            enroll_form.save()
+            messages.success(request, 'Успешно се записахте в курса!')
+            return redirect('courses:course_detail', slug=slug)
+    else:
+        enroll_form = EnrollmentForm()
+
+    # ако учителят разглежда своя курс – показваме записаните студенти
+    enrolled_students = []
+    if request.user.is_teacher and request.user.teacherprofile == course.teacher:
+        enrolled_students = Enrollment.objects.filter(course=course).select_related('student__user')
+
+    context = {
+        'course': course,
+        'is_enrolled': is_enrolled,
+        'enroll_form': enroll_form,
+        'enrolled_students': enrolled_students,
+    }
+    return render(request, 'courses/course_detail.html', context)
+
+
+
+
+
+

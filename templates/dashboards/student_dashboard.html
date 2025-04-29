@@ -1,1 +1,36 @@
-<h1>student_dashboard</h1>
+<!-- templates/students/student_dashboard.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <link rel="stylesheet" href="{% static 'css/student_dashboard.css' %}">
+
+<div class="dashboard-container">
+    <h1>Добре дошъл, {{ request.user.first_name }}!</h1>
+
+    <div class="dashboard-section">
+        <h2>Твоите курсове</h2>
+        <ul class="dashboard-list">
+            {% for course in courses %}
+                <li><a href="{% url 'courses:course_detail' course.id %}">{{ course.name }}</a></li>
+            {% empty %}
+                <li>Все още не си записан в курс.</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="dashboard-section">
+        <h2>Задания</h2>
+        <ul class="dashboard-list">
+            {% for assignment in assignments %}
+                <li>
+                    <strong>{{ assignment.title }}</strong> - {{ assignment.status }}
+                    (<a href="{% url 'assignments:assignment_detail' assignment.id %}">Виж</a>)
+                </li>
+            {% empty %}
+                <li>Няма текущи задания.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

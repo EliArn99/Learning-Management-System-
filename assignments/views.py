@@ -1,9 +1,13 @@
 from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect
+from django.utils import timezone
+
 from .models import Assignment, Submission
-from .forms import AssignmentSubmissionForm
+from .forms import AssignmentSubmissionForm, GradeSubmissionForm
 from users.models import StudentProfile
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
+from .forms import AssignmentForm
+
 
 @login_required
 def assignment_list_view(request):
@@ -56,3 +60,61 @@ def submit_assignment_view(request):
 def assignment_detail_view(request, pk):
     assignment = get_object_or_404(Assignment, pk=pk)
     return render(request, 'assignments/assignment_detail.html', {'assignment': assignment})
+
+
+def is_teacher(user):
+    return hasattr(user, 'teacherprofile')
+
+
+@user_passes_test(is_teacher)
+def teacher_submissions_view(request):
+    submissions = Submission.objects.all().order_by('-submitted_at')
+    return render(request, 'assignments/teacher_submissions.html', {'submissions': submissions})
+
+
+from django.core.mail import send_mail
+
+@user_passes_test(is_teacher)
+def grade_submission_view(request, submission_id):
+    submission = get_object_or_404(Submission, id=submission_id)
+
+    if request.method == 'POST':
+        form = GradeSubmissionForm(request.POST, instance=submission)
+        if form.is_valid():
+            graded_submission = form.save(commit=False)
+            graded_submission.graded_at = timezone.now()
+            graded_submission.save()
+
+            # Изпращаме имейл
+            student_email = submission.student.user.email
+            send_mail(
+                'Your Assignment Has Been Graded',
+                f'Hello {submission.student.user.username},\n\nYour submission for "{submission.assignment.title}" has been graded. You received a {graded_submission.grade}.\n\nFeedback: {graded_submission.feedback}',
+                'no-reply@yourplatform.com',   # Изпращач
+                [student_email],
+                fail_silently=True,
+            )
+
+            return redirect('assignments:teacher_submissions')
+    else:
+        form = GradeSubmissionForm(instance=submission)
+
+    return render(request, 'assignments/grade_submission.html', {'form': form, 'submission': submission})
+
+
+
+@login_required
+@user_passes_test(is_teacher)
+def create_assignment_view(request):
+    if request.method == 'POST':
+        form = AssignmentForm(request.POST)
+        if form.is_valid():
+            assignment = form.save(commit=False)
+            assignment.course = form.cleaned_data['course']  # или взето от teacher, зависи от модела
+            assignment.save()
+            messages.success(request, "Успешно създаде ново задание.")
+            return redirect('assignments:assignment_list')
+    else:
+        form = AssignmentForm()
+
+    return render(request, 'assignments/create_assignment.html', {'form': form})

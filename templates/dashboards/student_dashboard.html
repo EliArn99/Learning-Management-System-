@@ -1,36 +1,65 @@
-<!-- templates/students/student_dashboard.html -->
 {% extends 'base.html' %}
 {% load static %}
 
 {% block content %}
-    <link rel="stylesheet" href="{% static 'css/student_dashboard.css' %}">
+<div class="container mt-4">
+    <h2 class="mb-4">👨‍🎓 Student Dashboard</h2>
 
-<div class="dashboard-container">
-    <h1>Добре дошъл, {{ request.user.first_name }}!</h1>
-
-    <div class="dashboard-section">
-        <h2>Твоите курсове</h2>
-        <ul class="dashboard-list">
-            {% for course in courses %}
-                <li><a href="{% url 'courses:course_detail' course.id %}">{{ course.name }}</a></li>
-            {% empty %}
-                <li>Все още не си записан в курс.</li>
-            {% endfor %}
-        </ul>
+    <!-- Прогрес бар -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Progress</h5>
+            <div class="progress">
+                <div class="progress-bar bg-success" role="progressbar" style="width: {{ progress }}%;" aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100">
+                    {{ progress }}%
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="dashboard-section">
-        <h2>Задания</h2>
-        <ul class="dashboard-list">
-            {% for assignment in assignments %}
-                <li>
-                    <strong>{{ assignment.title }}</strong> - {{ assignment.status }}
-                    (<a href="{% url 'assignments:assignment_detail' assignment.id %}">Виж</a>)
-                </li>
-            {% empty %}
-                <li>Няма текущи задания.</li>
-            {% endfor %}
-        </ul>
+    <!-- Предстоящи задания -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Upcoming Assignments</h5>
+            {% if upcoming_assignments %}
+                <ul class="list-group">
+                    {% for assignment in upcoming_assignments %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                📘 <strong>{{ assignment.title }}</strong>
+                                <br>
+                                <small>Due: {{ assignment.due_date|date:"M d, Y H:i" }}</small>
+                            </div>
+                            <a href="{% url 'assignments:assignment_detail' assignment.pk %}" class="btn btn-outline-primary btn-sm">View</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted">No upcoming assignments.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Курсове -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Your Courses</h5>
+            <div class="row">
+                {% for course in courses %}
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body">
+                                <h6 class="card-title">{{ course.name }}</h6>
+                                <p class="card-text">{{ course.description|truncatewords:15 }}</p>
+                                <a href="#" class="btn btn-sm btn-outline-secondary">Go to Course</a>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p class="text-muted">You are not enrolled in any courses.</p>
+                {% endfor %}
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

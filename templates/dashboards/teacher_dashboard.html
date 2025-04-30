@@ -1,42 +1,85 @@
-<!-- templates/teachers/teacher_dashboard.html -->
 {% extends 'base.html' %}
 {% load static %}
 
 {% block content %}
-<div class="dashboard-container">
-    <h1>Добре дошъл, {{ request.user.first_name }}!</h1>
+<div class="container mt-4">
+    <h2 class="mb-4">👨‍🏫 Учителски Dashboard</h2>
 
-    <div class="dashboard-section">
-        <h2>Твоите курсове</h2>
-        <ul class="dashboard-list">
+    <!-- Карти със статистики -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-white bg-primary shadow">
+                <div class="card-body">
+                    <h5 class="card-title">Общо предавания</h5>
+                    <p class="card-text display-6">{{ total_submissions }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-success shadow">
+                <div class="card-body">
+                    <h5 class="card-title">Оценени предавания</h5>
+                    <p class="card-text display-6">{{ graded_submissions }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h5 class="card-title">Бързи действия</h5>
+                    <a href="{% url 'courses:create_course' %}" class="btn btn-sm btn-outline-primary mb-2">+ Нов курс</a><br>
+                    <a href="{% url 'assignments:create_assignment' %}" class="btn btn-sm btn-outline-success">+ Ново задание</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Филтър по курс -->
+    <form method="get" class="mb-3">
+        <label for="course" class="form-label">Филтрирай по курс:</label>
+        <select name="course" id="course" class="form-select" onchange="this.form.submit()">
+            <option value="">-- Всички курсове --</option>
             {% for course in courses %}
-                <li>
-                    <strong>{{ course.name }}</strong> ({{ course.university_name }})<br>
-                    <a href="{% url 'courses:course_detail' course.id %}">Виж курс</a>
-                </li>
-            {% empty %}
-                <li>Нямате създадени курсове.</li>
+                <option value="{{ course.id }}" {% if course.id|stringformat:"s" == selected_course_id %}selected{% endif %}>
+                    {{ course.name }}
+                </option>
             {% endfor %}
-        </ul>
-    </div>
+        </select>
+    </form>
 
-    <div class="dashboard-section">
-        <h2>Задания за оценяване</h2>
-        <ul class="dashboard-list">
-            {% for submission in submissions %}
-                <li>
-                    {{ submission.assignment.title }} -
-                    {{ submission.student.user.username }} -
-                    {% if submission.grade %}
-                        <span style="color: green;">Оценено: {{ submission.grade }}</span>
-                    {% else %}
-                        <a href="{% url 'assignments:grade_submission' submission.id %}">Оцени</a>
-                    {% endif %}
-                </li>
+    <!-- Последни предавания -->
+    <h4 class="mt-4">📄 Последни предавания</h4>
+    <table class="table table-hover table-bordered mt-2">
+        <thead class="table-light">
+            <tr>
+                <th>Студент</th>
+                <th>Задание</th>
+                <th>Курс</th>
+                <th>Дата</th>
+                <th>Статус</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sub in recent_submissions %}
+                <tr>
+                    <td>{{ sub.student.user.username }}</td>
+                    <td>{{ sub.assignment.title }}</td>
+                    <td>{{ sub.assignment.course.name }}</td>
+                    <td>{{ sub.submitted_at|date:"d.m.Y H:i" }}</td>
+                    <td>
+                        {% if sub.grade %}
+                            <span class="badge bg-success">Оценено</span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark">Чака оценка</span>
+                        {% endif %}
+                    </td>
+                </tr>
             {% empty %}
-                <li>Няма предадени задания.</li>
+                <tr>
+                    <td colspan="5">Няма предавания.</td>
+                </tr>
             {% endfor %}
-        </ul>
-    </div>
+        </tbody>
+    </table>
 </div>
 {% endblock %}

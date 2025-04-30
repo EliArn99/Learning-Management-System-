@@ -111,7 +111,7 @@ def custom_login_view(request):
                     profile = TeacherProfile.objects.get(user=user)
                     if not profile.is_approved:
                         return redirect('approval_pending')
-                    return redirect('teacher_dashboard')
+                    return redirect('dashboards:teacher_dashboard')
                 except TeacherProfile.DoesNotExist:
                     return redirect('approval_pending')
             else:

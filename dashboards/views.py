@@ -46,10 +46,18 @@ def teacher_dashboard_view(request):
 @login_required
 def student_dashboard_view(request):
     student = request.user.studentprofile
-    courses = Course.objects.filter(students=student)
+    courses = Course.objects.filter(enrollments__student=student).distinct()
     assignments = Assignment.objects.filter(course__in=courses)
+
+    upcoming_assignments = assignments.filter(due_date__gt=timezone.now()).order_by('due_date')
+
+    total = assignments.count()
+    submitted = Submission.objects.filter(student=student, assignment__in=assignments).count()
+    progress = int((submitted / total) * 100) if total else 0
 
     return render(request, 'dashboards/student_dashboard.html', {
         'courses': courses,
         'assignments': assignments,
+        'upcoming_assignments': upcoming_assignments[:5],
+        'progress': progress,
     })

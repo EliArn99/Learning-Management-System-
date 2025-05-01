@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'courses',
     'assignments',
     'messaging',
-    'dashboards'
+    'dashboards',
+    'widget_tweaks'
 ]
 
 MIDDLEWARE = [
@@ -138,3 +139,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = '/users/login/'          # ← Пътят, където е твоят custom login
 LOGIN_REDIRECT_URL = '/'             # накъде да идваш след логин
 LOGOUT_REDIRECT_URL = '/users/login/'
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'your_email@gmail.com'
+EMAIL_HOST_PASSWORD = 'your_email_password'

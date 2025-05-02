@@ -1,1 +1,29 @@
-<h1>sent</h1>
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>📤 Изпратени съобщения</h1>
+
+    {% if sent_messages %}
+        <ul class="list-group">
+            {% for msg in sent_messages %}
+                <li class="list-group-item">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <strong>До:</strong> {{ msg.receiver.username }}<br>
+                            <strong>Тема:</strong> {{ msg.subject|default:"(Без тема)" }}<br>
+                            <small class="text-muted">{{ msg.timestamp|date:"Y-m-d H:i" }}</small>
+                        </div>
+                        <div>
+                            <span class="badge bg-light text-dark">📩</span>
+                        </div>
+                    </div>
+                    <p class="mt-2 mb-0">{{ msg.content|truncatewords:20 }}</p>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="text-muted">Нямате изпратени съобщения.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,1 +1,33 @@
-<h1>send_messages</h1>
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>✉️ Изпрати съобщение</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="receiver" class="form-label">До:</label>
+            <select class="form-select" id="receiver" name="receiver" required>
+                {% for user in users %}
+                    {% if user != request.user %}
+                        <option value="{{ user.id }}">{{ user.username }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="subject" class="form-label">Тема:</label>
+            <input type="text" class="form-control" id="subject" name="subject">
+        </div>
+
+        <div class="mb-3">
+            <label for="content" class="form-label">Съобщение:</label>
+            <textarea class="form-control" id="content" name="content" rows="4" required></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Изпрати</button>
+    </form>
+</div>
+{% endblock %}

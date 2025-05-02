@@ -1,1 +1,22 @@
-<h1>inbox</h1>
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>📥 Inbox</h2>
+    {% if messages %}
+        <ul class="list-group">
+            {% for message in messages %}
+                <li class="list-group-item d-flex justify-content-between align-items-center {% if not message.is_read %}fw-bold{% endif %}">
+                    <div>
+                        <strong>{{ message.subject|default:"(No subject)" }}</strong><br>
+                        <small>From: {{ message.sender.username }} | {{ message.timestamp|date:"M d, Y H:i" }}</small>
+                    </div>
+                    <a href="#" class="btn btn-sm btn-outline-primary">View</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="text-muted">No messages found.</p>
+    {% endif %}
+</div>
+{% endblock %}

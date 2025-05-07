@@ -1,1 +1,29 @@
-<h1>submit_assignment</h1>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h2 class="card-title">📤 Submit Assignment: {{ assignment.title }}</h2>
+            <p class="text-muted">Due: {{ assignment.due_date|date:"M d, Y H:i" }}</p>
+
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="file" class="form-label">Upload your file (PDF, DOCX)</label>
+                    {{ form.file }}
+                </div>
+                <button type="submit" class="btn btn-success">Submit</button>
+            </form>
+
+            {% if submission %}
+                <hr>
+                <h5>Your Current Submission:</h5>
+                <p>Submitted on: {{ submission.submitted_at|date:"M d, Y H:i" }}</p>
+                <a href="{{ submission.file.url }}" class="btn btn-outline-secondary" download>📎 Download Submitted File</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

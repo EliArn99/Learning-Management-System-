@@ -1,1 +1,43 @@
-<h1>assignment_detail</h1>
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h2 class="card-title">{{ assignment.title }}</h2>
+            <p class="text-muted">Due: {{ assignment.due_date|date:"M d, Y H:i" }}</p>
+
+            <hr>
+            <h5>Description</h5>
+            <p>{{ assignment.description|linebreaks }}</p>
+
+            {% if assignment.file %}
+                <div class="mt-3">
+                    <h6>Attached File:</h6>
+                    <a href="{{ assignment.file.url }}" class="btn btn-outline-secondary btn-sm" download>
+                        📎 {{ assignment.file.name }}
+                    </a>
+                </div>
+            {% endif %}
+
+            {% if user.is_authenticated and user.is_student %}
+                <hr>
+                <h5>Your Submission</h5>
+                {% if submission %}
+                    <p><strong>Status:</strong> ✅ Submitted</p>
+                    <p><strong>Submitted on:</strong> {{ submission.submitted_at|date:"M d, Y H:i" }}</p>
+                    <a href="{% url 'assignments:edit_submission' submission.id %}" class="btn btn-primary btn-sm">
+                        ✏️ Edit Submission
+                    </a>
+                {% else %}
+                    <p class="text-warning">You haven't submitted this assignment yet.</p>
+                    <a href="{% url 'assignments:submit' assignment.id %}" class="btn btn-success btn-sm">
+                        📤 Submit Assignment
+                    </a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

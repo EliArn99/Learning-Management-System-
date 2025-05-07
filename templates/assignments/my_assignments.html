@@ -1,34 +1,52 @@
-<h1>Моите задания</h1>
+{% extends 'base.html' %}
+{% load static %}
 
-<table>
-    <thead>
-        <tr>
-            <th>Заглавие</th>
-            <th>Краен срок</th>
-            <th>Статус</th>
-            <th>Оценка</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for item in assignments_with_status %}
-        <tr>
-            <td>{{ item.assignment.title }}</td>
-            <td>{{ item.assignment.due_date }}</td>
-            <td>
-                {% if item.submission %}
-                    Предадено на {{ item.submission.submitted_at }}
-                {% else %}
-                    Не е предадено
-                {% endif %}
-            </td>
-            <td>
-                {% if item.submission and item.submission.grade %}
-                    {{ item.submission.grade }}
-                {% else %}
-                    Няма оценка
-                {% endif %}
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h2 class="card-title mb-4">📚 Моите задания</h2>
+
+            <div class="table-responsive">
+                <table class="table table-bordered align-middle table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Заглавие</th>
+                            <th>Краен срок</th>
+                            <th>Статус</th>
+                            <th>Оценка</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in assignments_with_status %}
+                        <tr>
+                            <td><strong>{{ item.assignment.title }}</strong></td>
+                            <td>{{ item.assignment.due_date|date:"M d, Y H:i" }}</td>
+                            <td>
+                                {% if item.submission %}
+                                    <span class="badge bg-success">✅ Предадено</span><br>
+                                    <small class="text-muted">{{ item.submission.submitted_at|date:"M d, Y H:i" }}</small>
+                                {% else %}
+                                    <span class="badge bg-warning text-dark">⏳ Не е предадено</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if item.submission and item.submission.grade %}
+                                    <span class="badge bg-primary">{{ item.submission.grade }}</span>
+                                {% else %}
+                                    <span class="text-muted">Няма оценка</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">Няма налични задания.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

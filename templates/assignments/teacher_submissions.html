@@ -1,0 +1,40 @@
+<h1>Предадени задания</h1>
+
+<table border="1" cellspacing="0" cellpadding="8">
+    <thead>
+    <tr>
+        <th>Задание</th>
+        <th>Студент</th>
+        <th>Предадено на</th>
+        <th>Оценка</th>
+        <th>Оцени</th>
+        <th>Файл</th> <!-- добавяме шеста колонка -->
+    </tr>
+    </thead>
+    <tbody>
+    {% for submission in submissions %}
+        <tr>
+            <td>{{ submission.assignment.title }}</td>
+            <td>{{ submission.student.user.username }}</td>
+            <td>{{ submission.submitted_at|date:"d.m.Y H:i" }}</td>
+            <td>
+                {% if submission.grade %}
+                    <span style="color: green;">Оценено: {{ submission.grade }}</span>
+                {% else %}
+                    <span style="color: red;">Неоценено</span>
+                {% endif %}
+            </td>
+            <td>
+                <a href="{% url 'assignments:grade_submission' submission.id %}">Оцени</a>
+            </td>
+            <td>
+                <a href="{{ submission.file.url }}" download>📥 Изтегли файл</a>
+            </td>
+        </tr>
+    {% empty %}
+        <tr>
+            <td colspan="6" style="text-align: center;">Няма предадени задания.</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

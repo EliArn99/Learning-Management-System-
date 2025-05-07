@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="mb-4">Оценяване на задание</h2>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">{{ submission.assignment.title }}</h5>
+            <p class="card-text"><strong>Студент:</strong> {{ submission.student.user.get_full_name }} ({{ submission.student.user.username }})</p>
+            <p class="card-text"><strong>Предадено на:</strong> {{ submission.submitted_at|date:"d.m.Y H:i" }}</p>
+            <p class="card-text">
+                <strong>Файл на студента:</strong><br>
+                <a href="{{ submission.file.url }}" class="btn btn-outline-primary btn-sm mt-2" download>
+                    📎 Изтегли предадения файл
+                </a>
+            </p>
+        </div>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" class="card p-4 shadow-sm">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="id_grade" class="form-label">Оценка</label>
+            {{ form.grade }}
+        </div>
+        <div class="mb-3">
+            <label for="id_feedback" class="form-label">Обратна връзка</label>
+            {{ form.feedback }}
+        </div>
+        <div class="mb-3">
+            <label for="id_graded_file" class="form-label">Коригиран файл (по избор)</label>
+            {{ form.graded_file }}
+        </div>
+        <button type="submit" class="btn btn-success">💾 Запази оценката</button>
+    </form>
+
+    {% if submission.graded_file %}
+    <div class="alert alert-info mt-4">
+        <strong>Качен от учителя файл:</strong><br>
+        <a href="{{ submission.graded_file.url }}" class="btn btn-outline-secondary btn-sm mt-2" download>
+            📥 Изтегли коригирания файл
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

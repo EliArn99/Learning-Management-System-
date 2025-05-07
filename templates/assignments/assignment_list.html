@@ -1,1 +1,31 @@
-<h1>assignments_list</h1>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Assignment List</h1>
+
+    {% if assignments %}
+        <div class="row">
+            {% for assignment in assignments %}
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ assignment.title }}</h5>
+                            <p class="card-text">
+                                Курс: {{ assignment.course.name }} <br>
+                                Срок: {{ assignment.due_date|date:"d.m.Y H:i" }}
+                            </p>
+                            <a href="{% url 'assignments:assignment_detail' assignment.pk %}" class="btn btn-primary">
+                                Виж детайли
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>Няма зададени задания.</p>
+    {% endif %}
+</div>
+{% endblock %}

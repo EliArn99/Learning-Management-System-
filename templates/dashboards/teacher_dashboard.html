@@ -33,6 +33,55 @@
             </div>
         </div>
     </div>
+<h4 class="mt-5">📚 Курсове, които преподавате</h4>
+<div class="row">
+    {% for course in courses %}
+        <div class="col-md-6 mb-3">
+            <div class="card border-info shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">{{ course.name }}</h5>
+                    <p class="card-text">{{ course.description|truncatewords:20 }}</p>
+                    <a href="{% url 'courses:course_detail' course.id %}" class="btn btn-sm btn-outline-info">Преглед</a>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <p>Нямате създадени курсове.</p>
+    {% endfor %}
+</div>
+
+<h4 class="mt-5">🕒 Най-активни студенти</h4>
+<ul class="list-group">
+    {% for student in active_students %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            {{ student.user.username }}
+            <span class="badge bg-secondary">{{ student.latest_submission_time|date:"d.m.Y H:i" }}</span>
+        </li>
+    {% empty %}
+        <li class="list-group-item">Няма активности.</li>
+    {% endfor %}
+</ul>
+
+<h4 class="mt-5">👨‍🎓 Студенти по курсове</h4>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Курс</th>
+            <th>Записани студенти</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for course in courses %}
+            <tr>
+                <td>{{ course.name }}</td>
+                <td>{{ course.enrollments.count }}</td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="2">Няма курсове.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
 
     <!-- Филтър по курс -->
     <form method="get" class="mb-3">
@@ -47,6 +96,8 @@
         </select>
     </form>
 
+
+
     <!-- Последни предавания -->
     <h4 class="mt-4">📄 Последни предавания</h4>
     <table class="table table-hover table-bordered mt-2">
@@ -59,6 +110,8 @@
                 <th>Статус</th>
             </tr>
         </thead>
+    
+    
         <tbody>
             {% for sub in recent_submissions %}
                 <tr>

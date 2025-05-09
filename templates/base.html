@@ -7,7 +7,18 @@
 </head>
 <body>
     {% include 'partials/navbar.html' %}
-    <div class="container mt-5">
+
+    <div class="container mt-3">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <div class="container mt-4">
         {% block content %}{% endblock %}
     </div>
 </body>

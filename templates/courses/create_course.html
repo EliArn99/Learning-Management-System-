@@ -1,1 +1,77 @@
-<h1>create_course</h1>
+{% extends "base.html" %}
+{% load static widget_tweaks %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/custom.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="hero-create fade-in">
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+
+        <!-- Header card -->
+        <div class="card mb-4 shadow-sm border-0 bg-gradient-primary text-white">
+          <div class="card-body d-flex align-items-center">
+            <i class="bi bi-journal-plus display-5 me-3"></i>
+            <div>
+              <h1 class="h3 mb-1 fw-semibold">Нов курс</h1>
+              <p class="mb-0 small opacity-75">
+                Попълни информацията и добави курса към каталога.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form card -->
+        <div class="card shadow-sm border-0">
+          <div class="card-body p-4">
+            <form method="post" class="needs-validation" novalidate>
+              {% csrf_token %}
+              {{ form.non_field_errors }}
+              {% for field in form %}
+                <div class="mb-3">
+                  {{ field.label_tag }}
+                  {{ field|add_class:"form-control" }}
+                  {% if field.help_text %}
+                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                  {% endif %}
+                  {% for err in field.errors %}
+                    <div class="invalid-feedback d-block">{{ err }}</div>
+                  {% endfor %}
+                </div>
+              {% endfor %}
+
+              <div class="d-grid">
+                <button class="btn btn-primary btn-lg">
+                  <i class="bi bi-save me-1"></i> Запази курса
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Bootstrap validation
+  (function () {
+    'use strict';
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.from(forms).forEach(form => {
+      form.addEventListener('submit', event => {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    });
+  })();
+</script>
+{% endblock %}

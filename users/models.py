@@ -36,11 +36,12 @@ class TeacherProfile(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     age = models.PositiveIntegerField()
     education = models.CharField(max_length=225)
+    experience_years = models.PositiveIntegerField(null=True, blank=True)  # ⬅️ добавено
     is_approved = models.BooleanField(default=False)
 
     def clean(self):
-        if self.age < 25:
-            raise ValidationError("Teacher age must be at least 25.")
+        if self.experience_years is not None and self.experience_years < 0:
+            raise ValidationError("Опитът не може да е отрицателен.")
 
     def save(self, *args, **kwargs):
         self.full_clean()
@@ -48,3 +49,4 @@ class TeacherProfile(models.Model):
 
     def __str__(self):
         return self.user.username
+

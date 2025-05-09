@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>👤 Профил на студента</h2>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <p><strong>Име:</strong> {{ student.user.get_full_name }}</p>
+            <p><strong>Имейл:</strong> {{ student.user.email }}</p>
+            <p><strong>Факултетен номер:</strong> {{ student.faculty_number }}</p>
+            <p><strong>Възраст:</strong> {{ student.age }}</p>
+            {% if student.achievements %}
+                <p><strong>Постижения:</strong> {{ student.achievements }}</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

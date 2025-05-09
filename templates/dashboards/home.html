@@ -1,7 +1,24 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="text-center">
-    <h1>Welcome to MiniLMS 🎓</h1>
-    <p class="lead">Please login or register to continue.</p>
+<div class="container text-center mt-5">
+    <h1 class="mb-4">Добре дошли в MiniLMS 🎓</h1>
+    <p class="lead mb-5">Изберете опция, за да продължите:</p>
+
+    <div class="row justify-content-center">
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm p-4">
+                <h5>Ученик</h5>
+                <a href="{% url 'users:login' %}" class="btn btn-primary w-100 my-2">Вход</a>
+                <a href="{% url 'users:register_student' %}" class="btn btn-outline-primary w-100">Регистрация</a>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm p-4">
+                <h5>Преподавател</h5>
+                <a href="{% url 'users:login' %}" class="btn btn-success w-100 my-2">Вход</a>
+                <a href="{% url 'users:register_teacher' %}" class="btn btn-outline-success w-100">Регистрация</a>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

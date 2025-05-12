@@ -37,34 +37,39 @@ def my_assignments_view(request):
 
 
 @login_required
-def submit_assignment_view(request):
+def submit_assignment_view(request, assignment_id):
+    assignment = get_object_or_404(Assignment, id=assignment_id)
+    submission, created = Submission.objects.get_or_create(
+        assignment=assignment,
+        student=request.user
+    )
+
     if request.method == 'POST':
-        form = AssignmentSubmissionForm(request.POST, request.FILES)
+        form = AssignmentSubmissionForm(request.POST, request.FILES, instance=submission)
         if form.is_valid():
-            assignment = form.cleaned_data['assignment']
-            student_profile = get_object_or_404(StudentProfile, user=request.user)
-
-            # Проверка: има ли вече предаване за това задание?
-            existing_submission = Submission.objects.filter(assignment=assignment, student=student_profile).first()
-            if existing_submission:
-                messages.error(request, "Вече сте предали това задание!")
-                return redirect('assignments:my_assignments')
-
-            assignment_submission = form.save(commit=False)
-            assignment_submission.student = student_profile
-            assignment_submission.save()
-            messages.success(request, "Успешно предадохте заданието!")
-            return redirect('assignments:my_assignments')
+            form.save()
+            return redirect('assignments:assignment_detail', pk=assignment.id)
     else:
-        form = AssignmentSubmissionForm()
-    return render(request, 'assignments/submit_assignment.html', {'form': form})
+        form = AssignmentSubmissionForm(instance=submission)
 
+    return render(request, 'assignments/submit_assignment.html', {
+        'assignment': assignment,
+        'form': form,
+        'submission': submission
+    })
 
 @login_required
 def assignment_detail_view(request, pk):
     assignment = get_object_or_404(Assignment, pk=pk)
-    return render(request, 'assignments/assignment_detail.html', {'assignment': assignment})
+    submission = None
 
+    if request.user.is_authenticated and request.user.is_student:
+        submission = Submission.objects.filter(student=request.user, assignment=assignment).first()
+
+    return render(request, 'assignments/assignment_detail.html', {
+        'assignment': assignment,
+        'submission': submission
+    })
 
 def is_teacher(user):
     return hasattr(user, 'teacherprofile')
@@ -108,14 +113,16 @@ def grade_submission_view(request, submission_id):
 @user_passes_test(is_teacher)
 def create_assignment_view(request):
     teacher = request.user.teacherprofile
-    courses = Course.objects.filter(teacher=teacher)
+    courses = Course.objects.filter(teacher=teacher)  # Ограничаваме курсовете на този преподавател
 
     if request.method == 'POST':
         form = AssignmentForm(request.POST)
+        course_id = request.POST.get("course")
+        course = get_object_or_404(Course, id=course_id, teacher=teacher)
+
         if form.is_valid():
             assignment = form.save(commit=False)
-            course_id = request.POST.get('course')
-            assignment.course = get_object_or_404(Course, id=course_id, teacher=teacher)
+            assignment.course = course
             assignment.save()
             messages.success(request, "Успешно създаде ново задание.")
             return redirect('assignments:assignment_list')
@@ -124,5 +131,5 @@ def create_assignment_view(request):
 
     return render(request, 'assignments/create_assignment.html', {
         'form': form,
-        'courses': courses,
+        'courses': courses,  # Списък с курсове за <select>
     })

@@ -1,5 +1,5 @@
 from django import forms
-from .models import Assignment
+from .models import Assignment, Submission
 from django.utils import timezone
 
 class AssignmentForm(forms.ModelForm):
@@ -24,8 +24,31 @@ class AssignmentForm(forms.ModelForm):
             raise forms.ValidationError("Due date cannot be in the past.")
         return due_date
 
-
 class AssignmentSubmissionForm(forms.ModelForm):
     class Meta:
         model = Submission
         fields = ['assignment', 'file']
+
+
+
+
+class GradeSubmissionForm(forms.ModelForm):
+    class Meta:
+        model = Submission
+        fields = ['grade', 'feedback']
+        widgets = {
+            'grade': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Grade'}),
+            'feedback': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Feedback'}),
+        }
+
+
+
+
+# class SubmissionForm(forms.ModelForm):
+#     class Meta:
+#         model = Submission
+#         fields = ['file']
+#         widgets = {
+#             'file': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+#         }
+

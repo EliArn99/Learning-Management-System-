@@ -1,4 +1,4 @@
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect, get_object_or_404
 
@@ -18,16 +18,31 @@ def profile_redirect_view(request):
 
 
 @login_required
+def profile_view(request):
+    user = request.user
+
+    if hasattr(user, 'studentprofile'):
+        return render(request, 'users/student_profile.html', {'student': user.studentprofile})
+
+    elif hasattr(user, 'teacherprofile'):
+        return render(request, 'users/teacher_profile.html', {'teacher': user.teacherprofile})
+
+    else:
+        # Ако няма профил — върни грешка или пренасочи
+        return redirect('home')
+
+
+@login_required
 def student_profile_view(request):
     profile, created = StudentProfile.objects.get_or_create(user=request.user)
 
     if request.method == 'POST':
-        form = StudentProfileForm(request.POST, instance=profile)
+        form = StudentRegisterForm(request.POST, instance=profile)
         if form.is_valid():
             form.save()
             return redirect('users:student_dashboard')
     else:
-        form = StudentProfileForm(instance=profile)
+        form = StudentRegisterForm(instance=profile)
 
     return render(request, 'users/student_profile.html', {'form': form})
 
@@ -37,19 +52,19 @@ def teacher_profile_view(request):
     profile, created = TeacherProfile.objects.get_or_create(user=request.user)
 
     if request.method == 'POST':
-        form = TeacherProfileForm(request.POST, instance=profile)
+        form = TeacherRegisterForm(request.POST, instance=profile)
         if form.is_valid():
             form.save()
             return redirect('users:teacher_dashboard')
     else:
-        form = TeacherProfileForm(instance=profile)
+        form = TeacherRegisterForm(instance=profile)
 
     return render(request, 'users/teacher_profile.html', {'form': form})
 
 
 @login_required
 def approval_pending_view(request):
-    return render(request, 'users/approval_pending.html')
+    return redirect('users:approval_pending')
 
 
 
@@ -59,7 +74,7 @@ def register_student(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('approval_pending')
+            return redirect('users:approval_pending')
     else:
         form = StudentRegisterForm()
     return render(request, 'users/register_student.html', {'form': form})
@@ -71,7 +86,7 @@ def register_teacher(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('approval_pending')
+            return redirect('users:approval_pending')
     else:
         form = TeacherRegisterForm()
     return render(request, 'users/register_teacher.html', {'form': form})
@@ -80,14 +95,14 @@ def register_teacher(request):
 def student_dashboard(request):
     profile = request.user.studentprofile
     if not profile.is_approved:
-        return redirect('approval_pending')
+        return redirect('users:approval_pending')
     return render(request, 'dashboards/student.html')
 
 @teacher_required
 def teacher_dashboard(request):
     profile = request.user.teacherprofile
     if not profile.is_approved:
-        return redirect('approval_pending')
+        return redirect('users:approval_pending')
     return render(request, 'dashboards/teacher.html')
 
 
@@ -102,18 +117,18 @@ def custom_login_view(request):
                 try:
                     profile = StudentProfile.objects.get(user=user)
                     if not profile.is_approved:
-                        return redirect('approval_pending')
-                    return redirect('student_dashboard')
+                        return redirect('users:approval_pending')
+                    return redirect('dashboards:student_dashboard')
                 except StudentProfile.DoesNotExist:
-                    return redirect('approval_pending')
+                    return redirect('users:approval_pending')
             elif user.is_teacher:
                 try:
                     profile = TeacherProfile.objects.get(user=user)
                     if not profile.is_approved:
-                        return redirect('approval_pending')
+                        return redirect('users:approval_pending')
                     return redirect('dashboards:teacher_dashboard')
                 except TeacherProfile.DoesNotExist:
-                    return redirect('approval_pending')
+                    return redirect('users:approval_pending')
             else:
                 return redirect('home')  # or some fallback
     else:
@@ -131,13 +146,13 @@ def login_view(request):
             if user.is_teacher:
                 profile = user.teacherprofile
                 if not profile.is_approved:
-                    return redirect('approval_pending')
+                    return redirect('users:approval_pending')
                 return redirect('teacher_dashboard')
 
             elif user.is_student:
                 profile = user.studentprofile
                 if not profile.is_approved:
-                    return redirect('approval_pending')
+                    return redirect('users:approval_pending')
                 return redirect('student_dashboard')
 
             else:
@@ -145,3 +160,11 @@ def login_view(request):
     else:
         form = AuthenticationForm()
     return render(request, 'users/login.html', {'form': form})
+
+
+def custom_logout_view(request):
+    # Излизане от сесията
+    logout(request)
+
+    # Пренасочване към страница след изход (например, може да е страница с потвърждение)
+    return render(request, 'users/logout.html')

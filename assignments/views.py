@@ -39,9 +39,13 @@ def my_assignments_view(request):
 @login_required
 def submit_assignment_view(request, assignment_id):
     assignment = get_object_or_404(Assignment, id=assignment_id)
+
+    # Взимаме StudentProfile
+    student_profile = get_object_or_404(StudentProfile, user=request.user)
+
     submission, created = Submission.objects.get_or_create(
         assignment=assignment,
-        student=request.user
+        student=student_profile  # ✅ подаваме правилно
     )
 
     if request.method == 'POST':
@@ -58,18 +62,21 @@ def submit_assignment_view(request, assignment_id):
         'submission': submission
     })
 
+
 @login_required
 def assignment_detail_view(request, pk):
     assignment = get_object_or_404(Assignment, pk=pk)
     submission = None
 
-    if request.user.is_authenticated and request.user.is_student:
-        submission = Submission.objects.filter(student=request.user, assignment=assignment).first()
+    if request.user.is_authenticated and hasattr(request.user, 'studentprofile'):
+        student_profile = request.user.studentprofile
+        submission = Submission.objects.filter(student=student_profile, assignment=assignment).first()
 
     return render(request, 'assignments/assignment_detail.html', {
         'assignment': assignment,
         'submission': submission
     })
+
 
 def is_teacher(user):
     return hasattr(user, 'teacherprofile')
@@ -132,4 +139,27 @@ def create_assignment_view(request):
     return render(request, 'assignments/create_assignment.html', {
         'form': form,
         'courses': courses,  # Списък с курсове за <select>
+    })
+
+
+@login_required
+def edit_submission_view(request, submission_id):
+    submission = get_object_or_404(Submission, id=submission_id)
+
+    if submission.student.user != request.user:
+        messages.error(request, "Нямате право да редактирате тази задача.")
+        return redirect('assignments:assignment_list')
+
+    if request.method == 'POST':
+        form = AssignmentSubmissionForm(request.POST, request.FILES, instance=submission)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Успешно редактирахте заданието.")
+            return redirect('assignments:assignment_detail', pk=submission.assignment.id)
+    else:
+        form = AssignmentSubmissionForm(instance=submission)
+
+    return render(request, 'assignments/edit_submission.html', {
+        'form': form,
+        'submission': submission
     })

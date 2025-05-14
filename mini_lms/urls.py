@@ -18,7 +18,8 @@ from django.contrib import admin
 from django.urls import path, include
 from dashboards.views import home  # добави това горе
 from users.views import login_view
-
+from django.conf import settings
+from django.conf.urls.static import static
 urlpatterns = [
     path('', home, name='home'),
 
@@ -31,4 +32,4 @@ urlpatterns = [
     path('users/', include('users.urls')),
     path('accounts/login/', login_view),   # пряк път
 
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

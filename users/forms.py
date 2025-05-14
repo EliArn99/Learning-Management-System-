@@ -45,3 +45,14 @@ class TeacherRegisterForm(UserCreationForm):
                 education=self.cleaned_data['education']
             )
         return user
+
+
+class StudentProfileForm(forms.ModelForm):
+    class Meta:
+        model = StudentProfile
+        fields = ['age', 'achievements', 'profile_picture']
+
+class TeacherProfileForm(forms.ModelForm):
+    class Meta:
+        model = TeacherProfile
+        fields = ['profile_picture']

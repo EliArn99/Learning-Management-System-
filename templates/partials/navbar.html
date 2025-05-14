@@ -1,23 +1,39 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <div class="container">
-    <a class="navbar-brand" href="/">MiniLMS</a>
+    <div class="container">
+        <a class="navbar-brand" href="/">MiniLMS</a>
+        <!-- Тук добавяме бутона за мобилна навигация -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+                aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-    <div class="collapse navbar-collapse">
-      <ul class="navbar-nav ms-auto">
-        {% if request.user.is_authenticated %}
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-              {{ request.user.get_full_name|default:request.user.username }}
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end">
-              <li><a class="dropdown-item" href="{% url 'users:profile' %}">Профил</a></li>
-{#              <li><a class="dropdown-item" href="{% url 'logout' %}">Изход</a></li>#}
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+            <ul class="navbar-nav ms-auto">
+                {% if request.user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                           aria-expanded="false">
+                            {{ request.user.get_full_name|default:request.user.username }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{% url 'users:profile' %}">👤 Профил</a></li>
+
+                            {% if request.user.is_student %}
+                                <li><a class="dropdown-item disabled" href="{% url 'users:student_profile' %}">🎓 Студент</a></li>
+                            {% elif request.user.is_teacher %}
+                                <li><a class="dropdown-item disabled" href="{% url 'users:teacher_profile' %}">👨‍🏫 Преподавател</a></li>
+                            {% endif %}
+
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="{% url 'users:logout' %}">🚪 Изход</a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">🔐 Вход</a></li>
+                {% endif %}
             </ul>
-          </li>
-        {% else %}
-          <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Вход</a></li>
-        {% endif %}
-      </ul>
+        </div>
     </div>
-  </div>
 </nav>

@@ -3,7 +3,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect, get_object_or_404
 
 from .decorators import student_required, teacher_required
-from .forms import StudentRegisterForm, TeacherRegisterForm
+from .forms import StudentRegisterForm, TeacherRegisterForm, StudentProfileForm, TeacherProfileForm
 from .models import StudentProfile, TeacherProfile, CustomUser
 from django.contrib.auth.decorators import login_required
 
@@ -168,3 +168,28 @@ def custom_logout_view(request):
 
     # Пренасочване към страница след изход (например, може да е страница с потвърждение)
     return render(request, 'users/logout.html')
+
+
+
+@login_required
+def edit_profile_view(request):
+    user = request.user
+
+    if hasattr(user, 'studentprofile'):
+        profile = user.studentprofile
+        form_class = StudentProfileForm
+    elif hasattr(user, 'teacherprofile'):
+        profile = user.teacherprofile
+        form_class = TeacherProfileForm
+    else:
+        return redirect('users:profile')
+
+    if request.method == 'POST':
+        form = form_class(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect('users:profile')
+    else:
+        form = form_class(instance=profile)
+
+    return render(request, 'users/edit_profile.html', {'form': form})

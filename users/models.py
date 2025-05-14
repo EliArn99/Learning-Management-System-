@@ -17,6 +17,8 @@ class StudentProfile(models.Model):
     achievements = models.TextField(blank=True, null=True)
     faculty_number = models.CharField(max_length=20, unique=True, editable=False)
     is_approved = models.BooleanField(default=False)
+    profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
+
 
     def clean(self):
         if self.age < 18:
@@ -38,6 +40,8 @@ class TeacherProfile(models.Model):
     education = models.CharField(max_length=225)
     experience_years = models.PositiveIntegerField(null=True, blank=True)  # ⬅️ добавено
     is_approved = models.BooleanField(default=False)
+    profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
+
 
     def clean(self):
         if self.experience_years is not None and self.experience_years < 0:

@@ -43,3 +43,21 @@ class Enrollment(models.Model):
 
     def __str__(self):
         return f'{self.student.user.username} - {self.course.name}'
+
+
+class ModuleCategory(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
+class Module(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='modules')
+    category = models.ForeignKey(ModuleCategory, on_delete=models.CASCADE, related_name='modules')
+    title = models.CharField(max_length=255)
+    code = models.CharField(max_length=20)
+    description = models.TextField()
+
+    def __str__(self):
+        return f"{self.title} ({self.code})"

@@ -1,1 +1,199 @@
-<h1>course_list</h1>
+{% extends "base.html" %}
+
+{% block extra_css %}
+<style>
+    /* Основни стилове за страницата с курсове */
+    .courses-page {
+        padding: 3rem 0;
+        background-color: #f8f9fa;
+    }
+
+    .page-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 2rem;
+        position: relative;
+        padding-bottom: 1rem;
+        text-align: center;
+    }
+
+    .page-title:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(90deg, #3498db, #9b59b6);
+        border-radius: 2px;
+    }
+
+    .empty-courses {
+        text-align: center;
+        padding: 3rem;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .empty-courses i {
+        font-size: 3rem;
+        color: #e0e0e0;
+        margin-bottom: 1rem;
+    }
+
+    /* Стилове за картите с курсове */
+    .course-card {
+        border: none;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        height: 100%;
+        background: white;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        position: relative;
+    }
+
+    .course-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+
+    .course-card .card-body {
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .course-card .card-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 0.75rem;
+        min-height: 3.5rem;
+    }
+
+    .course-card .card-text {
+        color: #7f8c8d;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+        flex-grow: 1;
+    }
+
+    .course-card .teacher-info {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+        color: #3498db;
+        font-size: 0.85rem;
+    }
+
+    .course-card .teacher-info i {
+        margin-right: 0.5rem;
+        font-size: 1rem;
+    }
+
+    .course-card .btn-details {
+        align-self: flex-start;
+        background: linear-gradient(90deg, #3498db, #9b59b6);
+        border: none;
+        color: white;
+        padding: 0.5rem 1.25rem;
+        border-radius: 30px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        margin-top: auto;
+    }
+
+    .course-card .btn-details:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 10px rgba(52, 152, 219, 0.3);
+    }
+
+    /* Стилове за лентичката NEW */
+    .new-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: linear-gradient(135deg, #2ecc71, #27ae60);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 30px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        box-shadow: 0 3px 10px rgba(46, 204, 113, 0.3);
+        z-index: 2;
+    }
+
+    /* Адаптивни стилове */
+    @media (max-width: 767.98px) {
+        .page-title {
+            font-size: 2rem;
+        }
+
+        .course-card {
+            margin-bottom: 1.5rem;
+        }
+    }
+
+    @media (max-width: 575.98px) {
+        .page-title {
+            font-size: 1.75rem;
+        }
+
+        .course-card .card-title {
+            font-size: 1.1rem;
+            min-height: auto;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="courses-page">
+    <div class="container">
+        <h2 class="page-title">Всички курсове</h2>
+
+        <div class="row g-4">
+            {% for course in courses %}
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="course-card">
+                    <!-- Лентичка NEW -->
+                    <span class="new-badge">NEW</span>
+
+                    <div class="card-body">
+                        <h5 class="card-title">{{ course.name }}</h5>
+
+                        <div class="teacher-info">
+                            <i class="bi bi-person-video2"></i>
+                            {{ course.teacher.user.username|default:"—" }}
+                        </div>
+
+                        <p class="card-text">{{ course.description|truncatewords:20 }}</p>
+
+                        <a href="{% url 'courses:course_detail' course.slug %}"
+                           class="btn-details stretched-link">
+                            Детайли
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="empty-courses">
+                    <i class="bi bi-book"></i>
+                    <h5>Няма налични курсове</h5>
+                    <p class="text-muted">В момента няма активни курсове. Моля, проверете отново по-късно.</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

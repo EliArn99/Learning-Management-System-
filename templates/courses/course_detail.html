@@ -1,1 +1,258 @@
-<h1>course_detail</h1>
+{% extends 'base.html' %}
+{% block content %}
+<div class="course-container">
+    <div class="course-header">
+        <h1 class="course-title">{{ course.name }}</h1>
+        <p class="course-description">{{ course.description }}</p>
+
+        {% if not is_enrolled %}
+        <div class="enroll-section">
+            <form method="post" class="enroll-form">
+                {% csrf_token %}
+                {{ enroll_form.as_p }}
+                <button type="submit" class="enroll-button">Запиши се в курса</button>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if is_enrolled %}
+    <div class="course-content">
+        <div class="modules-section">
+            <h2 class="section-title">📚 Учебни модули</h2>
+
+            {% for category, modules in grouped_modules.items %}
+            <div class="module-category">
+                <h3 class="category-title">{{ forloop.counter }}. {{ category }}</h3>
+                <div class="module-list">
+                    {% for module in modules %}
+                    <div class="module-card">
+                        <div class="module-header">
+                            <span class="module-bullet">•</span>
+                            <h4 class="module-title">{{ module.title }} <span class="module-code">({{ module.code }})</span></h4>
+                        </div>
+                        <p class="module-description">{{ module.description }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% if enrolled_students %}
+    <div class="students-section">
+        <h2 class="section-title">👨‍🎓 Записани студенти</h2>
+        <div class="students-grid">
+            {% for enrollment in enrolled_students %}
+            <div class="student-card">
+                <div class="student-avatar">{{ enrollment.student.user.get_full_name|first|upper }}</div>
+                <div class="student-info">
+                    <h4>{{ enrollment.student.user.get_full_name }}</h4>
+                    <p>@{{ enrollment.student.user.username }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    :root {
+        --primary-color: #4a6fa5;
+        --secondary-color: #6b8cae;
+        --accent-color: #ff7e5f;
+        --light-bg: #f8f9fa;
+        --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        --border-radius: 8px;
+    }
+
+    .course-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #333;
+    }
+
+    .course-header {
+        text-align: center;
+        margin-bottom: 3rem;
+        padding: 2rem;
+        background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+        border-radius: var(--border-radius);
+        box-shadow: var(--card-shadow);
+    }
+
+    .course-title {
+        font-size: 2.5rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+
+    .course-description {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        color: #555;
+        max-width: 800px;
+        margin: 0 auto 2rem;
+    }
+
+    .enroll-section {
+        margin-top: 2rem;
+    }
+
+    .enroll-form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .enroll-button {
+        background-color: var(--accent-color);
+        color: white;
+        border: none;
+        padding: 0.8rem 2rem;
+        font-size: 1rem;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .enroll-button:hover {
+        background-color: #ff6a45;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .section-title {
+        font-size: 1.8rem;
+        color: var(--primary-color);
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--secondary-color);
+    }
+
+    .module-category {
+        margin-bottom: 2.5rem;
+    }
+
+    .category-title {
+        font-size: 1.4rem;
+        color: var(--secondary-color);
+        margin-bottom: 1rem;
+    }
+
+    .module-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .module-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: var(--border-radius);
+        box-shadow: var(--card-shadow);
+        transition: transform 0.3s ease;
+    }
+
+    .module-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .module-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .module-bullet {
+        color: var(--accent-color);
+        font-weight: bold;
+        margin-right: 0.5rem;
+        font-size: 1.5rem;
+    }
+
+    .module-title {
+        font-size: 1.1rem;
+        margin: 0;
+        color: var(--primary-color);
+    }
+
+    .module-code {
+        font-size: 0.9rem;
+        color: #777;
+    }
+
+    .module-description {
+        font-size: 0.95rem;
+        line-height: 1.5;
+        color: #555;
+        margin: 0;
+    }
+
+    .students-section {
+        margin-top: 4rem;
+    }
+
+    .students-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .student-card {
+        display: flex;
+        align-items: center;
+        background: white;
+        padding: 1rem;
+        border-radius: var(--border-radius);
+        box-shadow: var(--card-shadow);
+    }
+
+    .student-avatar {
+        width: 40px;
+        height: 40px;
+        background-color: var(--primary-color);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        font-weight: bold;
+    }
+
+    .student-info h4 {
+        margin: 0;
+        font-size: 1rem;
+        color: #333;
+    }
+
+    .student-info p {
+        margin: 0;
+        font-size: 0.8rem;
+        color: #777;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .course-title {
+            font-size: 2rem;
+        }
+
+        .module-list {
+            grid-template-columns: 1fr;
+        }
+
+        .students-grid {
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        }
+    }
+</style>
+{% endblock %}

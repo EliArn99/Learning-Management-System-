@@ -1,4 +1,6 @@
 # courses/views.py
+from collections import defaultdict
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -24,6 +26,8 @@ def my_courses_view(request):
         courses = []
     return render(request, 'courses/my_courses.html', {'courses': courses})
 
+
+# ---------- създаване на курс (само учител) ----------
 @login_required
 def create_course_view(request):
     if not request.user.is_teacher:
@@ -44,7 +48,6 @@ def create_course_view(request):
     return render(request, "courses/create_course.html", {"form": form})
 
 
-
 # ---------- детайли за курс + записване ----------
 @login_required
 def course_detail_view(request, slug):
@@ -53,7 +56,7 @@ def course_detail_view(request, slug):
     if request.user.is_student:
         is_enrolled = Enrollment.objects.filter(student=request.user.studentprofile, course=course).exists()
 
-    # студент иска да се запише
+    # записване
     if request.user.is_student and request.method == 'POST' and not is_enrolled:
         enroll_form = EnrollmentForm(data={'student': request.user.studentprofile.id,
                                            'course': course.id})
@@ -64,19 +67,25 @@ def course_detail_view(request, slug):
     else:
         enroll_form = EnrollmentForm()
 
-    # ако учителят разглежда своя курс – показваме записаните студенти
+    # студенти (ако преподавателят гледа)
     enrolled_students = []
     if request.user.is_teacher and request.user.teacherprofile == course.teacher:
         enrolled_students = Enrollment.objects.filter(course=course).select_related('student__user')
+
+    # групиране на модули по категории
+    modules = course.modules.select_related('category')
+    grouped_modules = defaultdict(list)
+    for module in modules:
+        grouped_modules[module.category.name].append(module)
 
     context = {
         'course': course,
         'is_enrolled': is_enrolled,
         'enroll_form': enroll_form,
         'enrolled_students': enrolled_students,
+        'grouped_modules': dict(grouped_modules),
     }
     return render(request, 'courses/course_detail.html', context)
-
 
 
 

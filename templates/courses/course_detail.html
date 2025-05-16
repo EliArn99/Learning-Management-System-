@@ -15,3 +15,30 @@
         </div>
         {% endif %}
     </div>
+
+     <div class="course-content">
+    <div class="modules-section">
+        <h2 class="section-title">📚 Учебни модули</h2>
+
+        {% if grouped_modules %}
+            {% for category, modules in grouped_modules.items %}
+            <div class="module-category">
+                <h3 class="category-title">{{ forloop.counter }}. {{ category }}</h3>
+                <div class="module-list">
+                    {% for module in modules %}
+                    <div class="module-card">
+                        <div class="module-header">
+                            <span class="module-bullet">•</span>
+                            <h4 class="module-title">{{ module.title }} <span class="module-code">({{ module.code }})</span></h4>
+                        </div>
+                        <p class="module-description">{{ module.description }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>Все още няма добавени модули за този курс.</p>
+        {% endif %}
+    </div>
+</div>

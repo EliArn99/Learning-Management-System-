@@ -42,3 +42,22 @@
         {% endif %}
     </div>
 </div>
+
+
+    {% if enrolled_students %}
+    <div class="students-section">
+        <h2 class="section-title">👨‍🎓 Записани студенти</h2>
+        <div class="students-grid">
+            {% for enrollment in enrolled_students %}
+            <div class="student-card">
+                <div class="student-avatar">{{ enrollment.student.user.get_full_name|first|upper }}</div>
+                <div class="student-info">
+                    <h4>{{ enrollment.student.user.get_full_name }}</h4>
+                    <p>@{{ enrollment.student.user.username }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>

@@ -1,1 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="course-container">
+    <div class="course-header">
+        <h1 class="course-title">{{ course.name }}</h1>
+        <p class="course-description">{{ course.description }}</p>
 
+        {% if not is_enrolled %}
+        <div class="enroll-section">
+            <form method="post" class="enroll-form">
+                {% csrf_token %}
+{#                {{ enroll_form.as_p }}#}
+                <button type="submit" class="enroll-button">Запиши се в курса</button>
+            </form>
+        </div>
+        {% endif %}
+    </div>

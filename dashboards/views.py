@@ -10,6 +10,9 @@ from assignments.models import Assignment, Submission
 def home(request):
     return render(request, 'dashboards/home.html')
 
+def about(request):
+    return render(request, 'dashboards/about.html')
+
 
 def dashboard_home_view(request):
     return render(request, 'dashboards/dashboard_home.html')

@@ -56,10 +56,8 @@ def course_detail_view(request, slug):
     if request.user.is_student:
         is_enrolled = Enrollment.objects.filter(student=request.user.studentprofile, course=course).exists()
 
-    # записване
     if request.user.is_student and request.method == 'POST' and not is_enrolled:
-        enroll_form = EnrollmentForm(data={'student': request.user.studentprofile.id,
-                                           'course': course.id})
+        enroll_form = EnrollmentForm(data={'student': request.user.studentprofile.id, 'course': course.id})
         if enroll_form.is_valid():
             enroll_form.save()
             messages.success(request, 'Успешно се записахте в курса!')
@@ -67,27 +65,46 @@ def course_detail_view(request, slug):
     else:
         enroll_form = EnrollmentForm()
 
-    # студенти (ако преподавателят гледа)
+    # Само модулите за този курс
+    modules = course.modules.select_related('category')
+
+    # Групиране по категории
+    grouped_modules = defaultdict(list)
+    for module in modules:
+        category_name = module.category.name if module.category else "Без категория"
+        grouped_modules[category_name].append(module)
+
+    # Записани студенти (само ако потребителят е преподавател на курса)
     enrolled_students = []
     if request.user.is_teacher and request.user.teacherprofile == course.teacher:
         enrolled_students = Enrollment.objects.filter(course=course).select_related('student__user')
-
-    # групиране на модули по категории
-    modules = course.modules.select_related('category')
-    grouped_modules = defaultdict(list)
-    for module in modules:
-        grouped_modules[module.category.name].append(module)
 
     context = {
         'course': course,
         'is_enrolled': is_enrolled,
         'enroll_form': enroll_form,
         'enrolled_students': enrolled_students,
-        'grouped_modules': dict(grouped_modules),
+        'grouped_modules': dict(grouped_modules),  # важно!
     }
     return render(request, 'courses/course_detail.html', context)
 
 
+@login_required
+def course_enroll(request, course_id):
+    course = get_object_or_404(Course, id=course_id)
 
+    if request.method == 'POST':
+        form = EnrollmentForm(request.POST)
+        if form.is_valid():
+            enrollment = form.save(commit=False)
+            enrollment.student = request.user.student
+            enrollment.course = course
+            enrollment.save()
+            return redirect('course_detail', course_id=course.id)
+    else:
+        form = EnrollmentForm()
 
-
+    return render(request, 'courses/course_enroll.html', {
+        'course': course,
+        'form': form
+    })

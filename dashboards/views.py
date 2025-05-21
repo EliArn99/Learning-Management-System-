@@ -13,6 +13,9 @@ def home(request):
 def about(request):
     return render(request, 'dashboards/about.html')
 
+def contacts(request):
+    return render(request, 'dashboards/contacts.html')
+
 
 def dashboard_home_view(request):
     return render(request, 'dashboards/dashboard_home.html')

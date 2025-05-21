@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="contact-container">
+    <section class="contact-header">
+        <h1>📞 CONTACTS</h1>
+        <p>Свържете се с нас – ще се радваме да ви помогнем!</p>
+    </section>
+
+    <section class="contact-info-grid">
+        <div class="contact-details">
+            <h2>📍 Адрес</h2>
+            <p>бул. България 100, София, България</p>
+
+            <h2>📧 Email</h2>
+            <p><a href="mailto:info@example.com">info@example.com</a></p>
+
+            <h2>📱 Телефон</h2>
+            <p>+359 888 123 456</p>
+        </div>
+
+        <div class="contact-form">
+            <h2>📝 Изпратете съобщение</h2>
+            <form method="post">
+                {% csrf_token %}
+                <input type="text" name="name" placeholder="Вашето име" required>
+                <input type="email" name="email" placeholder="Вашият email" required>
+                <textarea name="message" rows="5" placeholder="Вашето съобщение" required></textarea>
+                <button type="submit">Изпрати</button>
+            </form>
+        </div>
+    </section>
+</div>
+
+<style>
+    :root {
+        --primary-color: #4a6fa5;
+        --accent-color: #ff7e5f;
+        --light-bg: #f8f9fa;
+        --border-radius: 10px;
+        --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .contact-container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 3rem 1.5rem;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .contact-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .contact-header h1 {
+        font-size: 2.5rem;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .contact-header p {
+        color: #555;
+        font-size: 1.1rem;
+    }
+
+    .contact-info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+    }
+
+    .contact-details h2 {
+        font-size: 1.2rem;
+        color: var(--primary-color);
+        margin-bottom: 0.3rem;
+    }
+
+    .contact-details p {
+        font-size: 1rem;
+        color: #444;
+        margin-bottom: 1.2rem;
+    }
+
+    .contact-details a {
+        color: var(--accent-color);
+        text-decoration: none;
+    }
+
+    .contact-details a:hover {
+        text-decoration: underline;
+    }
+
+    .contact-form {
+        background-color: white;
+        padding: 2rem;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+    }
+
+    .contact-form h2 {
+        margin-bottom: 1rem;
+        color: var(--primary-color);
+    }
+
+    .contact-form form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .contact-form input,
+    .contact-form textarea {
+        padding: 0.8rem;
+        border: 1px solid #ccc;
+        border-radius: var(--border-radius);
+        font-size: 1rem;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .contact-form button {
+        background-color: var(--accent-color);
+        color: white;
+        padding: 0.8rem;
+        border: none;
+        border-radius: 50px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .contact-form button:hover {
+        background-color: #ff6a45;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .contact-info-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .contact-header h1 {
+            font-size: 2rem;
+        }
+    }
+</style>
+{% endblock %}

@@ -1,112 +1,113 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="enroll-container">
-    <div class="enroll-box">
-        <h1 class="enroll-title">📘 Записване в курса</h1>
-        <h2 class="course-name">{{ course.name }}</h2>
-        <p class="course-description">{{ course.description }}</p>
+    <div class="enroll-container">
+        <div class="enroll-box">
+            <h1 class="enroll-title">📘 Записване в курса</h1>
+            <h2 class="course-name">{{ course.name }}</h2>
+            <p class="course-description">{{ course.description }}</p>
 
-        <form method="post" class="enroll-form">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="enroll-button">✅ Потвърди записването</button>
-        </form>
-        <a href="{% url 'courses:course_detail' course.id %}" class="back-link">← Назад към курса</a>
+            <form method="post" class="enroll-form">
+                {% csrf_token %}
+                {#            {{ form.as_p }}#}
+                <a href="{% url 'courses:checkout' %}" class="enroll-button">✅ Запиши се</a>
+
+            </form>
+            <a href="{% url 'courses:course_detail' course.id %}" class="back-link">← Назад към курса</a>
+        </div>
     </div>
-</div>
 
-<style>
-    :root {
-        --primary-color: #4a6fa5;
-        --accent-color: #ff7e5f;
-        --bg-light: #f7f9fc;
-        --shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        --radius: 10px;
-    }
+    <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --accent-color: #ff7e5f;
+            --bg-light: #f7f9fc;
+            --shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            --radius: 10px;
+        }
 
-    .enroll-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 80vh;
-        background-color: var(--bg-light);
-        padding: 2rem;
-    }
+        .enroll-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+            background-color: var(--bg-light);
+            padding: 2rem;
+        }
 
-    .enroll-box {
-        background: white;
-        padding: 3rem 2.5rem;
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        max-width: 600px;
-        width: 100%;
-        text-align: center;
-    }
-
-    .enroll-title {
-        font-size: 2rem;
-        color: var(--primary-color);
-        margin-bottom: 1rem;
-    }
-
-    .course-name {
-        font-size: 1.5rem;
-        color: #333;
-        margin-bottom: 0.5rem;
-    }
-
-    .course-description {
-        color: #555;
-        font-size: 1rem;
-        margin-bottom: 2rem;
-        line-height: 1.6;
-    }
-
-    .enroll-form {
-        margin-bottom: 1.5rem;
-    }
-
-    .enroll-form button.enroll-button {
-        background-color: var(--accent-color);
-        color: white;
-        border: none;
-        padding: 0.75rem 2rem;
-        font-size: 1rem;
-        border-radius: 50px;
-        cursor: pointer;
-        transition: background 0.3s ease, transform 0.2s ease;
-    }
-
-    .enroll-form button.enroll-button:hover {
-        background-color: #ff6a45;
-        transform: translateY(-2px);
-    }
-
-    .back-link {
-        display: inline-block;
-        margin-top: 1rem;
-        color: var(--primary-color);
-        text-decoration: none;
-        font-size: 0.95rem;
-    }
-
-    .back-link:hover {
-        text-decoration: underline;
-    }
-
-    @media (max-width: 600px) {
         .enroll-box {
-            padding: 2rem 1.5rem;
+            background: white;
+            padding: 3rem 2.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
         }
 
         .enroll-title {
-            font-size: 1.6rem;
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
         }
 
         .course-name {
-            font-size: 1.3rem;
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 0.5rem;
         }
-    }
-</style>
+
+        .course-description {
+            color: #555;
+            font-size: 1rem;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .enroll-form {
+            margin-bottom: 1.5rem;
+        }
+
+        .enroll-form button.enroll-button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            font-size: 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        .enroll-form button.enroll-button:hover {
+            background-color: #ff6a45;
+            transform: translateY(-2px);
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 1rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 0.95rem;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            .enroll-box {
+                padding: 2rem 1.5rem;
+            }
+
+            .enroll-title {
+                font-size: 1.6rem;
+            }
+
+            .course-name {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
 {% endblock %}

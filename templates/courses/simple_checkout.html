@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Simple Checkout</title>
+</head>
+<body>
+
+<div id="paypal-button-container"></div>
+<script
+        src="https://www.paypal.com/sdk/js?client-id=ASxoozE8GYdL1otAfewYf3evZgo5r1DWsJ3NiIwoH_kjpdd_7-qX3uUsmy7mncp_I2-AbPBVePNkPMpd&buyer-country=US&currency=USD&components=buttons&enable-funding=venmo,paylater,card"
+        data-sdk-integration-source="developer-studio"
+></script>
+
+<script>
+    // Render the PayPal button into #paypal-button-container
+    paypal.Buttons({
+
+        // Set up the transaction
+        createOrder: function (data, actions) {
+            return actions.order.create({
+                purchase_units: [{
+                    amount: {
+                        value: '0.01'
+                    }
+                }]
+            });
+        },
+
+        // Finalize the transaction
+        onApprove: function (data, actions) {
+            return actions.order.capture().then(function (details) {
+                // Show a success message to the buyer
+                alert('Transaction completed by ' + details.payer.name.given_name + '!');
+            });
+        }
+
+    }).render('#paypal-button-container');
+</script>
+
+</body>
+</html>
+

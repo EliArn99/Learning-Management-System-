@@ -14,6 +14,11 @@ def course_list_view(request):
     return render(request, 'courses/course_list.html', {'courses': courses})
 
 
+def checkout(request):
+    return render(request, 'courses/checkout.html')
+def simple_checkout(request):
+    return render(request, 'courses/simple_checkout.html')
+
 # ---------- „Моите курсове“ ----------
 @login_required
 def my_courses_view(request):

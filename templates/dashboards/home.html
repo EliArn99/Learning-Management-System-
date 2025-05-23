@@ -3,227 +3,246 @@
 {% block title %}Добре дошли в LMS{% endblock %}
 
 {% block extra_css %}
-<style>
-    .hero {
-        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-        color: white;
-        padding: 100px 0;
-        text-align: center;
-        border-radius: 0 0 20px 20px;
-        margin-bottom: 50px;
-    }
-
-    .hero-content {
-        max-width: 800px;
-        margin: 0 auto;
-    }
-
-    .hero-content h1 {
-        font-size: 48px;
-        margin-bottom: 20px;
-        line-height: 1.2;
-    }
-
-    .hero-content p {
-        font-size: 20px;
-        margin-bottom: 30px;
-        opacity: 0.9;
-    }
-
-    .hero-buttons {
-        display: flex;
-        gap: 20px;
-        justify-content: center;
-    }
-
-    .features {
-        padding: 80px 0;
-    }
-
-    .section-title {
-        text-align: center;
-        margin-bottom: 50px;
-    }
-
-    .section-title h2 {
-        font-size: 36px;
-        color: var(--dark-color);
-        margin-bottom: 15px;
-    }
-
-    .section-title p {
-        color: #64748b;
-        max-width: 600px;
-        margin: 0 auto;
-    }
-
-    .features-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 30px;
-    }
-
-    .feature-card {
-        background-color: white;
-        border-radius: 10px;
-        padding: 30px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s, box-shadow 0.3s;
-    }
-
-    .feature-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    }
-
-    .feature-icon {
-        font-size: 40px;
-        color: var(--primary-color);
-        margin-bottom: 20px;
-    }
-
-    .feature-card h3 {
-        font-size: 22px;
-        margin-bottom: 15px;
-        color: var(--dark-color);
-    }
-
-    .feature-card p {
-        color: #64748b;
-    }
-
-    .cta {
-        background-color: white;
-        padding: 80px 0;
-        text-align: center;
-    }
-
-    .cta-content {
-        max-width: 600px;
-        margin: 0 auto;
-    }
-
-    .cta h2 {
-        font-size: 36px;
-        margin-bottom: 20px;
-        color: var(--dark-color);
-    }
-
-    .cta p {
-        color: #64748b;
-        margin-bottom: 30px;
-    }
-
-    @media (max-width: 768px) {
+    <style>
         .hero {
-            padding: 80px 0;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 100px 0;
+            text-align: center;
+            border-radius: 0 0 20px 20px;
+            margin-bottom: 50px;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
         }
 
         .hero-content h1 {
-            font-size: 32px;
+            font-size: 48px;
+            margin-bottom: 20px;
+            line-height: 1.2;
         }
 
         .hero-content p {
-            font-size: 16px;
+            font-size: 20px;
+            margin-bottom: 30px;
+            opacity: 0.9;
         }
 
         .hero-buttons {
-            flex-direction: column;
-            align-items: center;
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .features {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
         }
 
         .section-title h2 {
-            font-size: 28px;
+            font-size: 36px;
+            color: var(--dark-color);
+            margin-bottom: 15px;
+        }
+
+        .section-title p {
+            color: #64748b;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .feature-card a.btn {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+
+        .feature-card a.btn:hover {
+            background-color: #4338ca;
+        }
+
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            font-size: 40px;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            font-size: 22px;
+            margin-bottom: 15px;
+            color: var(--dark-color);
+        }
+
+        .feature-card p {
+            color: #64748b;
+        }
+
+        .cta {
+            background-color: white;
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .cta-content {
+            max-width: 600px;
+            margin: 0 auto;
         }
 
         .cta h2 {
-            font-size: 28px;
+            font-size: 36px;
+            margin-bottom: 20px;
+            color: var(--dark-color);
         }
-    }
-</style>
+
+        .cta p {
+            color: #64748b;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .hero {
+                padding: 80px 0;
+            }
+
+            .hero-content h1 {
+                font-size: 32px;
+            }
+
+            .hero-content p {
+                font-size: 16px;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .section-title h2 {
+                font-size: 28px;
+            }
+
+            .cta h2 {
+                font-size: 28px;
+            }
+        }
+    </style>
 {% endblock %}
 
 {% block content %}
-<section class="hero">
-    <div class="container">
-        <div class="hero-content">
-            <h1>Добре дошли в LMS!</h1>
-            <p>Иновативна платформа за онлайн обучение, която ви помага да постигнете вашите образователни цели.</p>
-            <div class="hero-buttons">
-{#                <a href="{% url 'register' %}" class="btn btn-primary">Започнете сега</a>#}
-                <a href="#" class="btn btn-outline">Научете повече</a>
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Добре дошли в LMS!</h1>
+                <p>Иновативна платформа за онлайн обучение, която ви помага да постигнете вашите образователни цели.</p>
+                <div class="hero-buttons">
+                    {#                <a href="{% url 'register' %}" class="btn btn-primary">Започнете сега</a>#}
+                    <a href="#" class="btn btn-outline">Научете повече</a>
+                </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<section class="features">
-    <div class="container">
-        <div class="section-title">
-            <h2>Нашите предимства</h2>
-            <p>Открийте защо хиляди обучаващи се избраха нашата платформа</p>
+    <section class="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>Нашите предимства</h2>
+                <p>Открийте защо хиляди обучаващи се избраха нашата платформа</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-laptop-code"></i>
+                    </div>
+                    <h3>Интерактивни курсове</h3>
+                    <p>Достъп до разнообразни курсове с интерактивни материали и практически задания.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <h3>Опитни преподаватели</h3>
+                    <p>Учете се от най-добрите експерти в съответната област.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-certificate"></i>
+                    </div>
+                    <h3>Сертификати</h3>
+                    <p>Получавайте признати сертификати при успешно завършване на курсовете.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h3>Гъвкаво обучение</h3>
+                    <p>Учете се по свое време и в свое темпо, без ограничения.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chalkboard-teacher"></i> {# по-подходяща иконка за преподавател #}
+                    </div>
+                    <h3>Работа</h3>
+                    <p>Включете се в нашия екип .</p>
+                    <a href="{% url 'users:register_teacher' %}" class="btn btn-primary">
+                        Кандидатствай
+                    </a>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>Достъпност</h3>
+                    <p>Достъп до платформата от всяко устройство, навсякъде и по всяко време.</p>
+                </div>
+            </div>
         </div>
+    </section>
 
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-laptop-code"></i>
-                </div>
-                <h3>Интерактивни курсове</h3>
-                <p>Достъп до разнообразни курсове с интерактивни материали и практически задания.</p>
-            </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-chalkboard-teacher"></i>
-                </div>
-                <h3>Опитни преподаватели</h3>
-                <p>Учете се от най-добрите експерти в съответната област.</p>
-            </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-certificate"></i>
-                </div>
-                <h3>Сертификати</h3>
-                <p>Получавайте признати сертификати при успешно завършване на курсовете.</p>
-            </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-clock"></i>
-                </div>
-                <h3>Гъвкаво обучение</h3>
-                <p>Учете се по свое време и в свое темпо, без ограничения.</p>
-            </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-comments"></i>
-                </div>
-                {# TODO: Link to the application for teachers #}
-                <h3>Работа</h3>
-                <p>Включете се в екипа.</p>
-            </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-mobile-alt"></i>
-                </div>
-                <h3>Достъпност</h3>
-                <p>Достъп до платформата от всяко устройство, навсякъде и по всяко време.</p>
-            </div>
+    <section class="cta">
+        <div class="container">
+            {#        <div class="cta-content">#}
+            {#            <h2>Готови ли сте да започнете?</h2>#}
+            {#            <p>Присъединете се към нашата общност от обучаващи се и отключете своя път към знанието днес.</p>#}
+            {#            <a href="{% url 'register' %}" class="btn btn-primary">Регистрирайте се безплатно</a>#}
+            {#        </div>#}
         </div>
-    </div>
-</section>
-
-<section class="cta">
-    <div class="container">
-{#        <div class="cta-content">#}
-{#            <h2>Готови ли сте да започнете?</h2>#}
-{#            <p>Присъединете се към нашата общност от обучаващи се и отключете своя път към знанието днес.</p>#}
-{#            <a href="{% url 'register' %}" class="btn btn-primary">Регистрирайте се безплатно</a>#}
-{#        </div>#}
-    </div>
-</section>
+    </section>
 {% endblock %}

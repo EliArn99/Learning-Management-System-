@@ -11,13 +11,20 @@
 
 <div id="paypal-button-container"></div>
 <script
-        src="https://www.paypal.com/sdk/js?client-id=ASxoozE8GYdL1otAfewYf3evZgo5r1DWsJ3NiIwoH_kjpdd_7-qX3uUsmy7mncp_I2-AbPBVePNkPMpd&buyer-country=US&currency=USD&components=buttons&enable-funding=venmo,paylater,card"
+        src="https://www.paypal.com/sdk/js?client-id=ASxoozE8GYdL1otAfewYf3evZgo5r1DWsJ3NiIwoH_kjpdd_7-qX3uUsmy7mncp_I2-AbPBVePNkPMpd&buyer-country=US&currency=USD&disable-funding=credit"
         data-sdk-integration-source="developer-studio"
 ></script>
 
 <script>
     // Render the PayPal button into #paypal-button-container
     paypal.Buttons({
+
+        style: {
+            color: 'blue',
+            shape: 'rect',
+            label: 'pay',
+            height: 40
+        },
 
         // Set up the transaction
         createOrder: function (data, actions) {

@@ -16,26 +16,26 @@
             --warning-color: #f59e0b;
             --danger-color: #ef4444;
         }
-        
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Poppins', sans-serif;
             line-height: 1.6;
             color: var(--dark-color);
             background-color: #f1f5f9;
         }
-        
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
         }
-        
+
         header {
             background-color: white;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
@@ -44,37 +44,37 @@
             top: 0;
             z-index: 1000;
         }
-        
+
         nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 20px 0;
         }
-        
+
         .logo {
             font-size: 24px;
             font-weight: 700;
             color: var(--primary-color);
             text-decoration: none;
         }
-        
+
         .nav-links {
             display: flex;
             gap: 30px;
         }
-        
+
         .nav-links a {
             text-decoration: none;
             color: var(--dark-color);
             font-weight: 500;
             transition: color 0.3s;
         }
-        
+
         .nav-links a:hover {
             color: var(--primary-color);
         }
-        
+
         .auth-buttons .btn {
             margin-left: 15px;
             padding: 8px 16px;
@@ -83,89 +83,89 @@
             text-decoration: none;
             transition: all 0.3s;
         }
-        
+
         .btn-primary {
             background-color: var(--primary-color);
             color: white;
         }
-        
+
         .btn-primary:hover {
             background-color: #4338ca;
         }
-        
+
         .btn-outline {
             border: 1px solid var(--primary-color);
             color: var(--primary-color);
         }
-        
+
         .btn-outline:hover {
             background-color: var(--primary-color);
             color: white;
         }
-        
+
         .hamburger {
             display: none;
             cursor: pointer;
             font-size: 24px;
         }
-        
+
         main {
             margin-top: 80px;
             min-height: calc(100vh - 160px);
         }
-        
+
         footer {
             background-color: var(--dark-color);
             color: white;
             padding: 40px 0;
             text-align: center;
         }
-        
+
         .footer-content {
             display: flex;
             justify-content: space-between;
             flex-wrap: wrap;
             gap: 30px;
         }
-        
+
         .footer-section {
             flex: 1;
             min-width: 250px;
         }
-        
+
         .footer-section h3 {
             margin-bottom: 20px;
             font-size: 18px;
         }
-        
+
         .footer-section p, .footer-section a {
             color: #cbd5e1;
             margin-bottom: 10px;
             display: block;
             text-decoration: none;
         }
-        
+
         .footer-section a:hover {
             color: white;
         }
-        
+
         .social-icons {
             display: flex;
             gap: 15px;
             justify-content: center;
         }
-        
+
         .social-icons a {
             color: white;
             font-size: 20px;
         }
-        
+
         .copyright {
             margin-top: 30px;
             padding-top: 20px;
             border-top: 1px solid #334155;
         }
-        
+
         @media (max-width: 768px) {
             .nav-links {
                 display: none;
@@ -178,23 +178,23 @@
                 padding: 20px;
                 box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             }
-            
+
             .nav-links.active {
                 display: flex;
             }
-            
+
             .auth-buttons {
                 display: none;
             }
-            
+
             .hamburger {
                 display: block;
             }
-            
+
             .hero-content h1 {
                 font-size: 32px;
             }
-            
+
             .hero-content p {
                 font-size: 16px;
             }
@@ -203,78 +203,81 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <header>
-        <div class="container">
-            <nav>
-                <a href="{% url 'home' %}" class="logo">LMS</a>
-                
-                <div class="nav-links">
-                    <a href="{% url 'home' %}">Начало</a>
-                    <a href="{% url 'courses:course_list' %}">Курсове</a>
-                    <a href="{% url 'dashboards:about' %}">За нас</a>
-                    <a href="{% url 'dashboards:contacts' %}">Контакти</a>
-                </div>
-                
-                <div class="auth-buttons">
-{#                    <a href="{% url 'login' %}" class="btn btn-outline">Вход</a>#}
-{#                    <a href="{% url 'register' %}" class="btn btn-primary">Регистрация</a>#}
-                </div>
-                
-                <div class="hamburger">☰</div>
-            </nav>
-        </div>
-    </header>
-    
-    <main>
-        {% block content %}
-        {% endblock %}
-    </main>
-    
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>За LMS</h3>
-                    <p>Нашата платформа предоставя иновативни решения за онлайн обучение и управление на курсове.</p>
-                </div>
-                
-                <div class="footer-section">
-                    <h3>Бързи връзки</h3>
-                    <a href="{% url 'home' %}">Начало</a>
-                    <a href="{% url 'courses:course_list' %}">Курсове</a>
-                    <a href="#">Кандидатствай</a>
-                    <a href="#">Цени</a>
-                    <a href="#">ЧЗВ</a>
-                </div>
-                
-                <div class="footer-section">
-                    <h3>Контакти</h3>
-                    <p><i class="fas fa-envelope"></i> info@lms.com</p>
-                    <p><i class="fas fa-phone"></i> +359 888 123 456</p>
-                    <p><i class="fas fa-map-marker-alt"></i> София, България</p>
-                </div>
-            </div>
-            
-            <div class="social-icons">
-                <a href="#"><i class="fab fa-facebook"></i></a>
-                <a href="#"><i class="fab fa-twitter"></i></a>
-                <a href="#"><i class="fab fa-linkedin"></i></a>
-                <a href="#"><i class="fab fa-instagram"></i></a>
-            </div>
-            
-            <div class="copyright">
-                <p>&copy; 2023 LMS System. Всички права запазени.</p>
-            </div>
-        </div>
-    </footer>
+<header>
+    <div class="container">
+        <nav>
+            <a href="{% url 'home' %}" class="logo">LMS</a>
 
-    <script>
-        // Mobile menu toggle
-        document.querySelector('.hamburger').addEventListener('click', function() {
-            document.querySelector('.nav-links').classList.toggle('active');
-        });
-    </script>
-    
-    {% block extra_js %}{% endblock %}
+            <div class="nav-links">
+                <a href="{% url 'home' %}">Начало</a>
+                <a href="{% url 'courses:course_list' %}">Курсове</a>
+                <a href="{% url 'dashboards:about' %}">За нас</a>
+                <a href="{% url 'dashboards:contacts' %}">Контакти</a>
+            </div>
+
+{#            {% if not request.user.is_authenticated %}#}
+                <div class="auth-buttons">
+                    <a href="{% url 'users:login' %}" class="btn btn-outline">🔐 Вход</a>
+                    <a href="{% url 'users:register_student' %}" class="btn btn-primary">🎓 Регистрация</a>
+                </div>
+{#            {% endif %}#}
+
+
+            <div class="hamburger">☰</div>
+        </nav>
+    </div>
+</header>
+
+<main>
+    {% block content %}
+    {% endblock %}
+</main>
+
+<footer>
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>За LMS</h3>
+                <p>Нашата платформа предоставя иновативни решения за онлайн обучение и управление на курсове.</p>
+            </div>
+
+            <div class="footer-section">
+                <h3>Бързи връзки</h3>
+                <a href="{% url 'home' %}">Начало</a>
+                <a href="{% url 'courses:course_list' %}">Курсове</a>
+                <a href="#">Кандидатствай</a>
+                <a href="#">Цени</a>
+                <a href="#">ЧЗВ</a>
+            </div>
+
+            <div class="footer-section">
+                <h3>Контакти</h3>
+                <p><i class="fas fa-envelope"></i> info@lms.com</p>
+                <p><i class="fas fa-phone"></i> +359 888 123 456</p>
+                <p><i class="fas fa-map-marker-alt"></i> София, България</p>
+            </div>
+        </div>
+
+        <div class="social-icons">
+            <a href="#"><i class="fab fa-facebook"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-linkedin"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+        </div>
+
+        <div class="copyright">
+            <p>&copy; 2023 LMS System. Всички права запазени.</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Mobile menu toggle
+    document.querySelector('.hamburger').addEventListener('click', function () {
+        document.querySelector('.nav-links').classList.toggle('active');
+    });
+</script>
+
+{% block extra_js %}{% endblock %}
 </body>
 </html>

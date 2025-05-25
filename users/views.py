@@ -113,6 +113,7 @@ def custom_login_view(request):
             user = form.get_user()
             login(request, user)
 
+            # Пренасочване според ролята и одобрението
             if user.is_student:
                 try:
                     profile = StudentProfile.objects.get(user=user)
@@ -121,6 +122,7 @@ def custom_login_view(request):
                     return redirect('dashboards:student_dashboard')
                 except StudentProfile.DoesNotExist:
                     return redirect('users:approval_pending')
+
             elif user.is_teacher:
                 try:
                     profile = TeacherProfile.objects.get(user=user)
@@ -130,10 +132,11 @@ def custom_login_view(request):
                 except TeacherProfile.DoesNotExist:
                     return redirect('users:approval_pending')
             else:
-                return redirect('home')  # or some fallback
+                return redirect('home')
     else:
         form = AuthenticationForm()
     return render(request, 'users/login.html', {'form': form})
+
 
 
 def login_view(request):
@@ -193,3 +196,6 @@ def edit_profile_view(request):
         form = form_class(instance=profile)
 
     return render(request, 'users/edit_profile.html', {'form': form})
+
+
+

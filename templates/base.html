@@ -109,6 +109,45 @@
             font-size: 24px;
         }
 
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-toggle {
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            z-index: 999;
+        }
+
+        .dropdown:hover .dropdown-menu {
+            display: block;
+        }
+
+        .dropdown-menu a {
+            display: block;
+            padding: 10px 20px;
+            color: var(--dark-color);
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .dropdown-menu a:hover {
+            background-color: var(--light-color);
+        }
+
+
         main {
             margin-top: 80px;
             min-height: calc(100vh - 160px);
@@ -215,12 +254,30 @@
                 <a href="{% url 'dashboards:contacts' %}">Контакти</a>
             </div>
 
-{#            {% if not request.user.is_authenticated %}#}
+            {% if user.is_authenticated %}
+                <div class="nav-links">
+                    <div class="dropdown">
+                        <a href="#" class="dropdown-toggle">👤 {{ user.get_full_name|default:user.username }}</a>
+                        <div class="dropdown-menu">
+                            <a href="{% url 'users:profile' %}">Профил</a>
+                            {% if user.is_teacher %}
+                                <a href="{% url 'dashboards:teacher_dashboard' %}">Моят дашборд</a>
+                            {% elif user.is_student %}
+                                <a href="{% url 'dashboards:student_dashboard' %}">Моят дашборд</a>
+                            {% endif %}
+                            <a href="{% url 'users:logout' %}">⬅️ Изход</a>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
                 <div class="auth-buttons">
                     <a href="{% url 'users:login' %}" class="btn btn-outline">🔐 Вход</a>
                     <a href="{% url 'users:register_student' %}" class="btn btn-primary">🎓 Регистрация</a>
                 </div>
-{#            {% endif %}#}
+            {% endif %}
+
+
+
 
 
             <div class="hamburger">☰</div>

@@ -1,9 +1,25 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<h2>Teacher Profile</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Save</button>
-</form>
+<div class="container" style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+    <div style="
+        background-color: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    ">
+        <h2 style="font-size: 24px; font-weight: 600; color: var(--primary-color); margin-bottom: 20px;">
+            👨‍🏫 Профил на преподавател
+        </h2>
+
+        <form method="post">
+            {% csrf_token %}
+
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary" style="margin-top: 20px;">
+                💾 Запази промените
+            </button>
+        </form>
+    </div>
+</div>
 {% endblock %}

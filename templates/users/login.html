@@ -1,3 +1,4 @@
+<!-- users/templates/users/login.html -->
 {% extends 'base.html' %}
 {% block content %}
 <div class="container mt-4">
@@ -12,12 +13,7 @@
   <hr>
 
   <p>Нямаш акаунт?</p>
-  <!-- използваме namespace 'users' -->
-  <a href="{% url 'users:register_student' %}" class="btn btn-outline-success">
-      Регистрация като студент
-  </a>
-  <a href="{% url 'users:register_teacher' %}" class="btn btn-outline-info">
-      Регистрация като преподавател
-  </a>
+  <a href="{% url 'users:register_student' %}" class="btn btn-outline-success">Регистрация като студент</a>
+  <a href="{% url 'users:register_teacher' %}" class="btn btn-outline-info">Регистрация като преподавател</a>
 </div>
 {% endblock %}

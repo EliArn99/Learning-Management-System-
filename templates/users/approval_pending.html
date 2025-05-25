@@ -1,13 +1,7 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% block content %}
-<div class="text-center py-5">
-  <h1 class="display-6 fw-semibold mb-3">
-    <i class="bi bi-hourglass-split me-2"></i> Заявката чака одобрение
-  </h1>
-  <p class="lead">Администраторът ще потвърди профила ви скоро. Ще получите имейл.</p>
-
-  <a href="{% url 'users:login' %}" class="btn btn-primary mt-4">
-    <i class="bi bi-box-arrow-in-right me-1"></i> Върни се към Login
-  </a>
+<div class="container mt-5 text-center">
+  <h3>Вашият акаунт изисква одобрение</h3>
+  <p>Моля, изчакайте администратор да одобри регистрацията ви.</p>
 </div>
 {% endblock %}

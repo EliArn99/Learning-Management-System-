@@ -166,10 +166,7 @@ def login_view(request):
 
 
 def custom_logout_view(request):
-    # Излизане от сесията
     logout(request)
-
-    # Пренасочване към страница след изход (например, може да е страница с потвърждение)
     return render(request, 'users/logout.html')
 
 

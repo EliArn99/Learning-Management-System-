@@ -1,0 +1,16 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Изход от профила</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1>Изход от профила</h1>
+        <p>Успешно излезе от профила си. <a href="{% url 'users:login' %}">Влез отново</a></p>
+    </div>
+</body>
+</html>

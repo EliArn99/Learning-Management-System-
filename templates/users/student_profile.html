@@ -12,3 +12,21 @@
                             ✏️ Редактирай профил
                         </a>
                     </div>
+<div class="row g-4">
+                        {% if student.profile_picture %}
+                        <div class="col-md-4 text-center">
+                            <img src="{{ student.profile_picture.url }}" class="img-fluid rounded-circle border border-2" alt="Profile Picture" style="width: 150px; height: 150px; object-fit: cover;">
+                        </div>
+                        {% endif %}
+                        <div class="col-md-8">
+                            <form method="post">
+                                {% csrf_token %}
+                                {% for field in form %}
+                                    <div class="mb-3">
+                                        <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                                        {{ field }}
+                                        {% if field.errors %}
+                                            <div class="text-danger small">{{ field.errors|striptags }}</div>
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}

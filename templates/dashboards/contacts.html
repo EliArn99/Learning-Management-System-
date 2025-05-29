@@ -2,146 +2,487 @@
 
 {% block content %}
 <div class="contact-container">
-    <section class="contact-header">
-        <h1>📞 CONTACTS</h1>
-        <p>Свържете се с нас – ще се радваме да ви помогнем!</p>
+    <section class="contact-hero">
+        <div class="hero-content">
+            <h1 class="hero-title">📞 Свържете се с нас</h1>
+            <p class="hero-subtitle">Имате въпроси или нужда от помощ? Нашият екип е готов да ви помогне!</p>
+            <div class="contact-bubbles">
+                <span>Бърз отговор</span>
+                <span>Професионална поддръжка</span>
+                <span>24/7 достъпност</span>
+            </div>
+        </div>
+        <div class="hero-wave"></div>
     </section>
 
-    <section class="contact-info-grid">
-        <div class="contact-details">
-            <h2>📍 Адрес</h2>
-            <p>бул. България 100, София, България</p>
+    <section class="contact-main">
+        <div class="contact-info-card">
+            <h2 class="section-title">📌 Нашите контакти</h2>
 
-            <h2>📧 Email</h2>
-            <p><a href="mailto:info@example.com">info@example.com</a></p>
+            <div class="contact-method">
+                <div class="contact-icon">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div>
+                    <h3>Адрес</h3>
+                    <p>бул. България 100, София, България</p>
+                    <a href="#" class="map-link">Виж на картата <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
 
-            <h2>📱 Телефон</h2>
-            <p>+359 888 123 456</p>
+            <div class="contact-method">
+                <div class="contact-icon">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <div>
+                    <h3>Имейл</h3>
+                    <p><a href="mailto:info@example.com">info@example.com</a></p>
+                    <p><a href="mailto:support@example.com">support@example.com</a></p>
+                </div>
+            </div>
+
+            <div class="contact-method">
+                <div class="contact-icon">
+                    <i class="fas fa-phone-alt"></i>
+                </div>
+                <div>
+                    <h3>Телефон</h3>
+                    <p>+359 888 123 456 (основен)</p>
+                    <p>+359 899 987 654 (техническа поддръжка)</p>
+                </div>
+            </div>
+
+            <div class="social-links">
+                <h3>Следвайте ни:</h3>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
         </div>
 
-        <div class="contact-form">
-            <h2>📝 Изпратете съобщение</h2>
-            <form method="post">
+        <div class="contact-form-card">
+            <h2 class="section-title">✉️ Изпратете съобщение</h2>
+            <p class="form-subtitle">Попълнете формата по-долу и ние ще се свържем с вас възможно най-бързо.</p>
+
+            <form method="post" class="contact-form">
                 {% csrf_token %}
-                <input type="text" name="name" placeholder="Вашето име" required>
-                <input type="email" name="email" placeholder="Вашият email" required>
-                <textarea name="message" rows="5" placeholder="Вашето съобщение" required></textarea>
-                <button type="submit">Изпрати</button>
+                <div class="form-group">
+                    <label for="name">Вашето име</label>
+                    <input type="text" id="name" name="name" placeholder="Как да ви се обърнем?" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Вашият имейл</label>
+                    <input type="email" id="email" name="email" placeholder="example@email.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="subject">Тема</label>
+                    <select id="subject" name="subject">
+                        <option value="" disabled selected>Изберете тема</option>
+                        <option value="general">Общ въпрос</option>
+                        <option value="support">Техническа поддръжка</option>
+                        <option value="feedback">Обратна връзка</option>
+                        <option value="partnership">Партньорство</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="message">Вашето съобщение</label>
+                    <textarea id="message" name="message" rows="5" placeholder="Какво бихте искали да споделите с нас?" required></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <span>Изпрати съобщение</span>
+                    <i class="fas fa-paper-plane"></i>
+                </button>
             </form>
         </div>
     </section>
 </div>
 
 <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+    @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
+
     :root {
-        --primary-color: #4a6fa5;
-        --accent-color: #ff7e5f;
-        --light-bg: #f8f9fa;
-        --border-radius: 10px;
-        --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        --primary-color: #4361ee;
+        --secondary-color: #3a0ca3;
+        --accent-color: #f72585;
+        --light-color: #f8f9fa;
+        --dark-color: #212529;
+        --text-color: #2b2d42;
+        --text-light: #8d99ae;
+        --bg-gradient: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+        --shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        --shadow-hover: 0 15px 30px rgba(0, 0, 0, 0.15);
+        --radius: 12px;
+        --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     }
 
-    .contact-container {
-        max-width: 1100px;
-        margin: 0 auto;
-        padding: 3rem 1.5rem;
-        font-family: 'Segoe UI', sans-serif;
-    }
-
-    .contact-header {
-        text-align: center;
-        margin-bottom: 3rem;
-    }
-
-    .contact-header h1 {
-        font-size: 2.5rem;
-        color: var(--primary-color);
-        margin-bottom: 0.5rem;
-    }
-
-    .contact-header p {
-        color: #555;
-        font-size: 1.1rem;
-    }
-
-    .contact-info-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 3rem;
-    }
-
-    .contact-details h2 {
-        font-size: 1.2rem;
-        color: var(--primary-color);
-        margin-bottom: 0.3rem;
-    }
-
-    .contact-details p {
-        font-size: 1rem;
-        color: #444;
-        margin-bottom: 1.2rem;
-    }
-
-    .contact-details a {
-        color: var(--accent-color);
-        text-decoration: none;
-    }
-
-    .contact-details a:hover {
-        text-decoration: underline;
-    }
-
-    .contact-form {
-        background-color: white;
-        padding: 2rem;
-        border-radius: var(--border-radius);
-        box-shadow: var(--shadow);
-    }
-
-    .contact-form h2 {
-        margin-bottom: 1rem;
-        color: var(--primary-color);
-    }
-
-    .contact-form form {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    .contact-form input,
-    .contact-form textarea {
-        padding: 0.8rem;
-        border: 1px solid #ccc;
-        border-radius: var(--border-radius);
-        font-size: 1rem;
-        width: 100%;
+    * {
+        margin: 0;
+        padding: 0;
         box-sizing: border-box;
     }
 
-    .contact-form button {
-        background-color: var(--accent-color);
+    body {
+        font-family: 'Poppins', sans-serif;
+        line-height: 1.6;
+        color: var(--text-color);
+        background-color: #f9fafb;
+    }
+
+    .contact-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        overflow: hidden;
+    }
+
+    /* Hero Section */
+    .contact-hero {
+        background: var(--bg-gradient);
         color: white;
-        padding: 0.8rem;
-        border: none;
+        padding: 5rem 2rem 6rem;
+        text-align: center;
+        position: relative;
+    }
+
+    .hero-content {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .hero-title {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .hero-subtitle {
+        font-size: 1.3rem;
+        font-weight: 300;
+        max-width: 600px;
+        margin: 0 auto 2rem;
+        opacity: 0.9;
+    }
+
+    .contact-bubbles {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-top: 2rem;
+    }
+
+    .contact-bubbles span {
+        background-color: rgba(255,255,255,0.15);
+        padding: 0.5rem 1.5rem;
         border-radius: 50px;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
+        font-size: 0.9rem;
+        backdrop-filter: blur(5px);
     }
 
-    .contact-form button:hover {
-        background-color: #ff6a45;
+    .hero-wave {
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        width: 100%;
+        height: 100px;
+        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23f9fafb' fill-opacity='1' d='M0,192L48,197.3C96,203,192,213,288,229.3C384,245,480,267,576,250.7C672,235,768,181,864,181.3C960,181,1056,235,1152,234.7C1248,235,1344,181,1392,154.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+        background-size: cover;
+        background-repeat: no-repeat;
     }
 
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-        .contact-info-grid {
+    /* Main Content */
+    .contact-main {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+        padding: 3rem 2rem;
+        max-width: 1300px;
+        margin: -4rem auto 5rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    @media (max-width: 1100px) {
+        .contact-main {
             grid-template-columns: 1fr;
+            max-width: 700px;
+        }
+    }
+
+    /* Contact Info Card */
+    .contact-info-card {
+        background: white;
+        border-radius: var(--radius);
+        padding: 2.5rem;
+        box-shadow: var(--shadow);
+        transition: var(--transition);
+    }
+
+    .contact-info-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .section-title {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 1.5rem;
+        position: relative;
+    }
+
+    .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 0;
+        width: 50px;
+        height: 4px;
+        background-color: var(--accent-color);
+        border-radius: 2px;
+    }
+
+    .contact-method {
+        display: flex;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+        align-items: flex-start;
+    }
+
+    .contact-icon {
+        width: 50px;
+        height: 50px;
+        background-color: rgba(67, 97, 238, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-color);
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+
+    .contact-method h3 {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+        color: var(--text-color);
+    }
+
+    .contact-method p {
+        color: var(--text-light);
+        margin-bottom: 0.5rem;
+        line-height: 1.6;
+    }
+
+    .contact-method a {
+        color: var(--primary-color);
+        text-decoration: none;
+        transition: var(--transition);
+    }
+
+    .contact-method a:hover {
+        color: var(--accent-color);
+    }
+
+    .map-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--accent-color) !important;
+        font-weight: 500;
+        margin-top: 0.5rem;
+    }
+
+    .map-link i {
+        font-size: 0.8rem;
+        transition: var(--transition);
+    }
+
+    .map-link:hover i {
+        transform: translateX(3px);
+    }
+
+    .social-links {
+        margin-top: 3rem;
+    }
+
+    .social-links h3 {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+    }
+
+    .social-icons {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .social-icons a {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #f0f0f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-color);
+        transition: var(--transition);
+    }
+
+    .social-icons a:hover {
+        background: var(--bg-gradient);
+        color: white;
+        transform: translateY(-3px);
+    }
+
+    /* Contact Form Card */
+    .contact-form-card {
+        background: white;
+        border-radius: var(--radius);
+        padding: 2.5rem;
+        box-shadow: var(--shadow);
+        transition: var(--transition);
+    }
+
+    .contact-form-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .form-subtitle {
+        color: var(--text-light);
+        margin-bottom: 2rem;
+    }
+
+    .contact-form {
+        display: grid;
+        gap: 1.5rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .form-group label {
+        font-weight: 500;
+        color: var(--text-color);
+    }
+
+    .contact-form input,
+    .contact-form select,
+    .contact-form textarea {
+        padding: 0.9rem 1.2rem;
+        border: 1px solid #e0e0e0;
+        border-radius: var(--radius);
+        font-family: inherit;
+        font-size: 1rem;
+        transition: var(--transition);
+        width: 100%;
+    }
+
+    .contact-form input:focus,
+    .contact-form select:focus,
+    .contact-form textarea:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+    }
+
+    .contact-form textarea {
+        resize: vertical;
+        min-height: 150px;
+    }
+
+    .submit-btn {
+        background: var(--bg-gradient);
+        color: white;
+        border: none;
+        padding: 1rem;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: var(--radius);
+        cursor: pointer;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.8rem;
+        margin-top: 1rem;
+    }
+
+    .submit-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(67, 97, 238, 0.3);
+    }
+
+    .submit-btn i {
+        transition: var(--transition);
+    }
+
+    .submit-btn:hover i {
+        transform: translateX(5px);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .contact-hero {
+            padding: 3rem 1.5rem 5rem;
         }
 
-        .contact-header h1 {
-            font-size: 2rem;
+        .hero-title {
+            font-size: 2.2rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.1rem;
+        }
+
+        .contact-main {
+            padding: 2rem 1.5rem;
+            margin-top: -3rem;
+        }
+
+        .contact-info-card,
+        .contact-form-card {
+            padding: 1.8rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .hero-title {
+            font-size: 1.8rem;
+        }
+
+        .contact-bubbles {
+            flex-direction: column;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .contact-bubbles span {
+            width: fit-content;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+        }
+
+        .contact-method {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .submit-btn {
+            padding: 0.9rem;
+            font-size: 0.95rem;
         }
     }
 </style>

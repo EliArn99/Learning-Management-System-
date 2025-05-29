@@ -1,260 +1,759 @@
 {% extends 'base.html' %}
 {% block content %}
-    <div class="course-container">
-        <div class="course-header">
+<div class="course-detail-container">
+    <!-- Hero Section -->
+    <section class="course-hero">
+        <div class="hero-content">
+            <div class="course-badge">{{ course.category|default:"Програмиране" }}</div>
             <h1 class="course-title">{{ course.name }}</h1>
             <p class="course-description">{{ course.description }}</p>
 
-            {% if not is_enrolled %}
-                <div class="enroll-section">
-                    <div class="enroll-form">
-                        <a href="{% url 'courses:course_enroll' course.id %}" class="enroll-button">Запиши се в курса</a>
-                    </div>
+            <div class="course-meta">
+                <div class="meta-item">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <span>Преподавател: {{ course.teacher.user.get_full_name|default:"Академията" }}</span>
                 </div>
-            {% endif %}
+                <div class="meta-item">
+                    <i class="fas fa-clock"></i>
+                    <span>Продължителност: {{ course.duration|default:"8 седмици" }}</span>
+                </div>
+                <div class="meta-item">
+                    <i class="fas fa-layer-group"></i>
+                    <span>Ниво: {{ course.level|default:"Начинаещ" }}</span>
+                </div>
+            </div>
 
+            {% if not is_enrolled %}
+            <div class="enroll-section">
+                <a href="{% url 'courses:course_enroll' course.id %}" class="enroll-button">
+                    <span>Запиши се сега</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+                <div class="price-tag">{{ course.price|default:"299" }} лв.</div>
+            </div>
+            {% else %}
+            <div class="enrolled-badge">
+                <i class="fas fa-check-circle"></i>
+                <span>Вие сте записан в този курс</span>
+            </div>
+            {% endif %}
+        </div>
+        <div class="hero-image">
+            <div class="image-placeholder">
+                <i class="fas fa-laptop-code"></i>
+            </div>
+        </div>
+    </section>
+
+    <!-- Course Content Section -->
+    <section class="course-content-section">
+        <div class="content-tabs">
+            <button class="tab-button active" data-tab="modules">Учебни модули</button>
+            <button class="tab-button" data-tab="curriculum">Учебен план</button>
+            <button class="tab-button" data-tab="resources">Ресурси</button>
         </div>
 
-        <div class="course-content">
-            <div class="modules-section">
-                <h2 class="section-title">📚 Учебни модули</h2>
+        <div class="tab-content active" id="modules-tab">
+            <h2 class="section-title"><i class="fas fa-book-open"></i> Учебни модули</h2>
 
-                {% if grouped_modules %}
-                    {% for category, modules in grouped_modules.items %}
-                        <div class="module-category">
+            {% if grouped_modules %}
+                {% for category, modules in grouped_modules.items %}
+                    <div class="module-category">
+                        <div class="category-header">
                             <h3 class="category-title">{{ forloop.counter }}. {{ category }}</h3>
-                            <div class="module-list">
-                                {% for module in modules %}
-                                    <div class="module-card">
+                            <span class="module-count">{{ modules|length }} модула</span>
+                        </div>
+                        <div class="module-list">
+                            {% for module in modules %}
+                                <div class="module-card">
+{#                                    <div class="module-icon">#}
+{#                                        <i class="fas fa-{{ module.icon|default:'book' %}"></i>#}
+{#                                    </div>#}
+                                    <div class="module-content">
                                         <div class="module-header">
-                                            <span class="module-bullet">•</span>
-                                            <h4 class="module-title">{{ module.title }} <span
-                                                    class="module-code">({{ module.code }})</span></h4>
+                                            <h4 class="module-title">{{ module.title }}</h4>
+                                            <span class="module-code">{{ module.code }}</span>
                                         </div>
                                         <p class="module-description">{{ module.description }}</p>
+                                        <div class="module-footer">
+                                            <span class="duration"><i class="fas fa-clock"></i> {{ module.duration|default:"2 часа" }}</span>
+                                            {% if is_enrolled %}
+                                            <a href="#" class="start-button">Започни <i class="fas fa-arrow-right"></i></a>
+                                            {% endif %}
+                                        </div>
                                     </div>
-                                {% endfor %}
-                            </div>
+                                </div>
+                            {% endfor %}
                         </div>
-                    {% endfor %}
-                {% else %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-modules">
+                    <i class="fas fa-book"></i>
                     <p>Все още няма добавени модули за този курс.</p>
-                {% endif %}
-            </div>
+                </div>
+            {% endif %}
         </div>
 
-        {% if enrolled_students %}
-            <div class="students-section">
-                <h2 class="section-title">👨‍🎓 Записани студенти</h2>
-                <div class="students-grid">
-                    {% for enrollment in enrolled_students %}
-                        <div class="student-card">
-                            <div class="student-avatar">{{ enrollment.student.user.get_full_name|first|upper }}</div>
-                            <div class="student-info">
-                                <h4>{{ enrollment.student.user.get_full_name }}</h4>
-                                <p>@{{ enrollment.student.user.username }}</p>
-                            </div>
+        <div class="tab-content" id="curriculum-tab">
+            <!-- Curriculum content would go here -->
+        </div>
+
+        <div class="tab-content" id="resources-tab">
+            <!-- Resources content would go here -->
+        </div>
+    </section>
+
+    <!-- Students Section -->
+    {% if enrolled_students %}
+    <section class="students-section">
+        <h2 class="section-title"><i class="fas fa-users"></i> Записани студенти <span class="students-count">({{ enrolled_students|length }})</span></h2>
+
+        <div class="students-grid">
+            {% for enrollment in enrolled_students %}
+                <div class="student-card">
+                    <div class="student-avatar" style="background-color: {{ enrollment.student.color|default:'#4361ee' }};">
+                        {{ enrollment.student.user.get_full_name|first|upper }}
+                    </div>
+                    <div class="student-info">
+                        <h4>{{ enrollment.student.user.get_full_name }}</h4>
+                        <p>@{{ enrollment.student.user.username }}</p>
+                        <div class="student-meta">
+                            <span class="enrollment-date"><i class="fas fa-calendar-alt"></i> {{ enrollment.enrollment_date|date:"d.m.Y" }}</span>
                         </div>
-                    {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Testimonials Section -->
+    <section class="testimonials-section">
+        <h2 class="section-title"><i class="fas fa-quote-left"></i> Отзиви от студенти</h2>
+        <div class="testimonials-slider">
+            <!-- Testimonial cards would go here -->
+            <div class="testimonial-card">
+                <div class="testimonial-content">
+                    "Този курс промени начина, по който гледам на програмирането. Преподавателят обяснява невероятно ясно!"
+                </div>
+                <div class="testimonial-author">
+                    <div class="author-avatar">И</div>
+                    <div class="author-info">
+                        <h5>Иван Петров</h5>
+                        <p>Full Stack Developer</p>
+                    </div>
                 </div>
             </div>
-        {% endif %}
-    </div>
+        </div>
+    </section>
+</div>
 
-    <style>
-        :root {
-            --primary-color: #4a6fa5;
-            --secondary-color: #6b8cae;
-            --accent-color: #ff7e5f;
-            --light-bg: #f8f9fa;
-            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            --border-radius: 8px;
-        }
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+    @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
 
-        .course-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #333;
-        }
+    :root {
+        --primary-color: #4361ee;
+        --secondary-color: #3a0ca3;
+        --accent-color: #f72585;
+        --success-color: #4cc9f0;
+        --light-color: #f8f9fa;
+        --dark-color: #212529;
+        --text-color: #2b2d42;
+        --text-light: #8d99ae;
+        --bg-gradient: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+        --shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        --shadow-hover: 0 15px 30px rgba(0, 0, 0, 0.15);
+        --radius: 12px;
+        --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
 
-        .course-header {
+    .course-detail-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+        font-family: 'Poppins', sans-serif;
+        color: var(--text-color);
+    }
+
+    /* Hero Section */
+    .course-hero {
+        display: flex;
+        align-items: center;
+        gap: 3rem;
+        margin: 2rem 0 4rem;
+        padding: 3rem 0;
+    }
+
+    .hero-content {
+        flex: 1;
+    }
+
+    .hero-image {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+    }
+
+    .image-placeholder {
+        width: 400px;
+        height: 300px;
+        background: linear-gradient(135deg, rgba(67, 97, 238, 0.1) 0%, rgba(58, 12, 163, 0.1) 100%);
+        border-radius: var(--radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-color);
+        font-size: 5rem;
+    }
+
+    .course-badge {
+        display: inline-block;
+        background-color: var(--accent-color);
+        color: white;
+        padding: 0.5rem 1.5rem;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 5px 15px rgba(247, 37, 133, 0.3);
+    }
+
+    .course-title {
+        font-size: 2.8rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 1.5rem;
+        line-height: 1.2;
+    }
+
+    .course-description {
+        font-size: 1.2rem;
+        line-height: 1.6;
+        color: var(--text-light);
+        margin-bottom: 2rem;
+    }
+
+    .course-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.95rem;
+        color: var(--text-light);
+    }
+
+    .meta-item i {
+        color: var(--primary-color);
+    }
+
+    .enroll-section {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .enroll-button {
+        background: var(--bg-gradient);
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 50px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.8rem;
+        box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+    }
+
+    .enroll-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(67, 97, 238, 0.4);
+    }
+
+    .enroll-button i {
+        transition: var(--transition);
+    }
+
+    .enroll-button:hover i {
+        transform: translateX(5px);
+    }
+
+    .price-tag {
+        background-color: white;
+        color: var(--accent-color);
+        padding: 0.75rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 1.2rem;
+        box-shadow: var(--shadow);
+    }
+
+    .enrolled-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background-color: rgba(76, 201, 240, 0.1);
+        color: var(--success-color);
+        padding: 0.75rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        margin-top: 2rem;
+    }
+
+    /* Content Tabs */
+    .content-tabs {
+        display: flex;
+        border-bottom: 1px solid #e0e0e0;
+        margin-bottom: 2rem;
+    }
+
+    .tab-button {
+        padding: 1rem 2rem;
+        background: none;
+        border: none;
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-light);
+        cursor: pointer;
+        position: relative;
+        transition: var(--transition);
+    }
+
+    .tab-button.active {
+        color: var(--primary-color);
+    }
+
+    .tab-button.active:after {
+        content: '';
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: var(--bg-gradient);
+    }
+
+    .tab-button:hover:not(.active) {
+        color: var(--primary-color);
+    }
+
+    .tab-content {
+        display: none;
+    }
+
+    .tab-content.active {
+        display: block;
+    }
+
+    /* Modules Section */
+    .section-title {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+
+    .section-title i {
+        font-size: 1.5rem;
+    }
+
+    .students-count {
+        color: var(--text-light);
+        font-size: 1.2rem;
+    }
+
+    .module-category {
+        margin-bottom: 3rem;
+    }
+
+    .category-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+    }
+
+    .category-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text-color);
+    }
+
+    .module-count {
+        background-color: rgba(67, 97, 238, 0.1);
+        color: var(--primary-color);
+        padding: 0.25rem 1rem;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .module-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .module-card {
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        transition: var(--transition);
+        display: flex;
+        gap: 1.5rem;
+        padding: 1.5rem;
+    }
+
+    .module-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .module-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, rgba(67, 97, 238, 0.1) 0%, rgba(58, 12, 163, 0.1) 100%);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-color);
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+
+    .module-content {
+        flex: 1;
+    }
+
+    .module-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+    }
+
+    .module-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .module-code {
+        font-size: 0.8rem;
+        color: var(--text-light);
+        background-color: #f5f5f5;
+        padding: 0.25rem 0.75rem;
+        border-radius: 50px;
+    }
+
+    .module-description {
+        font-size: 0.95rem;
+        color: var(--text-light);
+        line-height: 1.6;
+        margin-bottom: 1rem;
+    }
+
+    .module-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .duration {
+        font-size: 0.85rem;
+        color: var(--text-light);
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .duration i {
+        font-size: 0.8rem;
+    }
+
+    .start-button {
+        color: var(--primary-color);
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        transition: var(--transition);
+    }
+
+    .start-button:hover {
+        color: var(--secondary-color);
+    }
+
+    .start-button i {
+        font-size: 0.8rem;
+        transition: var(--transition);
+    }
+
+    .start-button:hover i {
+        transform: translateX(3px);
+    }
+
+    .empty-modules {
+        text-align: center;
+        padding: 3rem;
+        background-color: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+    }
+
+    .empty-modules i {
+        font-size: 3rem;
+        color: #e0e0e0;
+        margin-bottom: 1rem;
+    }
+
+    .empty-modules p {
+        color: var(--text-light);
+        font-size: 1.1rem;
+    }
+
+    /* Students Section */
+    .students-section {
+        margin: 5rem 0;
+    }
+
+    .students-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .student-card {
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        transition: var(--transition);
+        display: flex;
+        gap: 1rem;
+        padding: 1.5rem;
+        align-items: center;
+    }
+
+    .student-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .student-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+
+    .student-info {
+        flex: 1;
+    }
+
+    .student-info h4 {
+        margin: 0 0 0.2rem;
+        font-size: 1rem;
+    }
+
+    .student-info p {
+        margin: 0;
+        font-size: 0.85rem;
+        color: var(--text-light);
+    }
+
+    .student-meta {
+        margin-top: 0.5rem;
+    }
+
+    .enrollment-date {
+        font-size: 0.75rem;
+        color: var(--text-light);
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    /* Testimonials Section */
+    .testimonials-section {
+        margin: 5rem 0;
+    }
+
+    .testimonials-slider {
+        display: flex;
+        gap: 1.5rem;
+        overflow-x: auto;
+        padding-bottom: 1rem;
+    }
+
+    .testimonial-card {
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 2rem;
+        min-width: 350px;
+        transition: var(--transition);
+    }
+
+    .testimonial-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .testimonial-content {
+        font-style: italic;
+        color: var(--text-color);
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+    }
+
+    .testimonial-author {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .author-avatar {
+        width: 50px;
+        height: 50px;
+        background-color: var(--primary-color);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 1.2rem;
+    }
+
+    .author-info h5 {
+        margin: 0 0 0.2rem;
+        font-size: 1rem;
+    }
+
+    .author-info p {
+        margin: 0;
+        font-size: 0.85rem;
+        color: var(--text-light);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1200px) {
+        .course-hero {
+            flex-direction: column;
             text-align: center;
-            margin-bottom: 3rem;
-            padding: 2rem;
-            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
-            border-radius: var(--border-radius);
-            box-shadow: var(--card-shadow);
         }
 
+        .hero-content {
+            margin-bottom: 2rem;
+        }
+
+        .course-meta {
+            justify-content: center;
+        }
+
+        .enroll-section {
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 992px) {
+        .module-list {
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        }
+
+        .students-grid {
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        }
+    }
+
+    @media (max-width: 768px) {
         .course-title {
-            font-size: 2.5rem;
-            color: var(--primary-color);
-            margin-bottom: 1rem;
+            font-size: 2.2rem;
         }
 
         .course-description {
             font-size: 1.1rem;
-            line-height: 1.6;
-            color: #555;
-            max-width: 800px;
-            margin: 0 auto 2rem;
         }
 
-        .enroll-section {
-            margin-top: 2rem;
-        }
-
-        .enroll-form {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .enroll-button {
-            background-color: var(--accent-color);
-            color: white;
-            border: none;
-            padding: 0.8rem 2rem;
-            font-size: 1rem;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .enroll-button:hover {
-            background-color: #ff6a45;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-        }
-
-        .section-title {
-            font-size: 1.8rem;
-            color: var(--primary-color);
-            margin-bottom: 1.5rem;
+        .content-tabs {
+            overflow-x: auto;
+            white-space: nowrap;
             padding-bottom: 0.5rem;
-            border-bottom: 2px solid var(--secondary-color);
         }
 
-        .module-category {
-            margin-bottom: 2.5rem;
-        }
-
-        .category-title {
-            font-size: 1.4rem;
-            color: var(--secondary-color);
-            margin-bottom: 1rem;
+        .tab-button {
+            padding: 0.75rem 1.5rem;
         }
 
         .module-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .course-title {
+            font-size: 1.8rem;
         }
 
-        .module-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--card-shadow);
-            transition: transform 0.3s ease;
+        .course-meta {
+            flex-direction: column;
+            gap: 1rem;
         }
 
-        .module-card:hover {
-            transform: translateY(-5px);
+        .enroll-section {
+            flex-direction: column;
+            gap: 1rem;
         }
 
-        .module-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
-
-        .module-bullet {
-            color: var(--accent-color);
-            font-weight: bold;
-            margin-right: 0.5rem;
+        .section-title {
             font-size: 1.5rem;
         }
+    }
+</style>
 
-        .module-title {
-            font-size: 1.1rem;
-            margin: 0;
-            color: var(--primary-color);
-        }
+<script>
+    // Simple tab functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const tabButtons = document.querySelectorAll('.tab-button');
 
-        .module-code {
-            font-size: 0.9rem;
-            color: #777;
-        }
+        tabButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons and tabs
+                document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
 
-        .module-description {
-            font-size: 0.95rem;
-            line-height: 1.5;
-            color: #555;
-            margin: 0;
-        }
+                // Add active class to clicked button
+                this.classList.add('active');
 
-        .students-section {
-            margin-top: 4rem;
-        }
-
-        .students-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .student-card {
-            display: flex;
-            align-items: center;
-            background: white;
-            padding: 1rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--card-shadow);
-        }
-
-        .student-avatar {
-            width: 40px;
-            height: 40px;
-            background-color: var(--primary-color);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 1rem;
-            font-weight: bold;
-        }
-
-        .student-info h4 {
-            margin: 0;
-            font-size: 1rem;
-            color: #333;
-        }
-
-        .student-info p {
-            margin: 0;
-            font-size: 0.8rem;
-            color: #777;
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .course-title {
-                font-size: 2rem;
-            }
-
-            .module-list {
-                grid-template-columns: 1fr;
-            }
-
-            .students-grid {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            }
-        }
-    </style>
+                // Show corresponding tab content
+                const tabId = this.getAttribute('data-tab') + '-tab';
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+    });
+</script>
 {% endblock %}

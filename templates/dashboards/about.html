@@ -1,5 +1,3 @@
-
-
 {% extends 'base.html' %}
 
 {% block content %}
@@ -7,151 +5,470 @@
     <section class="about-hero">
         <h1 class="hero-title">👋 Добре дошли в нашата академия</h1>
         <p class="hero-subtitle">Ние вярваме, че знанието е силата, която движи света напред.</p>
+        <div class="hero-wave"></div>
     </section>
 
-    <section class="about-section">
-        <h2 class="section-title">🎯 Нашата мисия</h2>
-        <p class="section-text">
-            Нашата цел е да предоставим качествено образование на достъпен език. Чрез нашите курсове, модули и общност от обучаеми и преподаватели,
-            се стремим да изградим среда, в която всеки има шанс да се развива и да постигне успех.
-        </p>
+    <section class="about-section mission-section">
+        <div class="section-content">
+            <h2 class="section-title">🎯 Нашата мисия</h2>
+            <p class="section-text">
+                Нашата цел е да предоставим качествено образование на достъпен език. Чрез нашите курсове, модули и общност от обучаеми и преподаватели,
+                се стремим да изградим среда, в която всеки има шанс да се развива и да постигне успех.
+            </p>
+        </div>
+        <div class="section-illustration">
+            <div class="illustration-circle"></div>
+            <div class="illustration-dots">
+                <span></span><span></span><span></span>
+                <span></span><span></span><span></span>
+            </div>
+        </div>
     </section>
 
-    <section class="about-section">
+    <section class="about-section team-section">
         <h2 class="section-title">💼 Екипът зад проекта</h2>
         <div class="team-grid">
             <div class="team-member">
                 <div class="avatar">А</div>
                 <h4>Александър Иванов</h4>
                 <p>Основател и преподавател</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-github"></i></a>
+                    <a href="#"><i class="fas fa-envelope"></i></a>
+                </div>
             </div>
             <div class="team-member">
                 <div class="avatar">М</div>
                 <h4>Мария Петрова</h4>
                 <p>UI/UX дизайнер</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-behance"></i></a>
+                    <a href="#"><i class="fas fa-envelope"></i></a>
+                </div>
             </div>
             <div class="team-member">
                 <div class="avatar">Г</div>
                 <h4>Георги Тодоров</h4>
                 <p>Full Stack разработчик</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-github"></i></a>
+                    <a href="#"><i class="fas fa-envelope"></i></a>
+                </div>
             </div>
         </div>
     </section>
 
-    <section class="about-section">
+    <section class="about-section contact-section">
         <h2 class="section-title">📫 Свържете се с нас</h2>
-        <p class="section-text">Ако имате въпроси, предложения или просто искате да кажете "Здравей" – пишете ни на <a href="mailto:info@example.com">info@example.com</a></p>
+        <p class="section-text">Ако имате въпроси, предложения или просто искате да кажете "Здравей" – пишете ни на <a href="mailto:info@example.com" class="contact-link">info@example.com</a></p>
+        <div class="contact-form">
+            <input type="text" placeholder="Вашето име">
+            <input type="email" placeholder="Вашият имейл">
+            <textarea placeholder="Вашето съобщение"></textarea>
+            <button class="submit-btn">Изпрати</button>
+        </div>
     </section>
 </div>
 
 <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+    @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
+
     :root {
-        --primary-color: #4a6fa5;
-        --secondary-color: #6b8cae;
-        --accent-color: #ff7e5f;
-        --bg-light: #f8f9fa;
-        --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        --radius: 10px;
+        --primary-color: #4361ee;
+        --secondary-color: #3a0ca3;
+        --accent-color: #f72585;
+        --light-color: #f8f9fa;
+        --dark-color: #212529;
+        --bg-gradient: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+        --shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        --radius: 12px;
+        --transition: all 0.3s ease;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        line-height: 1.6;
+        color: var(--dark-color);
+        background-color: #f9fafb;
     }
 
     .about-container {
-        max-width: 1000px;
+        max-width: 1200px;
         margin: 0 auto;
-        padding: 3rem 1.5rem;
-        font-family: 'Segoe UI', sans-serif;
+        padding: 0 1.5rem;
+        overflow: hidden;
     }
 
+    /* Hero Section */
     .about-hero {
         text-align: center;
-        margin-bottom: 3rem;
+        margin: 2rem 0 4rem;
+        padding: 4rem 0;
+        position: relative;
     }
 
     .hero-title {
-        font-size: 2.5rem;
+        font-size: 2.8rem;
+        font-weight: 700;
         color: var(--primary-color);
-        margin-bottom: 1rem;
+        margin-bottom: 1.5rem;
+        line-height: 1.2;
+        animation: fadeInUp 0.8s ease;
     }
 
     .hero-subtitle {
-        font-size: 1.2rem;
+        font-size: 1.3rem;
         color: #555;
         max-width: 700px;
-        margin: 0 auto;
+        margin: 0 auto 2rem;
+        animation: fadeInUp 0.8s ease 0.2s forwards;
+        opacity: 0;
     }
 
-    .about-section {
-        margin-bottom: 3rem;
+    .hero-wave {
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        width: 100%;
+        height: 100px;
+        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%234361ee' fill-opacity='0.1' d='M0,192L48,197.3C96,203,192,213,288,229.3C384,245,480,267,576,250.7C672,235,768,181,864,181.3C960,181,1056,235,1152,234.7C1248,235,1344,181,1392,154.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+        background-size: cover;
+        background-repeat: no-repeat;
     }
+
+    /* About Sections */
+    .about-section {
+        margin-bottom: 5rem;
+        padding: 2rem;
+        border-radius: var(--radius);
+        background-color: white;
+        box-shadow: var(--shadow);
+        transition: var(--transition);
+    }
+
+    .about-section:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .mission-section {
+        display: flex;
+        align-items: center;
+        gap: 3rem;
+        padding: 3rem;
+    }
+
+    .section-content {
+        flex: 1;
+    }
+
+    .section-illustration {
+        flex: 1;
+        position: relative;
+        height: 300px;
+    }
+
+    .illustration-circle {
+        position: absolute;
+        width: 250px;
+        height: 250px;
+        border-radius: 50%;
+        background: var(--bg-gradient);
+        opacity: 0.8;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .illustration-dots {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+    }
+
+    .illustration-dots span {
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        background-color: var(--accent-color);
+        border-radius: 50%;
+    }
+
+    .illustration-dots span:nth-child(1) { top: 20%; left: 10%; }
+    .illustration-dots span:nth-child(2) { top: 70%; left: 15%; }
+    .illustration-dots span:nth-child(3) { top: 30%; left: 80%; }
+    .illustration-dots span:nth-child(4) { top: 80%; left: 75%; }
+    .illustration-dots span:nth-child(5) { top: 10%; left: 50%; }
+    .illustration-dots span:nth-child(6) { top: 90%; left: 40%; }
 
     .section-title {
-        font-size: 1.8rem;
+        font-size: 2rem;
+        font-weight: 600;
         color: var(--primary-color);
-        margin-bottom: 1rem;
-        border-bottom: 2px solid var(--secondary-color);
-        padding-bottom: 0.5rem;
+        margin-bottom: 1.5rem;
+        position: relative;
+        display: inline-block;
+    }
+
+    .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 0;
+        width: 50px;
+        height: 4px;
+        background-color: var(--accent-color);
+        border-radius: 2px;
     }
 
     .section-text {
-        font-size: 1rem;
-        color: #444;
-        line-height: 1.6;
+        font-size: 1.1rem;
+        color: #555;
+        line-height: 1.8;
+        margin-bottom: 1.5rem;
     }
 
+    /* Team Section */
     .team-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-        gap: 2rem;
-        margin-top: 2rem;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 2.5rem;
+        margin-top: 3rem;
     }
 
     .team-member {
         background: white;
-        padding: 1.5rem;
+        padding: 2rem;
         text-align: center;
         border-radius: var(--radius);
         box-shadow: var(--shadow);
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+    }
+
+    .team-member::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: var(--bg-gradient);
+        transition: var(--transition);
+    }
+
+    .team-member:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .team-member:hover::before {
+        height: 10px;
     }
 
     .avatar {
-        width: 60px;
-        height: 60px;
-        margin: 0 auto 1rem;
-        background-color: var(--primary-color);
+        width: 100px;
+        height: 100px;
+        margin: 0 auto 1.5rem;
+        background: var(--bg-gradient);
         color: white;
         font-weight: bold;
-        font-size: 1.5rem;
+        font-size: 2.5rem;
         display: flex;
         align-items: center;
         justify-content: center;
         border-radius: 50%;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: var(--transition);
+    }
+
+    .team-member:hover .avatar {
+        transform: scale(1.1);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
     }
 
     .team-member h4 {
-        margin: 0.5rem 0 0.3rem;
-        color: #333;
+        margin: 1rem 0 0.5rem;
+        color: var(--dark-color);
+        font-size: 1.3rem;
+        font-weight: 600;
     }
 
     .team-member p {
-        color: #777;
-        font-size: 0.95rem;
+        color: #666;
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
     }
 
-    a {
+    .social-links {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .social-links a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        background-color: #f0f0f0;
+        color: var(--primary-color);
+        border-radius: 50%;
+        transition: var(--transition);
+    }
+
+    .social-links a:hover {
+        background: var(--bg-gradient);
+        color: white;
+        transform: translateY(-3px);
+    }
+
+    /* Contact Section */
+    .contact-section {
+        text-align: center;
+        padding: 3rem;
+    }
+
+    .contact-link {
         color: var(--accent-color);
+        font-weight: 600;
         text-decoration: none;
+        position: relative;
     }
 
-    a:hover {
-        text-decoration: underline;
+    .contact-link::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background-color: var(--accent-color);
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+        transform-origin: right;
     }
 
-    @media (max-width: 600px) {
-        .hero-title {
-            font-size: 2rem;
+    .contact-link:hover::after {
+        transform: scaleX(1);
+        transform-origin: left;
+    }
+
+    .contact-form {
+        max-width: 600px;
+        margin: 2rem auto 0;
+        display: grid;
+        gap: 1.5rem;
+    }
+
+    .contact-form input,
+    .contact-form textarea {
+        width: 100%;
+        padding: 1rem;
+        border: 1px solid #ddd;
+        border-radius: var(--radius);
+        font-family: inherit;
+        font-size: 1rem;
+        transition: var(--transition);
+    }
+
+    .contact-form input:focus,
+    .contact-form textarea:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+    }
+
+    .contact-form textarea {
+        min-height: 150px;
+        resize: vertical;
+    }
+
+    .submit-btn {
+        background: var(--bg-gradient);
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: var(--radius);
+        cursor: pointer;
+        transition: var(--transition);
+        justify-self: center;
+        width: 200px;
+    }
+
+    .submit-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(67, 97, 238, 0.3);
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
         }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
 
+    /* Responsive Design */
+    @media (max-width: 992px) {
+        .mission-section {
+            flex-direction: column;
+        }
+        
+        .section-illustration {
+            order: -1;
+            margin-bottom: 2rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 2.2rem;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.1rem;
+        }
+        
         .section-title {
-            font-size: 1.5rem;
+            font-size: 1.7rem;
+        }
+        
+        .team-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .about-section {
+            padding: 1.5rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .hero-title {
+            font-size: 1.8rem;
+        }
+        
+        .about-hero {
+            padding: 3rem 0;
         }
     }
 </style>

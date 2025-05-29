@@ -2,20 +2,43 @@
 
 {% block extra_css %}
 <style>
-    /* Основни стилове за страницата с курсове */
-    .courses-page {
-        padding: 3rem 0;
-        background-color: #f8f9fa;
+    /* Base Styles */
+    :root {
+        --primary-color: #4361ee;
+        --secondary-color: #3a0ca3;
+        --accent-color: #f72585;
+        --success-color: #4cc9f0;
+        --light-color: #f8f9fa;
+        --dark-color: #212529;
+        --text-color: #2b2d42;
+        --text-light: #8d99ae;
+        --bg-gradient: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+        --shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        --radius: 12px;
+        --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     }
 
+    .courses-page {
+        padding: 4rem 0;
+        background-color: #f9fafb;
+        min-height: calc(100vh - 120px);
+    }
+
+    .container {
+        max-width: 1400px;
+    }
+
+    /* Page Title */
     .page-title {
-        font-size: 2.5rem;
+        font-size: 2.8rem;
         font-weight: 700;
-        color: #2c3e50;
-        margin-bottom: 2rem;
+        color: var(--primary-color);
+        margin-bottom: 3rem;
         position: relative;
-        padding-bottom: 1rem;
+        padding-bottom: 1.5rem;
         text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 1px;
     }
 
     .page-title:after {
@@ -24,176 +47,344 @@
         bottom: 0;
         left: 50%;
         transform: translateX(-50%);
-        width: 80px;
-        height: 4px;
-        background: linear-gradient(90deg, #3498db, #9b59b6);
-        border-radius: 2px;
+        width: 120px;
+        height: 5px;
+        background: var(--bg-gradient);
+        border-radius: 3px;
     }
 
+    /* Empty State */
     .empty-courses {
         text-align: center;
-        padding: 3rem;
+        padding: 4rem 2rem;
         background: white;
-        border-radius: 12px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-        max-width: 600px;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        max-width: 700px;
         margin: 0 auto;
+        transition: var(--transition);
+    }
+
+    .empty-courses:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1);
     }
 
     .empty-courses i {
-        font-size: 3rem;
+        font-size: 4rem;
         color: #e0e0e0;
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-courses h5 {
+        font-size: 1.5rem;
+        color: var(--text-color);
         margin-bottom: 1rem;
     }
 
-    /* Стилове за картите с курсове */
+    .empty-courses p {
+        color: var(--text-light);
+        font-size: 1.1rem;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    /* Course Cards */
     .course-card {
         border: none;
-        border-radius: 12px;
+        border-radius: var(--radius);
         overflow: hidden;
-        transition: all 0.3s ease;
+        transition: var(--transition);
         height: 100%;
         background: white;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        box-shadow: var(--shadow);
         position: relative;
+        border-top: 5px solid var(--primary-color);
     }
 
     .course-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.15);
     }
 
     .course-card .card-body {
-        padding: 1.5rem;
+        padding: 2rem;
         display: flex;
         flex-direction: column;
         height: 100%;
     }
 
     .course-card .card-title {
-        font-size: 1.25rem;
-        font-weight: 600;
-        color: #2c3e50;
-        margin-bottom: 0.75rem;
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--text-color);
+        margin-bottom: 1rem;
         min-height: 3.5rem;
+        position: relative;
+        padding-bottom: 0.75rem;
+    }
+
+    .course-card .card-title:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 50px;
+        height: 3px;
+        background: var(--accent-color);
+        border-radius: 2px;
     }
 
     .course-card .card-text {
-        color: #7f8c8d;
-        font-size: 0.9rem;
-        margin-bottom: 1rem;
+        color: var(--text-light);
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
         flex-grow: 1;
+        line-height: 1.6;
+    }
+
+    .course-card .course-meta {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
     }
 
     .course-card .teacher-info {
         display: flex;
         align-items: center;
-        margin-bottom: 1rem;
-        color: #3498db;
-        font-size: 0.85rem;
+        color: var(--primary-color);
     }
 
     .course-card .teacher-info i {
         margin-right: 0.5rem;
-        font-size: 1rem;
+        font-size: 1.1rem;
+    }
+
+    .course-card .duration-info {
+        display: flex;
+        align-items: center;
+        color: var(--text-light);
+    }
+
+    .course-card .duration-info i {
+        margin-right: 0.5rem;
+        font-size: 1.1rem;
     }
 
     .course-card .btn-details {
         align-self: flex-start;
-        background: linear-gradient(90deg, #3498db, #9b59b6);
+        background: var(--bg-gradient);
         border: none;
         color: white;
-        padding: 0.5rem 1.25rem;
+        padding: 0.75rem 1.75rem;
         border-radius: 30px;
-        font-size: 0.85rem;
-        font-weight: 500;
-        transition: all 0.3s ease;
+        font-size: 0.95rem;
+        font-weight: 600;
+        transition: var(--transition);
         margin-top: auto;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+    }
+
+    .course-card .btn-details:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+        z-index: -1;
+        transition: var(--transition);
+        opacity: 1;
     }
 
     .course-card .btn-details:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 10px rgba(52, 152, 219, 0.3);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 15px rgba(67, 97, 238, 0.3);
     }
 
-    /* Стилове за лентичката NEW */
-    .new-badge {
+    .course-card .btn-details:hover:before {
+        opacity: 0.9;
+    }
+
+    /* Price Badge */
+    .price-badge {
         position: absolute;
         top: 15px;
         right: 15px;
-        background: linear-gradient(135deg, #2ecc71, #27ae60);
+        background: var(--accent-color);
         color: white;
-        padding: 0.25rem 0.75rem;
-        border-radius: 30px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        box-shadow: 0 3px 10px rgba(46, 204, 113, 0.3);
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius);
+        font-size: 0.9rem;
+        font-weight: 700;
+        box-shadow: 0 5px 15px rgba(247, 37, 133, 0.3);
         z-index: 2;
+        transition: var(--transition);
     }
 
-    /* Адаптивни стилове */
+    .course-card:hover .price-badge {
+        transform: scale(1.05);
+    }
+
+    /* Difficulty Level */
+    .difficulty-level {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        padding: 0.25rem 0.75rem;
+        border-radius: 30px;
+        background-color: rgba(255,255,255,0.9);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .beginner {
+        color: #2ecc71;
+        border: 1px solid #2ecc71;
+    }
+
+    .intermediate {
+        color: #f39c12;
+        border: 1px solid #f39c12;
+    }
+
+    .advanced {
+        color: #e74c3c;
+        border: 1px solid #e74c3c;
+    }
+
+    /* Course Grid */
+    .courses-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 2rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1199.98px) {
+        .courses-grid {
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        }
+    }
+
+    @media (max-width: 991.98px) {
+        .page-title {
+            font-size: 2.4rem;
+        }
+    }
+
     @media (max-width: 767.98px) {
+        .courses-page {
+            padding: 3rem 0;
+        }
+
         .page-title {
             font-size: 2rem;
         }
 
-        .course-card {
-            margin-bottom: 1.5rem;
+        .courses-grid {
+            grid-template-columns: 1fr;
+            max-width: 500px;
+            margin: 0 auto;
         }
     }
 
     @media (max-width: 575.98px) {
         .page-title {
-            font-size: 1.75rem;
+            font-size: 1.8rem;
+            padding-bottom: 1rem;
+        }
+
+        .page-title:after {
+            width: 80px;
+            height: 3px;
         }
 
         .course-card .card-title {
-            font-size: 1.1rem;
-            min-height: auto;
+            font-size: 1.2rem;
         }
     }
+
+    /* Animation */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .course-card {
+        animation: fadeIn 0.5s ease forwards;
+        opacity: 0;
+    }
+
+    .course-card:nth-child(1) { animation-delay: 0.1s; }
+    .course-card:nth-child(2) { animation-delay: 0.2s; }
+    .course-card:nth-child(3) { animation-delay: 0.3s; }
+    .course-card:nth-child(4) { animation-delay: 0.4s; }
+    .course-card:nth-child(5) { animation-delay: 0.5s; }
+    .course-card:nth-child(6) { animation-delay: 0.6s; }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="courses-page">
     <div class="container">
-        <h2 class="page-title">Всички курсове</h2>
+        <h2 class="page-title">Нашите Курсове</h2>
 
-        <div class="row g-4">
+        {% if courses %}
+        <div class="courses-grid">
             {% for course in courses %}
-            <div class="col-12 col-md-6 col-lg-4">
-                <div class="course-card">
-                    <!-- Лентичка NEW -->
-                    <span class="new-badge">300$</span>
+            <div class="course-card">
+                <!-- Price Badge -->
+                <span class="price-badge">{{ course.price|default:"300$" }}</span>
 
-                    <div class="card-body">
-                        <h5 class="card-title">{{ course.name }}</h5>
+                <!-- Difficulty Level (you would need to add this field to your course model) -->
+{#                <span class="difficulty-level {{ course.difficulty|default:'beginner'|lower }}">#}
+{#                    {{ course.difficulty|default:"Начинаещ" }}#}
+{#                </span>#}
 
+                <div class="card-body">
+                    <h5 class="card-title">{{ course.name }}</h5>
+
+                    <div class="course-meta">
                         <div class="teacher-info">
-                            <i class="bi bi-person-video2"></i>
-                            {{ course.teacher.user.username|default:"—" }}
+                            <i class="fas fa-chalkboard-teacher"></i>
+                            {{ course.teacher.user.username|default:"Анонимен" }}
                         </div>
-
-                        <p class="card-text">{{ course.description|truncatewords:20 }}</p>
-
-                        <a href="{% url 'courses:course_detail' course.slug %}"
-                           class="btn-details stretched-link">
-                            Детайли
-                        </a>
+                        <div class="duration-info">
+                            <i class="far fa-clock"></i>
+                            {{ course.duration|default:"8 седмици" }}
+                        </div>
                     </div>
-                </div>
-            </div>
-            {% empty %}
-            <div class="col-12">
-                <div class="empty-courses">
-                    <i class="bi bi-book"></i>
-                    <h5>Няма налични курсове</h5>
-                    <p class="text-muted">В момента няма активни курсове. Моля, проверете отново по-късно.</p>
+
+                    <p class="card-text">{{ course.description|truncatewords:25 }}</p>
+
+                    <a href="{% url 'courses:course_detail' course.slug %}"
+                       class="btn-details stretched-link">
+                        Виж повече
+                    </a>
                 </div>
             </div>
             {% endfor %}
         </div>
+        {% else %}
+        <div class="empty-courses">
+            <i class="fas fa-book-open"></i>
+            <h5>Няма налични курсове в момента</h5>
+            <p>Нашият екип работи по създаването на нови и интересни курсове. Абонирайте се за нашия бюлетин, за да научите първи кога ще бъдат пуснати.</p>
+            <button class="btn btn-primary mt-3">Абонирай се</button>
+        </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

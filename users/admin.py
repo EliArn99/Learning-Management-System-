@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import CustomUser, StudentProfile, TeacherProfile
+from .models import CustomUser, StudentProfile, TeacherProfile, RegistrationCode
+
 
 @admin.register(CustomUser)
 class CustomUserAdmin(admin.ModelAdmin):
@@ -21,3 +22,9 @@ class TeacherProfileAdmin(admin.ModelAdmin):
     list_display = ('user', 'age', 'education', 'is_approved')
     list_filter = ('is_approved',)
     search_fields = ('user__username', 'education')
+
+
+@admin.register(RegistrationCode)
+class RegistrationCodeAdmin(admin.ModelAdmin):
+    list_display = ('code', 'is_used', 'user', 'created_at')
+    search_fields = ('code',)

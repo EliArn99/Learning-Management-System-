@@ -3,7 +3,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect, get_object_or_404
 
 from .decorators import student_required, teacher_required
-from .forms import StudentRegisterForm, TeacherRegisterForm, StudentProfileForm, TeacherProfileForm
+from .forms import StudentRegisterForm, TeacherRegisterForm
 from .models import StudentProfile, TeacherProfile, CustomUser
 from django.contrib.auth.decorators import login_required
 

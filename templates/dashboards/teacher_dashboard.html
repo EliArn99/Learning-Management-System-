@@ -2,718 +2,725 @@
 {% load static %}
 
 {% block content %}
-<div class="student-dashboard">
-    <!-- Dashboard Header -->
-    <div class="dashboard-header">
-        <div class="header-content">
-            <h1><i class="bi bi-person-video3"></i> Студентски Dashboard</h1>
-            <p class="welcome-message">Добре дошли обратно, {{ request.user.username }}! Ето преглед на вашите курсове и задания.</p>
-        </div>
-        <div class="quick-actions">
-            <a href="#" class="action-btn primary">
-                <i class="bi bi-journal-bookmark"></i> Моите курсове
-            </a>
-            <a href="#" class="action-btn secondary">
-                <i class="bi bi-calendar-check"></i> Календар
-            </a>
-        </div>
-    </div>
+    <div class="student-dashboard">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+            <div class="header-content">
+                <h1><i class="bi bi-person-video3"></i> Студентски Dashboard</h1>
+                <p class="welcome-message">Добре дошли обратно, {{ request.user.username }}! Ето преглед на вашите
+                    курсове и задания.</p>
+            </div>
+            <div class="quick-actions">
+                <a href="#" class="action-btn primary">
+                    <i class="bi bi-journal-bookmark"></i> Моите курсове
+                </a>
+                <a href="#" class="action-btn secondary">
+                    <i class="bi bi-calendar-check"></i> Календар
+                </a>
+                <a href="{% url 'quiz:quiz_form' %}" class="action-btn success">
+                    <i class="bi bi-question-circle"></i> Попълни тест
+                </a>
+            </div>
 
-    <!-- Stats Cards -->
-    <div class="stats-grid">
-        <div class="stat-card primary">
-            <div class="stat-icon">
-                <i class="bi bi-check-circle"></i>
-            </div>
-            <div class="stat-content">
-                <h3>Завършени задания</h3>
-                <p class="stat-value">{{ completed_assignments }}</p>
-            </div>
-        </div>
 
-        <div class="stat-card success">
-            <div class="stat-icon">
-                <i class="bi bi-clock-history"></i>
-            </div>
-            <div class="stat-content">
-                <h3>Чакащи задания</h3>
-                <p class="stat-value">{{ pending_assignments }}</p>
-            </div>
-        </div>
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card primary">
+                    <div class="stat-icon">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Завършени задания</h3>
+                        <p class="stat-value">{{ completed_assignments }}</p>
+                    </div>
+                </div>
 
-        <div class="stat-card warning">
-            <div class="stat-icon">
-                <i class="bi bi-graph-up"></i>
-            </div>
-            <div class="stat-content">
-                <h3>Прогрес</h3>
-                <p class="stat-value">{{ progress }}%</p>
-            </div>
-        </div>
+                <div class="stat-card success">
+                    <div class="stat-icon">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Чакащи задания</h3>
+                        <p class="stat-value">{{ pending_assignments }}</p>
+                    </div>
+                </div>
 
-        <div class="stat-card info">
-            <div class="stat-icon">
-                <i class="bi bi-star"></i>
-            </div>
-            <div class="stat-content">
-                <h3>Средна оценка</h3>
-                <p class="stat-value">{{ average_grade|default:"-" }}</p>
-            </div>
-        </div>
-    </div>
+                <div class="stat-card warning">
+                    <div class="stat-icon">
+                        <i class="bi bi-graph-up"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Прогрес</h3>
+                        <p class="stat-value">{{ progress }}%</p>
+                    </div>
+                </div>
 
-    <!-- Courses Section -->
-    <section class="dashboard-section">
-        <div class="section-header">
-            <h2><i class="bi bi-book"></i> Вашите курсове</h2>
-            <div class="filter-controls">
-                <form method="get" class="course-filter">
-                    <select name="course" id="course" class="filter-select" onchange="this.form.submit()">
-                        <option value="">-- Всички курсове --</option>
+                <div class="stat-card info">
+                    <div class="stat-icon">
+                        <i class="bi bi-star"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Средна оценка</h3>
+                        <p class="stat-value">{{ average_grade|default:"-" }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Courses Section -->
+            <section class="dashboard-section">
+                <div class="section-header">
+                    <h2><i class="bi bi-book"></i> Вашите курсове</h2>
+                    <div class="filter-controls">
+                        <form method="get" class="course-filter">
+                            <select name="course" id="course" class="filter-select" onchange="this.form.submit()">
+                                <option value="">-- Всички курсове --</option>
+                                {% for course in courses %}
+                                    <option value="{{ course.id }}"
+                                            {% if course.id|stringformat:"s" == selected_course_id %}selected{% endif %}>
+                                        {{ course.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </form>
+                    </div>
+                </div>
+
+                {% if courses %}
+                    <div class="courses-grid">
                         {% for course in courses %}
-                            <option value="{{ course.id }}" {% if course.id|stringformat:"s" == selected_course_id %}selected{% endif %}>
-                                {{ course.name }}
-                            </option>
+                            <div class="course-card">
+                                <div class="course-header">
+                                    <h3>{{ course.name }}</h3>
+                                    <span class="course-status">{{ course.status }}</span>
+                                </div>
+                                <p class="course-description">{{ course.description|truncatewords:20 }}</p>
+                                <div class="course-footer">
+                                    <div class="course-progress">
+                                        <div class="progress-container">
+                                            <div class="progress-bar"
+                                                 style="width: {{ course.completion_rate }}%"></div>
+                                            <span>{{ course.completion_rate }}% завършеност</span>
+                                        </div>
+                                    </div>
+                                    <a href="{% url 'courses:course_detail' course.pk %}" class="view-btn">
+                                        <i class="bi bi-arrow-right-circle"></i> Продължи
+                                    </a>
+                                </div>
+                            </div>
                         {% endfor %}
-                    </select>
-                </form>
-            </div>
-        </div>
-
-        {% if courses %}
-        <div class="courses-grid">
-            {% for course in courses %}
-            <div class="course-card">
-                <div class="course-header">
-                    <h3>{{ course.name }}</h3>
-                    <span class="course-status">{{ course.status }}</span>
-                </div>
-                <p class="course-description">{{ course.description|truncatewords:20 }}</p>
-                <div class="course-footer">
-                    <div class="course-progress">
-                        <div class="progress-container">
-                            <div class="progress-bar" style="width: {{ course.completion_rate }}%"></div>
-                            <span>{{ course.completion_rate }}% завършеност</span>
-                        </div>
                     </div>
-                    <a href="{% url 'courses:course_detail' course.pk %}" class="view-btn">
-                        <i class="bi bi-arrow-right-circle"></i> Продължи
-                    </a>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-        {% else %}
-        <div class="empty-state">
-            <i class="bi bi-book"></i>
-            <p>Не сте записани в нито един курс.</p>
-            <a href="{% url 'courses:course_list' %}" class="action-btn primary">
-                <i class="bi bi-search"></i> Разгледайте курсове
-            </a>
-        </div>
-        {% endif %}
-    </section>
-
-    <!-- Assignments Section -->
-    <div class="activity-columns">
-        <!-- Upcoming Assignments -->
-        <div class="activity-column">
-            <div class="section-header">
-                <h2><i class="bi bi-list-task"></i> Предстоящи задания</h2>
-            </div>
-
-            {% if upcoming_assignments %}
-            <div class="assignments-list">
-                {% for assignment in upcoming_assignments %}
-                <div class="assignment-item {% if assignment.is_urgent %}urgent{% endif %}">
-                    <div class="assignment-meta">
-                        <div class="assignment-icon">
-                            <i class="bi bi-file-earmark-text"></i>
-                        </div>
-                        <div class="assignment-info">
-                            <h4>{{ assignment.title }}</h4>
-                            <p>{{ assignment.course.name }} | Срок: {{ assignment.due_date|date:"d.m.Y H:i" }}</p>
-                        </div>
-                    </div>
-                    <div class="assignment-actions">
-                        <a href="{% url 'assignments:assignment_detail' assignment.pk %}"
-                           class="action-btn small">
-                            <i class="bi bi-eye"></i> Преглед
+                {% else %}
+                    <div class="empty-state">
+                        <i class="bi bi-book"></i>
+                        <p>Не сте записани в нито един курс.</p>
+                        <a href="{% url 'courses:course_list' %}" class="action-btn primary">
+                            <i class="bi bi-search"></i> Разгледайте курсове
                         </a>
                     </div>
-                </div>
-                {% endfor %}
-            </div>
-            {% else %}
-            <div class="empty-state small">
-                <i class="bi bi-check-circle"></i>
-                <p>Няма предстоящи задания.</p>
-            </div>
-            {% endif %}
-        </div>
+                {% endif %}
+            </section>
 
-        <!-- Recent Activity -->
-        <div class="activity-column">
-            <div class="section-header">
-                <h2><i class="bi bi-clock-history"></i> Последна активност</h2>
-            </div>
-
-            {% if recent_activity %}
-            <div class="activity-list">
-                {% for activity in recent_activity %}
-                <div class="activity-item">
-                    <div class="activity-icon">
-                        {% if activity.type == 'submission' %}
-                        <i class="bi bi-upload text-primary"></i>
-                        {% elif activity.type == 'grade' %}
-                        <i class="bi bi-check-circle text-success"></i>
-                        {% else %}
-                        <i class="bi bi-info-circle text-info"></i>
-                        {% endif %}
+            <!-- Assignments Section -->
+            <div class="activity-columns">
+                <!-- Upcoming Assignments -->
+                <div class="activity-column">
+                    <div class="section-header">
+                        <h2><i class="bi bi-list-task"></i> Предстоящи задания</h2>
                     </div>
-                    <div class="activity-content">
-                        <h4>{{ activity.title }}</h4>
-                        <p>{{ activity.description }}</p>
-                        <small class="text-muted">{{ activity.date|date:"d.m.Y H:i" }}</small>
+
+                    {% if upcoming_assignments %}
+                        <div class="assignments-list">
+                            {% for assignment in upcoming_assignments %}
+                                <div class="assignment-item {% if assignment.is_urgent %}urgent{% endif %}">
+                                    <div class="assignment-meta">
+                                        <div class="assignment-icon">
+                                            <i class="bi bi-file-earmark-text"></i>
+                                        </div>
+                                        <div class="assignment-info">
+                                            <h4>{{ assignment.title }}</h4>
+                                            <p>{{ assignment.course.name }} |
+                                                Срок: {{ assignment.due_date|date:"d.m.Y H:i" }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="assignment-actions">
+                                        <a href="{% url 'assignments:assignment_detail' assignment.pk %}"
+                                           class="action-btn small">
+                                            <i class="bi bi-eye"></i> Преглед
+                                        </a>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-state small">
+                            <i class="bi bi-check-circle"></i>
+                            <p>Няма предстоящи задания.</p>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="activity-column">
+                    <div class="section-header">
+                        <h2><i class="bi bi-clock-history"></i> Последна активност</h2>
+                    </div>
+
+                    {% if recent_activity %}
+                        <div class="activity-list">
+                            {% for activity in recent_activity %}
+                                <div class="activity-item">
+                                    <div class="activity-icon">
+                                        {% if activity.type == 'submission' %}
+                                            <i class="bi bi-upload text-primary"></i>
+                                        {% elif activity.type == 'grade' %}
+                                            <i class="bi bi-check-circle text-success"></i>
+                                        {% else %}
+                                            <i class="bi bi-info-circle text-info"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div class="activity-content">
+                                        <h4>{{ activity.title }}</h4>
+                                        <p>{{ activity.description }}</p>
+                                        <small class="text-muted">{{ activity.date|date:"d.m.Y H:i" }}</small>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-state small">
+                            <i class="bi bi-activity"></i>
+                            <p>Няма скорошна активност.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Deadlines Calendar -->
+            <section class="dashboard-section">
+                <div class="section-header">
+                    <h2><i class="bi bi-calendar-event"></i> Важни срокове</h2>
+                </div>
+
+                <div class="deadlines-calendar">
+                    <!-- This would be replaced with an actual calendar component -->
+                    <div class="calendar-placeholder">
+                        <i class="bi bi-calendar3" style="font-size: 3rem; color: #e0e0e0;"></i>
+                        <p>Календар със срокове за задания и изпити</p>
                     </div>
                 </div>
-                {% endfor %}
-            </div>
-            {% else %}
-            <div class="empty-state small">
-                <i class="bi bi-activity"></i>
-                <p>Няма скорошна активност.</p>
-            </div>
-            {% endif %}
-        </div>
-    </div>
-
-    <!-- Deadlines Calendar -->
-    <section class="dashboard-section">
-        <div class="section-header">
-            <h2><i class="bi bi-calendar-event"></i> Важни срокове</h2>
+            </section>
         </div>
 
-        <div class="deadlines-calendar">
-            <!-- This would be replaced with an actual calendar component -->
-            <div class="calendar-placeholder">
-                <i class="bi bi-calendar3" style="font-size: 3rem; color: #e0e0e0;"></i>
-                <p>Календар със срокове за задания и изпити</p>
-            </div>
-        </div>
-    </section>
-</div>
-
-<style>
-/* Base Styles */
-.student-dashboard {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 1.5rem;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #333;
-}
-
-.dashboard-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-}
-
-.header-content h1 {
-    font-size: 2rem;
-    font-weight: 700;
-    margin: 0;
-    color: #2c3e50;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.welcome-message {
-    margin: 0.5rem 0 0;
-    color: #7f8c8d;
-    font-size: 1rem;
-}
-
-.quick-actions {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-}
-
-.action-btn {
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px;
-    font-weight: 500;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: all 0.3s ease;
-}
-
-.action-btn i {
-    font-size: 1.1rem;
-}
-
-.action-btn.primary {
-    background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
-    color: white;
-    border: none;
-}
-
-.action-btn.secondary {
-    background: white;
-    color: #2c3e50;
-    border: 1px solid #ddd;
-}
-
-.action-btn.primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
-}
-
-.action-btn.secondary:hover {
-    background: #f8f9fa;
-    transform: translateY(-2px);
-}
-
-.action-btn.small {
-    padding: 0.5rem 1rem;
-    font-size: 0.9rem;
-}
-
-/* Stats Grid */
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 3rem;
-}
-
-.stat-card {
-    padding: 1.5rem;
-    border-radius: 12px;
-    color: white;
-    display: flex;
-    gap: 1rem;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.stat-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-}
-
-.stat-card.primary {
-    background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
-}
-
-.stat-card.success {
-    background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
-}
-
-.stat-card.warning {
-    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
-}
-
-.stat-card.info {
-    background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
-}
-
-.stat-icon {
-    font-size: 2rem;
-    opacity: 0.8;
-}
-
-.stat-content h3 {
-    margin: 0 0 0.5rem;
-    font-size: 1rem;
-    font-weight: 500;
-}
-
-.stat-value {
-    margin: 0;
-    font-size: 2rem;
-    font-weight: 700;
-}
-
-/* Sections */
-.dashboard-section {
-    margin-bottom: 3rem;
-}
-
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-
-.section-header h2 {
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin: 0;
-    color: #2c3e50;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.filter-controls {
-    display: flex;
-    gap: 1rem;
-}
-
-.filter-select {
-    padding: 0.5rem 1rem;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    background-color: white;
-    transition: all 0.3s ease;
-}
-
-.filter-select:focus {
-    outline: none;
-    border-color: #3498db;
-    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
-}
-
-/* Courses Grid */
-.courses-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
-}
-
-.course-card {
-    background: white;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s ease;
-    border: 1px solid #eee;
-}
-
-.course-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-}
-
-.course-header {
-    padding: 1.25rem 1.5rem 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-}
-
-.course-header h3 {
-    margin: 0;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #2c3e50;
-}
-
-.course-status {
-    background: #f8f9fa;
-    padding: 0.25rem 0.5rem;
-    border-radius: 50px;
-    font-size: 0.8rem;
-    font-weight: 500;
-    color: #7f8c8d;
-}
-
-.course-description {
-    padding: 0 1.5rem;
-    margin: 0.75rem 0 1.25rem;
-    color: #7f8c8d;
-    font-size: 0.9rem;
-    line-height: 1.5;
-}
-
-.course-footer {
-    padding: 0 1.5rem 1.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.course-progress {
-    width: 60%;
-}
-
-.progress-container {
-    width: 100%;
-    position: relative;
-}
-
-.progress-bar {
-    height: 6px;
-    background: #3498db;
-    border-radius: 3px;
-    margin-bottom: 0.25rem;
-}
-
-.progress-container span {
-    font-size: 0.75rem;
-    color: #7f8c8d;
-}
-
-.view-btn {
-    color: #3498db;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 0.9rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: all 0.3s ease;
-}
-
-.view-btn:hover {
-    color: #2980b9;
-}
-
-/* Assignments List */
-.assignments-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.assignment-item {
-    padding: 1rem;
-    border-radius: 8px;
-    background: white;
-    border-left: 4px solid #3498db;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.assignment-item.urgent {
-    border-left-color: #e74c3c;
-    background: rgba(231, 76, 60, 0.05);
-}
-
-.assignment-item:hover {
-    transform: translateX(5px);
-}
-
-.assignment-meta {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.assignment-icon {
-    font-size: 1.5rem;
-    color: #3498db;
-}
-
-.assignment-info h4 {
-    margin: 0;
-    font-size: 0.95rem;
-    font-weight: 600;
-}
-
-.assignment-info p {
-    margin: 0.25rem 0 0;
-    font-size: 0.8rem;
-    color: #7f8c8d;
-}
-
-.assignment-actions {
-    margin-top: 0.5rem;
-    display: flex;
-    justify-content: flex-end;
-}
-
-/* Activity List */
-.activity-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.activity-item {
-    display: flex;
-    gap: 1rem;
-    padding: 1rem;
-    border-radius: 8px;
-    background: white;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.activity-item:hover {
-    transform: translateX(5px);
-}
-
-.activity-icon {
-    font-size: 1.5rem;
-}
-
-.activity-content h4 {
-    margin: 0 0 0.25rem;
-    font-size: 0.95rem;
-    font-weight: 600;
-}
-
-.activity-content p {
-    margin: 0 0 0.25rem;
-    font-size: 0.85rem;
-    color: #7f8c8d;
-}
-
-.activity-content small {
-    font-size: 0.75rem;
-}
-
-/* Deadlines Calendar */
-.deadlines-calendar {
-    background: white;
-    border-radius: 12px;
-    padding: 1.5rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    border: 1px solid #eee;
-}
-
-.calendar-placeholder {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 3rem;
-    background: #f8f9fa;
-    border-radius: 8px;
-    color: #bdc3c7;
-    text-align: center;
-}
-
-.calendar-placeholder p {
-    margin: 1rem 0 0;
-}
-
-/* Empty States */
-.empty-state {
-    background: #f8f9fa;
-    border-radius: 12px;
-    padding: 3rem 2rem;
-    text-align: center;
-    color: #7f8c8d;
-}
-
-.empty-state i {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-    color: #bdc3c7;
-}
-
-.empty-state p {
-    margin: 0 0 1.5rem;
-    font-size: 1rem;
-}
-
-.empty-state.small {
-    padding: 1.5rem;
-}
-
-.empty-state.small i {
-    font-size: 1.5rem;
-    margin-bottom: 0.75rem;
-}
-
-.empty-state.small p {
-    margin: 0;
-    font-size: 0.9rem;
-}
-
-/* Activity Columns */
-.activity-columns {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 2rem;
-    margin-bottom: 3rem;
-}
-
-.activity-column {
-    background: white;
-    border-radius: 12px;
-    padding: 1.5rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    border: 1px solid #eee;
-}
-
-/* Responsive Adjustments */
-@media (max-width: 1200px) {
-    .course-progress {
-        width: 50%;
-    }
-}
-
-@media (max-width: 992px) {
-    .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .activity-columns {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 768px) {
-    .dashboard-header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .section-header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .filter-controls {
-        width: 100%;
-    }
-
-    .filter-select {
-        width: 100%;
-    }
-
-    .course-footer {
-        flex-direction: column;
-        gap: 1rem;
-        align-items: flex-start;
-    }
-
-    .course-progress {
-        width: 100%;
-    }
-}
-
-@media (max-width: 576px) {
-    .stats-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .courses-grid {
-        grid-template-columns: 1fr;
-    }
-}
-</style>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Add any interactive JavaScript functionality here
-    // For example, tooltips, dynamic filtering, etc.
-});
-</script>
+        <style>
+            /* Base Styles */
+            .student-dashboard {
+                max-width: 1400px;
+                margin: 0 auto;
+                padding: 1.5rem;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                color: #333;
+            }
+
+            .dashboard-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 2rem;
+                flex-wrap: wrap;
+                gap: 1.5rem;
+            }
+
+            .header-content h1 {
+                font-size: 2rem;
+                font-weight: 700;
+                margin: 0;
+                color: #2c3e50;
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+            }
+
+            .welcome-message {
+                margin: 0.5rem 0 0;
+                color: #7f8c8d;
+                font-size: 1rem;
+            }
+
+            .quick-actions {
+                display: flex;
+                gap: 1rem;
+                flex-wrap: wrap;
+            }
+
+            .action-btn {
+                padding: 0.75rem 1.5rem;
+                border-radius: 8px;
+                font-weight: 500;
+                text-decoration: none;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                transition: all 0.3s ease;
+            }
+
+            .action-btn i {
+                font-size: 1.1rem;
+            }
+
+            .action-btn.primary {
+                background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
+                color: white;
+                border: none;
+            }
+
+            .action-btn.secondary {
+                background: white;
+                color: #2c3e50;
+                border: 1px solid #ddd;
+            }
+
+            .action-btn.primary:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+            }
+
+            .action-btn.secondary:hover {
+                background: #f8f9fa;
+                transform: translateY(-2px);
+            }
+
+            .action-btn.small {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            /* Stats Grid */
+            .stats-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+                gap: 1.5rem;
+                margin-bottom: 3rem;
+            }
+
+            .stat-card {
+                padding: 1.5rem;
+                border-radius: 12px;
+                color: white;
+                display: flex;
+                gap: 1rem;
+                transition: all 0.3s ease;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+
+            .stat-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            }
+
+            .stat-card.primary {
+                background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
+            }
+
+            .stat-card.success {
+                background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            }
+
+            .stat-card.warning {
+                background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            }
+
+            .stat-card.info {
+                background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+            }
+
+            .stat-icon {
+                font-size: 2rem;
+                opacity: 0.8;
+            }
+
+            .stat-content h3 {
+                margin: 0 0 0.5rem;
+                font-size: 1rem;
+                font-weight: 500;
+            }
+
+            .stat-value {
+                margin: 0;
+                font-size: 2rem;
+                font-weight: 700;
+            }
+
+            /* Sections */
+            .dashboard-section {
+                margin-bottom: 3rem;
+            }
+
+            .section-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 1.5rem;
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+
+            .section-header h2 {
+                font-size: 1.5rem;
+                font-weight: 600;
+                margin: 0;
+                color: #2c3e50;
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+            }
+
+            .filter-controls {
+                display: flex;
+                gap: 1rem;
+            }
+
+            .filter-select {
+                padding: 0.5rem 1rem;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                font-size: 0.9rem;
+                background-color: white;
+                transition: all 0.3s ease;
+            }
+
+            .filter-select:focus {
+                outline: none;
+                border-color: #3498db;
+                box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+            }
+
+            /* Courses Grid */
+            .courses-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                gap: 1.5rem;
+            }
+
+            .course-card {
+                background: white;
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+                transition: all 0.3s ease;
+                border: 1px solid #eee;
+            }
+
+            .course-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            }
+
+            .course-header {
+                padding: 1.25rem 1.5rem 0;
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+            }
+
+            .course-header h3 {
+                margin: 0;
+                font-size: 1.1rem;
+                font-weight: 600;
+                color: #2c3e50;
+            }
+
+            .course-status {
+                background: #f8f9fa;
+                padding: 0.25rem 0.5rem;
+                border-radius: 50px;
+                font-size: 0.8rem;
+                font-weight: 500;
+                color: #7f8c8d;
+            }
+
+            .course-description {
+                padding: 0 1.5rem;
+                margin: 0.75rem 0 1.25rem;
+                color: #7f8c8d;
+                font-size: 0.9rem;
+                line-height: 1.5;
+            }
+
+            .course-footer {
+                padding: 0 1.5rem 1.5rem;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .course-progress {
+                width: 60%;
+            }
+
+            .progress-container {
+                width: 100%;
+                position: relative;
+            }
+
+            .progress-bar {
+                height: 6px;
+                background: #3498db;
+                border-radius: 3px;
+                margin-bottom: 0.25rem;
+            }
+
+            .progress-container span {
+                font-size: 0.75rem;
+                color: #7f8c8d;
+            }
+
+            .view-btn {
+                color: #3498db;
+                text-decoration: none;
+                font-weight: 500;
+                font-size: 0.9rem;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                transition: all 0.3s ease;
+            }
+
+            .view-btn:hover {
+                color: #2980b9;
+            }
+
+            /* Assignments List */
+            .assignments-list {
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .assignment-item {
+                padding: 1rem;
+                border-radius: 8px;
+                background: white;
+                border-left: 4px solid #3498db;
+                transition: all 0.3s ease;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            }
+
+            .assignment-item.urgent {
+                border-left-color: #e74c3c;
+                background: rgba(231, 76, 60, 0.05);
+            }
+
+            .assignment-item:hover {
+                transform: translateX(5px);
+            }
+
+            .assignment-meta {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+            }
+
+            .assignment-icon {
+                font-size: 1.5rem;
+                color: #3498db;
+            }
+
+            .assignment-info h4 {
+                margin: 0;
+                font-size: 0.95rem;
+                font-weight: 600;
+            }
+
+            .assignment-info p {
+                margin: 0.25rem 0 0;
+                font-size: 0.8rem;
+                color: #7f8c8d;
+            }
+
+            .assignment-actions {
+                margin-top: 0.5rem;
+                display: flex;
+                justify-content: flex-end;
+            }
+
+            /* Activity List */
+            .activity-list {
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .activity-item {
+                display: flex;
+                gap: 1rem;
+                padding: 1rem;
+                border-radius: 8px;
+                background: white;
+                transition: all 0.3s ease;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            }
+
+            .activity-item:hover {
+                transform: translateX(5px);
+            }
+
+            .activity-icon {
+                font-size: 1.5rem;
+            }
+
+            .activity-content h4 {
+                margin: 0 0 0.25rem;
+                font-size: 0.95rem;
+                font-weight: 600;
+            }
+
+            .activity-content p {
+                margin: 0 0 0.25rem;
+                font-size: 0.85rem;
+                color: #7f8c8d;
+            }
+
+            .activity-content small {
+                font-size: 0.75rem;
+            }
+
+            /* Deadlines Calendar */
+            .deadlines-calendar {
+                background: white;
+                border-radius: 12px;
+                padding: 1.5rem;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+                border: 1px solid #eee;
+            }
+
+            .calendar-placeholder {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                padding: 3rem;
+                background: #f8f9fa;
+                border-radius: 8px;
+                color: #bdc3c7;
+                text-align: center;
+            }
+
+            .calendar-placeholder p {
+                margin: 1rem 0 0;
+            }
+
+            /* Empty States */
+            .empty-state {
+                background: #f8f9fa;
+                border-radius: 12px;
+                padding: 3rem 2rem;
+                text-align: center;
+                color: #7f8c8d;
+            }
+
+            .empty-state i {
+                font-size: 2.5rem;
+                margin-bottom: 1rem;
+                color: #bdc3c7;
+            }
+
+            .empty-state p {
+                margin: 0 0 1.5rem;
+                font-size: 1rem;
+            }
+
+            .empty-state.small {
+                padding: 1.5rem;
+            }
+
+            .empty-state.small i {
+                font-size: 1.5rem;
+                margin-bottom: 0.75rem;
+            }
+
+            .empty-state.small p {
+                margin: 0;
+                font-size: 0.9rem;
+            }
+
+            /* Activity Columns */
+            .activity-columns {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+                gap: 2rem;
+                margin-bottom: 3rem;
+            }
+
+            .activity-column {
+                background: white;
+                border-radius: 12px;
+                padding: 1.5rem;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+                border: 1px solid #eee;
+            }
+
+            /* Responsive Adjustments */
+            @media (max-width: 1200px) {
+                .course-progress {
+                    width: 50%;
+                }
+            }
+
+            @media (max-width: 992px) {
+                .stats-grid {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+
+                .activity-columns {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+            @media (max-width: 768px) {
+                .dashboard-header {
+                    flex-direction: column;
+                    align-items: flex-start;
+                }
+
+                .section-header {
+                    flex-direction: column;
+                    align-items: flex-start;
+                }
+
+                .filter-controls {
+                    width: 100%;
+                }
+
+                .filter-select {
+                    width: 100%;
+                }
+
+                .course-footer {
+                    flex-direction: column;
+                    gap: 1rem;
+                    align-items: flex-start;
+                }
+
+                .course-progress {
+                    width: 100%;
+                }
+            }
+
+            @media (max-width: 576px) {
+                .stats-grid {
+                    grid-template-columns: 1fr;
+                }
+
+                .courses-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+        </style>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                // Add any interactive JavaScript functionality here
+                // For example, tooltips, dynamic filtering, etc.
+            });
+        </script>
 {% endblock %}

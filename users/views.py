@@ -1,7 +1,10 @@
+from django.utils import timezone
+
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect, get_object_or_404
 
+from quizz.models import Quiz
 from .decorators import student_required, teacher_required
 from .forms import StudentRegisterForm, TeacherRegisterForm
 from .models import StudentProfile, TeacherProfile, CustomUser
@@ -93,10 +96,18 @@ def register_teacher(request):
 
 @student_required
 def student_dashboard(request):
-    profile = request.user.studentprofile
-    if not profile.is_approved:
-        return redirect('users:approval_pending')
-    return render(request, 'dashboards/student.html')
+    student = request.user.studentprofile
+    now = timezone.now()
+    # Пример: студентът е записан в courses
+    courses = student.courses.all()
+    upcoming_quizzes = Quiz.objects.filter(
+        course__in=courses,
+        available_from__lte=now,
+        available_until__gte=now
+    )
+    return render(request, 'dashboards/student.html', {
+        'upcoming_quizzes': upcoming_quizzes
+    })
 
 @teacher_required
 def teacher_dashboard(request):

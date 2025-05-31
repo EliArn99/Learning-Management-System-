@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Quiz</title>
+    <style>
+        :root {
+            --primary-color: #4a6bff;
+            --secondary-color: #f8f9fa;
+            --accent-color: #ff6b6b;
+            --text-color: #333;
+            --light-text: #6c757d;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7ff;
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .quiz-container {
+            max-width: 800px;
+            margin: 30px auto;
+            background: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .quiz-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .quiz-header h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .quiz-header p {
+            color: var(--light-text);
+        }
+
+        .progress-container {
+            width: 100%;
+            background-color: #e9ecef;
+            border-radius: var(--border-radius);
+            margin: 20px 0;
+            height: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary-color);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .question-container {
+            margin-bottom: 30px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .question-number {
+            font-size: 14px;
+            color: var(--light-text);
+            margin-bottom: 5px;
+        }
+
+        .question-text {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .option {
+            padding: 15px;
+            background-color: var(--secondary-color);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+            display: flex;
+            align-items: center;
+        }
+
+        .option:hover {
+            background-color: #e9ecef;
+        }
+
+        .option.selected {
+            border-color: var(--primary-color);
+            background-color: rgba(74, 107, 255, 0.1);
+        }
+
+        .option input {
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #3a5bef;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: #e9ecef;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .quiz-result {
+            text-align: center;
+            padding: 30px;
+            display: none;
+        }
+
+        .quiz-result h2 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .score {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin: 20px 0;
+        }
+
+        .feedback {
+            margin-bottom: 30px;
+            color: var(--light-text);
+        }
+
+        @media (max-width: 768px) {
+            .quiz-container {
+                padding: 20px;
+            }
+
+            .question-text {
+                font-size: 18px;
+            }
+
+            .btn {
+                padding: 10px 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .quiz-container {
+                padding: 15px;
+            }
+
+            .navigation-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div class="quiz-header">
+            <h1>Knowledge Check Quiz</h1>
+            <p>Test your understanding with this interactive quiz</p>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+
+        <div class="question-container" id="question-container">
+            <div class="question-number">Question <span id="current-question">1</span> of <span id="total-questions">5</span></div>
+            <div class="question-text" id="question-text">What is the capital of France?</div>
+            <div class="options-container" id="options-container">
+                <label class="option">
+                    <input type="radio" name="option" value="A">
+                    <span>Berlin</span>
+                </label>
+                <label class="option">
+                    <input type="radio" name="option" value="B">
+                    <span>Madrid</span>
+                </label>
+                <label class="option">
+                    <input type="radio" name="option" value="C">
+                    <span>Paris</span>
+                </label>
+                <label class="option">
+                    <input type="radio" name="option" value="D">
+                    <span>Rome</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="navigation-buttons">
+            <button class="btn btn-secondary" id="prev-btn" disabled>Previous</button>
+            <button class="btn btn-primary" id="next-btn">Next</button>
+        </div>
+
+        <div class="quiz-result" id="quiz-result">
+            <h2>Quiz Completed!</h2>
+            <div class="score" id="score">8/10</div>
+            <p class="feedback" id="feedback">Great job! You have a solid understanding of the topic.</p>
+            <button class="btn btn-primary" id="restart-btn">Restart Quiz</button>
+        </div>
+    </div>
+
+    <script>
+        // Sample quiz data
+        const quizData = [
+            {
+                question: "What is the capital of France?",
+                options: ["Berlin", "Madrid", "Paris", "Rome"],
+                correct: 2
+            },
+            {
+                question: "Which planet is known as the Red Planet?",
+                options: ["Venus", "Mars", "Jupiter", "Saturn"],
+                correct: 1
+            },
+            {
+                question: "What is the largest mammal in the world?",
+                options: ["Elephant", "Blue Whale", "Giraffe", "Polar Bear"],
+                correct: 1
+            },
+            {
+                question: "Which language is primarily used for web development?",
+                options: ["Python", "Java", "JavaScript", "C++"],
+                correct: 2
+            },
+            {
+                question: "What year was JavaScript created?",
+                options: ["1990", "1995", "2000", "2005"],
+                correct: 1
+            }
+        ];
+
+        // DOM elements
+        const questionContainer = document.getElementById('question-container');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const currentQuestionEl = document.getElementById('current-question');
+        const totalQuestionsEl = document.getElementById('total-questions');
+        const progressBar = document.getElementById('progress-bar');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const quizResult = document.getElementById('quiz-result');
+        const scoreEl = document.getElementById('score');
+        const feedbackEl = document.getElementById('feedback');
+        const restartBtn = document.getElementById('restart-btn');
+
+        // Quiz state
+        let currentQuestion = 0;
+        let score = 0;
+        let userAnswers = Array(quizData.length).fill(null);
+
+        // Initialize quiz
+        function initQuiz() {
+            totalQuestionsEl.textContent = quizData.length;
+            loadQuestion();
+        }
+
+        // Load question
+        function loadQuestion() {
+            const question = quizData[currentQuestion];
+            questionText.textContent = question.question;
+            currentQuestionEl.textContent = currentQuestion + 1;
+
+            // Update progress bar
+            progressBar.style.width = `${((currentQuestion + 1) / quizData.length) * 100}%`;
+
+            // Clear previous options
+            optionsContainer.innerHTML = '';
+
+            // Add new options
+            question.options.forEach((option, index) => {
+                const optionElement = document.createElement('label');
+                optionElement.classList.add('option');
+                if (userAnswers[currentQuestion] === index) {
+                    optionElement.classList.add('selected');
+                }
+
+                optionElement.innerHTML = `
+                    <input type="radio" name="option" value="${index}"
+                        ${userAnswers[currentQuestion] === index ? 'checked' : ''}>
+                    <span>${option}</span>
+                `;
+
+                optionElement.addEventListener('click', () => {
+                    document.querySelectorAll('.option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    optionElement.classList.add('selected');
+                    userAnswers[currentQuestion] = index;
+                });
+
+                optionsContainer.appendChild(optionElement);
+            });
+
+            // Update navigation buttons
+            prevBtn.disabled = currentQuestion === 0;
+            nextBtn.textContent = currentQuestion === quizData.length - 1 ? 'Submit' : 'Next';
+        }
+
+        // Show quiz result
+        function showResult() {
+            questionContainer.style.display = 'none';
+            quizResult.style.display = 'block';
+
+            // Calculate score
+            score = 0;
+            userAnswers.forEach((answer, index) => {
+                if (answer === quizData[index].correct) {
+                    score++;
+                }
+            });
+
+            scoreEl.textContent = `${score}/${quizData.length}`;
+
+            // Provide feedback
+            const percentage = (score / quizData.length) * 100;
+            if (percentage >= 80) {
+                feedbackEl.textContent = "Excellent! You've mastered this topic.";
+            } else if (percentage >= 60) {
+                feedbackEl.textContent = "Good job! You have a solid understanding.";
+            } else if (percentage >= 40) {
+                feedbackEl.textContent = "Not bad! Consider reviewing the material.";
+            } else {
+                feedbackEl.textContent = "Keep practicing! You'll improve with more study.";
+            }
+        }
+
+        // Event listeners
+        nextBtn.addEventListener('click', () => {
+            if (currentQuestion < quizData.length - 1) {
+                currentQuestion++;
+                loadQuestion();
+            } else {
+                showResult();
+            }
+        });
+
+        prevBtn.addEventListener('click', () => {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                loadQuestion();
+            }
+        });
+
+        restartBtn.addEventListener('click', () => {
+            currentQuestion = 0;
+            score = 0;
+            userAnswers = Array(quizData.length).fill(null);
+            questionContainer.style.display = 'block';
+            quizResult.style.display = 'none';
+            loadQuestion();
+        });
+
+        // Start the quiz
+        initQuiz();
+    </script>
+</body>
+</html>

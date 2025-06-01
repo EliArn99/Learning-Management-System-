@@ -17,7 +17,7 @@
                     <button type="submit" class="btn btn-success">Submit</button>
                 </form>
 
-                {{% if submission %}
+                {% if submission %}
                 <hr>
                 <h5>Your Current Submission:</h5>
                 <p>Submitted on: {{ submission.submitted_at|date:"M d, Y H:i" }}</p>

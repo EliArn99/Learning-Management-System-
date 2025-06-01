@@ -2,156 +2,389 @@
 {% load static %}
 
 {% block content %}
-    <div class="container py-4">
-        <!-- Header Section -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h2 class="fw-bold text-gradient-primary">Student Dashboard</h2>
-                <p class="text-muted">Welcome back! Here's what's happening today.</p>
-            </div>
-            <div class="avatar avatar-lg">
-                <img src="{% static 'images/avatar.svg' %}" alt="Student Avatar" class="rounded-circle">
-            </div>
+<style>
+    /* Student Dashboard Styles */
+    .dashboard-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+    }
+
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .dashboard-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(90deg, #4e73df 0%, #224abe 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .dashboard-subtitle {
+        color: #6c757d;
+        font-size: 1rem;
+    }
+
+    .student-avatar {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #e9ecef;
+    }
+
+    /* Cards */
+    .dashboard-card {
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        border: none;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.25rem 1.5rem;
+        background: transparent;
+        border-bottom: 1px solid #f0f2f5;
+    }
+
+    .card-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0;
+    }
+
+    .status-badge {
+        padding: 0.35rem 0.65rem;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    /* Progress Card */
+    .progress-container {
+        padding: 1.5rem;
+    }
+
+    .progress-bar-custom {
+        height: 12px;
+        border-radius: 6px;
+        background-color: #f0f3f8;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        border-radius: 6px;
+        background: linear-gradient(90deg, #4e73df 0%, #224abe 100%);
+        background-size: 200% 100%;
+        animation: progressAnimation 2s ease-in-out infinite;
+    }
+
+    @keyframes progressAnimation {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    /* Assignments List */
+    .assignment-list {
+        padding: 0;
+        list-style: none;
+    }
+
+    .assignment-item {
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #f0f2f5;
+        transition: background-color 0.2s ease;
+    }
+
+    .assignment-item:hover {
+        background-color: #f8f9fa;
+    }
+
+    .assignment-icon {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #e6f0fd;
+        color: #4e73df;
+        border-radius: 8px;
+        margin-right: 1rem;
+    }
+
+    .assignment-title {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+
+    .assignment-due {
+        font-size: 0.85rem;
+        color: #6c757d;
+    }
+
+    .urgent-badge {
+        background-color: rgba(220, 53, 69, 0.1);
+        color: #dc3545;
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 50px;
+    }
+
+    /* Courses Grid */
+    .courses-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.25rem;
+        padding: 1.5rem;
+    }
+
+    .course-card {
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+
+    .course-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    }
+
+    .course-icon {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #e2f3f8;
+        color: #17a2b8;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+
+    .course-name {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .course-description {
+        font-size: 0.85rem;
+        color: #6c757d;
+        margin-bottom: 1.25rem;
+    }
+
+    /* Empty States */
+    .empty-state {
+        text-align: center;
+        padding: 2rem;
+    }
+
+    .empty-state-img {
+        max-height: 150px;
+        margin-bottom: 1rem;
+    }
+
+    /* Buttons */
+    .view-btn {
+        padding: 0.375rem 1rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        border: 1px solid #4e73df;
+        color: #4e73df;
+        transition: all 0.2s ease;
+    }
+
+    .view-btn:hover {
+        background-color: #4e73df;
+        color: white;
+    }
+
+    .continue-btn {
+        width: 100%;
+        padding: 0.5rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        border: 1px solid #6c757d;
+        color: #6c757d;
+        transition: all 0.2s ease;
+    }
+
+    .continue-btn:hover {
+        background-color: #f8f9fa;
+    }
+
+    .browse-btn {
+        padding: 0.5rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 500;
+        background-color: #4e73df;
+        border: none;
+        color: white;
+        transition: all 0.2s ease;
+    }
+
+    .browse-btn:hover {
+        background-color: #3a5bbf;
+        color: white;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 992px) {
+        .dashboard-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .student-avatar {
+            align-self: flex-end;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .dashboard-container {
+            padding: 1.5rem 1rem;
+        }
+
+        .dashboard-title {
+            font-size: 1.75rem;
+        }
+
+        .courses-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="dashboard-container">
+    <!-- Header Section -->
+    <div class="dashboard-header">
+        <div>
+            <h1 class="dashboard-title">Student Dashboard</h1>
+            <p class="dashboard-subtitle">Welcome back! Here's what's happening today.</p>
         </div>
+        <img src="{% static 'images/avatar.svg' %}" alt="Student Avatar" class="student-avatar">
+    </div>
 
-        <!-- Progress Card with Animated Bar -->
-        <div class="card shadow-sm mb-4 border-0">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="card-title mb-0 fw-semibold">Your Learning Progress</h5>
-                    <span class="badge bg-light text-dark">{{ progress }}% Complete</span>
-                </div>
-                <div class="progress" style="height: 12px; border-radius: 6px;">
-                    <div class="progress-bar bg-gradient-primary progress-bar-striped progress-bar-animated"
-                         role="progressbar" style="width: {{ progress }}%;"
-                         aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100">
-                    </div>
-                </div>
-                <div class="d-flex justify-content-between mt-2">
-                    <small class="text-muted">Started</small>
-                    <small class="text-muted">Goal: 100%</small>
-                </div>
+    <!-- Progress Card -->
+    <div class="dashboard-card">
+        <div class="progress-container">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="card-title">Your Learning Progress</h2>
+                <span class="status-badge" style="background-color: rgba(78, 115, 223, 0.1); color: #4e73df;">
+                    {{ progress }}% Complete
+                </span>
             </div>
-        </div>
-
-        <div class="row">
-            <!-- Upcoming Assignments Column -->
-            <div class="col-lg-6 mb-4">
-                <div class="card shadow-sm h-100 border-0">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h5 class="card-title mb-0 fw-semibold">📝 Upcoming Assignments</h5>
-                            <span class="badge bg-primary bg-opacity-10 text-primary">{{ upcoming_assignments|length }} due</span>
-                        </div>
-
-                        {% if upcoming_assignments %}
-                            <div class="list-group list-group-flush">
-                                {% for assignment in upcoming_assignments %}
-                                    <div class="list-group-item border-0 px-0 py-3">
-                                        <div class="d-flex align-items-center">
-                                            <div class="icon-shape bg-light-primary text-primary rounded-3 me-3 p-2">
-                                                <i class="fas fa-book-open"></i>
-                                            </div>
-                                            <div class="flex-grow-1">
-                                                <h6 class="mb-1 fw-semibold">{{ assignment.title }}</h6>
-                                                <div class="d-flex align-items-center">
-                                                    <small class="text-muted me-2">
-                                                        <i class="far fa-calendar-alt me-1"></i>
-                                                        {{ assignment.due_date|date:"M d, Y H:i" }}
-                                                    </small>
-                                                    {% if assignment.is_urgent %}
-                                                        <span class="badge bg-danger bg-opacity-10 text-danger ms-2">Urgent</span>
-                                                    {% endif %}
-                                                </div>
-                                            </div>
-                                            <a href="{% url 'assignments:assignment_detail' assignment.pk %}"
-                                               class="btn btn-sm btn-outline-primary rounded-pill px-3">
-                                                View
-                                            </a>
-                                        </div>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        {% else %}
-                            <div class="text-center py-4">
-                                <img src="{% static 'images/no-assignments.svg' %}" alt="No assignments" class="img-fluid mb-3" style="max-height: 120px;">
-                                <p class="text-muted">No upcoming assignments. Enjoy your free time!</p>
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
+            <div class="progress-bar-custom">
+                <div class="progress-fill" style="width: {{ progress }}%;"></div>
             </div>
-
-            <!-- Your Courses Column -->
-            <div class="col-lg-6 mb-4">
-                <div class="card shadow-sm h-100 border-0">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h5 class="card-title mb-0 fw-semibold">🎓 Your Courses</h5>
-                            <span class="badge bg-success bg-opacity-10 text-success">{{ courses|length }} enrolled</span>
-                        </div>
-
-                        {% if courses %}
-                            <div class="row g-3">
-                                {% for course in courses %}
-                                    <div class="col-md-6">
-                                        <div class="card h-100 border-0 shadow-sm hover-scale">
-                                            <div class="card-body">
-                                                <div class="icon-shape bg-light-info text-info rounded-3 mb-3 p-2 d-inline-block">
-                                                    <i class="fas fa-graduation-cap"></i>
-                                                </div>
-                                                <h6 class="card-title fw-semibold">{{ course.name }}</h6>
-                                                <p class="card-text text-muted small">{{ course.description|truncatewords:12 }}</p>
-                                            </div>
-                                            <div class="card-footer bg-transparent border-0 pt-0">
-                                                <a href="{% url 'courses:course_detail' course.pk %}"
-                                                   class="btn btn-sm btn-outline-secondary w-100 rounded-pill">
-                                                    Continue Learning
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        {% else %}
-                            <div class="text-center py-4">
-                                <img src="{% static 'images/no-courses.svg' %}" alt="No courses" class="img-fluid mb-3" style="max-height: 120px;">
-                                <p class="text-muted">You're not enrolled in any courses yet.</p>
-                                <a href="#" class="btn btn-primary rounded-pill px-4">Browse Courses</a>
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
+            <div class="d-flex justify-content-between mt-2">
+                <small class="text-muted">Started</small>
+                <small class="text-muted">Goal: 100%</small>
             </div>
         </div>
     </div>
 
-    <style>
-        .text-gradient-primary {
-            background: linear-gradient(90deg, #4e73df 0%, #224abe 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+    <div class="row">
+        <!-- Upcoming Assignments Column -->
+        <div class="col-lg-6">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h2 class="card-title">📝 Upcoming Assignments</h2>
+                    <span class="status-badge" style="background-color: rgba(78, 115, 223, 0.1); color: #4e73df;">
+                        {{ upcoming_assignments|length }} due
+                    </span>
+                </div>
 
-        .bg-gradient-primary {
-            background: linear-gradient(90deg, #4e73df 0%, #224abe 100%);
-        }
+                {% if upcoming_assignments %}
+                    <ul class="assignment-list">
+                        {% for assignment in upcoming_assignments %}
+                            <li class="assignment-item">
+                                <div class="d-flex align-items-center">
+                                    <div class="assignment-icon">
+                                        <i class="fas fa-book-open"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h3 class="assignment-title">{{ assignment.title }}</h3>
+                                        <div class="d-flex align-items-center">
+                                            <span class="assignment-due">
+                                                <i class="far fa-calendar-alt me-1"></i>
+                                                {{ assignment.due_date|date:"M d, Y H:i" }}
+                                            </span>
+                                            {% if assignment.is_urgent %}
+                                                <span class="urgent-badge ms-2">Urgent</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <a href="{% url 'assignments:assignment_detail' assignment.pk %}" class="view-btn">
+                                        View
+                                    </a>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="empty-state">
+                        <img src="{% static 'images/no-assignments.svg' %}" alt="No assignments" class="empty-state-img">
+                        <p class="text-muted">No upcoming assignments. Enjoy your free time!</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
 
-        .hover-scale {
-            transition: transform 0.3s ease;
-        }
+        <!-- Your Courses Column -->
+        <div class="col-lg-6">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h2 class="card-title">🎓 Your Courses</h2>
+                    <span class="status-badge" style="background-color: rgba(40, 167, 69, 0.1); color: #28a745;">
+                        {{ courses|length }} enrolled
+                    </span>
+                </div>
 
-        .hover-scale:hover {
-            transform: translateY(-5px);
-        }
-
-        .icon-shape {
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-    </style>
+                {% if courses %}
+                    <div class="courses-grid">
+                        {% for course in courses %}
+                            <div class="course-card">
+                                <div class="card-body" style="padding: 1.5rem;">
+                                    <div class="course-icon">
+                                        <i class="fas fa-graduation-cap"></i>
+                                    </div>
+                                    <h3 class="course-name">{{ course.name }}</h3>
+                                    <p class="course-description">{{ course.description|truncatewords:12 }}</p>
+                                    <a href="{% url 'courses:course_detail' course.pk %}" class="continue-btn">
+                                        Continue Learning
+                                    </a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <img src="{% static 'images/no-courses.svg' %}" alt="No courses" class="empty-state-img">
+                        <p class="text-muted">You're not enrolled in any courses yet.</p>
+                        <a href="#" class="browse-btn">Browse Courses</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

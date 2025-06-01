@@ -2,40 +2,233 @@
 {% load static %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <h2 class="card-title">{{ assignment.title }}</h2>
-            <p class="text-muted">Due: {{ assignment.due_date|date:"M d, Y H:i" }}</p>
+<style>
+    /* Assignment Detail Page Styles */
+    .assignment-detail-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 0 1.5rem;
+    }
 
-            <hr>
-            <h5>Description</h5>
-            <p>{{ assignment.description|linebreaks }}</p>
+    .assignment-card {
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        border: none;
+        overflow: hidden;
+    }
+
+    .assignment-card-body {
+        padding: 2rem;
+    }
+
+    .assignment-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 0.5rem;
+    }
+
+    .assignment-due-date {
+        color: #6b7280;
+        font-size: 0.95rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .assignment-divider {
+        border: none;
+        height: 1px;
+        background-color: #e5e7eb;
+        margin: 1.5rem 0;
+    }
+
+    .section-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 1rem;
+    }
+
+    .assignment-description {
+        color: #4b5563;
+        line-height: 1.6;
+        white-space: pre-line;
+    }
+
+    .file-attachment {
+        margin-top: 1.5rem;
+        padding: 1rem;
+        background-color: #f9fafb;
+        border-radius: 8px;
+        border: 1px dashed #d1d5db;
+    }
+
+    .file-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+    .file-download-btn {
+        background-color: #f3f4f6;
+        color: #374151;
+        border: 1px solid #e5e7eb;
+    }
+
+    .file-download-btn:hover {
+        background-color: #e5e7eb;
+    }
+
+    .submission-section {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+    }
+
+    .submission-status {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+
+    .submitted-date {
+        color: #6b7280;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1.25rem;
+        border-radius: 8px;
+        font-weight: 500;
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
+    }
+
+    .submit-btn {
+        background-color: #10b981;
+        color: white;
+        border: none;
+    }
+
+    .submit-btn:hover {
+        background-color: #0d9f6e;
+        color: white;
+        transform: translateY(-1px);
+    }
+
+    .edit-btn {
+        background-color: #3b82f6;
+        color: white;
+        border: none;
+    }
+
+    .edit-btn:hover {
+        background-color: #2563eb;
+        color: white;
+        transform: translateY(-1px);
+    }
+
+    .warning-text {
+        color: #f59e0b;
+        font-weight: 500;
+        margin-bottom: 1rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .assignment-detail-container {
+            padding: 0 1rem;
+        }
+
+        .assignment-card-body {
+            padding: 1.5rem;
+        }
+
+        .assignment-title {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+
+<div class="assignment-detail-container">
+    <div class="assignment-card">
+        <div class="assignment-card-body">
+            <h1 class="assignment-title">{{ assignment.title }}</h1>
+            <p class="assignment-due-date">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
+                </svg>
+                Due: {{ assignment.due_date|date:"M d, Y H:i" }}
+            </p>
+
+            <hr class="assignment-divider">
+
+            <h3 class="section-title">Description</h3>
+            <div class="assignment-description">{{ assignment.description|linebreaks }}</div>
 
             {% if assignment.file %}
-                <div class="mt-3">
-                    <h6>Attached File:</h6>
-                    <a href="{{ assignment.file.url }}" class="btn btn-outline-secondary btn-sm" download>
-                        📎 {{ assignment.file.name }}
+                <div class="file-attachment">
+                    <h4 class="section-title">Attached File</h4>
+                    <a href="{{ assignment.file.url }}" class="file-btn file-download-btn" download>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293V6.5z"/>
+                            <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
+                        </svg>
+                        {{ assignment.file.name|cut:"assignments/files/" }}
                     </a>
                 </div>
             {% endif %}
 
             {% if user.is_authenticated and user.is_student %}
-                <hr>
-                <h5>Your Submission</h5>
-                {% if submission %}
-                    <p><strong>Status:</strong> ✅ Submitted</p>
-                    <p><strong>Submitted on:</strong> {{ submission.submitted_at|date:"M d, Y H:i" }}</p>
-                    <a href="{% url 'assignments:edit_submission' submission.id %}" class="btn btn-primary btn-sm">
-                        ✏️ Edit Submission
-                    </a>
-                {% else %}
-                    <p class="text-warning">You haven't submitted this assignment yet.</p>
-                    <a href="{% url 'assignments:submit' assignment.id %}" class="btn btn-success btn-sm">
-                        📤 Submit Assignment
-                    </a>
-                {% endif %}
+                <div class="submission-section">
+                    <hr class="assignment-divider">
+                    <h3 class="section-title">Your Submission</h3>
+
+                    {% if submission %}
+                        <p class="submission-status">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z"/>
+                            </svg>
+                            Status: Submitted
+                        </p>
+                        <p class="submitted-date">
+                            Submitted on: {{ submission.submitted_at|date:"M d, Y H:i" }}
+                        </p>
+                        <a href="{% url 'assignments:edit_submission' submission.id %}" class="action-btn edit-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                            </svg>
+                            Edit Submission
+                        </a>
+                    {% else %}
+                        <p class="warning-text">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                            </svg>
+                            You haven't submitted this assignment yet
+                        </p>
+                        <a href="{% url 'assignments:submit' assignment.id %}" class="action-btn submit-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z"/>
+                            </svg>
+                            Submit Assignment
+                        </a>
+                    {% endif %}
+                </div>
             {% endif %}
         </div>
     </div>

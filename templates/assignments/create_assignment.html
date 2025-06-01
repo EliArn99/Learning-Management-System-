@@ -2,25 +2,228 @@
 {% load static %}
 
 {% block content %}
-<div class="container mt-5">
-    <h2 class="mb-4">Създай ново задание</h2>
+<style>
+    /* Assignment Creation Page Styles */
+    .assignment-create-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1.5rem;
+    }
 
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-        {% endfor %}
-    {% endif %}
+    .assignment-create-card {
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        padding: 2.5rem;
+        transition: all 0.3s ease;
+    }
 
-   <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <label for="course">Избери курс:</label>
-    <select name="course" required>
-        {% for course in courses %}
-            <option value="{{ course.id }}">{{ course.title }}</option>
-        {% endfor %}
-    </select>
-    <button type="submit">Създай</button>
-</form>
+    .assignment-create-title {
+        color: #2d3748;
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .assignment-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .form-row {
+        display: flex;
+        gap: 1.5rem;
+    }
+
+    .form-row .form-group {
+        flex: 1;
+    }
+
+    .assignment-form label {
+        font-weight: 600;
+        color: #4a5568;
+        font-size: 0.95rem;
+    }
+
+    .assignment-form input,
+    .assignment-form textarea,
+    .assignment-form select {
+        padding: 0.75rem 1rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.2s ease;
+        background-color: #f8fafc;
+    }
+
+    .assignment-form input:focus,
+    .assignment-form textarea:focus,
+    .assignment-form select:focus {
+        outline: none;
+        border-color: #4299e1;
+        box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+        background-color: #ffffff;
+    }
+
+    .assignment-form textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .form-select {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 16px 12px;
+    }
+
+    .submit-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        background-color: #4299e1;
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        margin-top: 1rem;
+    }
+
+    .submit-button:hover {
+        background-color: #3182ce;
+        transform: translateY(-1px);
+    }
+
+    .submit-button:active {
+        transform: translateY(0);
+    }
+
+    .error-message {
+        color: #e53e3e;
+        font-size: 0.85rem;
+        margin-top: 0.25rem;
+    }
+
+    .assignment-messages {
+        margin-bottom: 1.5rem;
+    }
+
+    .message-success {
+        background-color: #f0fff4;
+        color: #2f855a;
+        padding: 1rem;
+        border-radius: 8px;
+        border-left: 4px solid #38a169;
+    }
+
+    .message-error {
+        background-color: #fff5f5;
+        color: #c53030;
+        padding: 1rem;
+        border-radius: 8px;
+        border-left: 4px solid #e53e3e;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .assignment-create-card {
+            padding: 1.5rem;
+        }
+
+        .form-row {
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .assignment-create-title {
+            font-size: 1.5rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .assignment-create-container {
+            padding: 0 1rem;
+        }
+
+        .assignment-create-card {
+            padding: 1.25rem;
+        }
+    }
+</style>
+
+<div class="assignment-create-container">
+    <div class="assignment-create-card">
+        <h2 class="assignment-create-title">Създай ново задание</h2>
+
+        {% if messages %}
+            <div class="assignment-messages">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} message-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="post" class="assignment-form">
+            {% csrf_token %}
+
+            <div class="form-group">
+                {{ form.title.label_tag }}
+                {{ form.title }}
+                {% if form.title.errors %}
+                    <div class="error-message">{{ form.title.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                {{ form.description.label_tag }}
+                {{ form.description }}
+                {% if form.description.errors %}
+                    <div class="error-message">{{ form.description.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    {{ form.due_date.label_tag }}
+                    {{ form.due_date }}
+                    {% if form.due_date.errors %}
+                        <div class="error-message">{{ form.due_date.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="course">Избери курс:</label>
+                    <select name="course" id="course" class="form-select" required>
+                        {% for course in courses %}
+                            <option value="{{ course.id }}">{{ course.title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="submit-button">
+                    <span>Създай задание</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
+                    </svg>
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 {% endblock %}

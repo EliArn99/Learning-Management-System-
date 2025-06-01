@@ -19,11 +19,14 @@ class QuizCreateView(LoginRequiredMixin, CreateView):
     template_name = 'quiz/quiz_form.html'
 
     def form_valid(self, form):
-        form.instance.created_by = self.request.user
+        form.instance.created_by = self.request.user.teacherprofile  # 👈
         return super().form_valid(form)
 
-    def get_success_url(self):
-        return reverse_lazy('quizz:quiz_detail', kwargs={'pk': self.object.pk})
+    def get_form(self):
+        form = super().get_form()
+        # Ограничаваме само курсовете на този преподавател
+        form.fields['course'].queryset = self.request.user.teacherprofile.courses.all()
+        return form
 
 # ✅ CBV за подробности за тест
 class QuizDetailView(DetailView):
@@ -59,3 +62,15 @@ def quiz_results(request, pk):
         'quiz': quiz,
         'submission': submission
     })
+
+
+def quiz_form_view(request):
+    form = QuizForm()
+    if request.method == 'POST':
+        form = QuizForm(request.POST)
+        if form.is_valid():
+            quiz = form.save(commit=False)
+            quiz.created_by = request.user.teacherprofile
+            quiz.save()
+            return redirect('quizz:quiz_detail', pk=quiz.pk)
+    return render(request, 'quiz/quiz_form.html', {'form': form})

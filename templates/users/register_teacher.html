@@ -1,29 +1,45 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow-lg border-0 rounded-4">
-                <div class="card-body p-4">
-                    <h3 class="card-title text-center mb-4">Регистрация като преподавател</h3>
-                    <form method="post">
-                        {% csrf_token %}
-                        {% for field in form %}
-                            <div class="mb-3">
-                                <label class="form-label">{{ field.label }}</label>
-                                {{ field }}
-                                {% if field.errors %}
-                                    <div class="text-danger small">{{ field.errors|striptags }}</div>
-                                {% endif %}
-                            </div>
-                        {% endfor %}
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-success btn-lg">Регистрация</button>
+<div class="teacher-registration">
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow-lg border-0 rounded-4 registration-card">
+                    <div class="card-body p-4 p-md-5">
+                        <div class="text-center mb-4">
+                            <i class="fas fa-chalkboard-teacher registration-icon"></i>
+                            <h2 class="card-title registration-title">Регистрация като преподавател</h2>
+                            <p class="text-muted">Присъединете се към нашата образователна общност</p>
                         </div>
-                    </form>
+
+                        <form method="post" class="registration-form">
+                            {% csrf_token %}
+                            {% for field in form %}
+                                <div class="mb-3 form-group">
+                                    <label class="form-label">{{ field.label }}</label>
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                        <small class="form-text text-muted">{{ field.help_text }}</small>
+                                    {% endif %}
+                                    {% if field.errors %}
+                                        <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+
+                            <div class="d-grid mt-4">
+                                <button type="submit" class="btn btn-primary btn-lg registration-button">
+                                    <i class="fas fa-user-plus me-2"></i>Регистрация
+                                </button>
+                            </div>
+
+                            <div class="text-center mt-4">
+                                <p class="mb-0">Вече имате акаунт? <a href="#" class="text-decoration-none">Влезте</a></p>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-{% endblock %}

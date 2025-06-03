@@ -1,113 +1,359 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <div class="enroll-container">
-        <div class="enroll-box">
-            <h1 class="enroll-title">📘 Записване в курса</h1>
-            <h2 class="course-name">{{ course.name }}</h2>
-            <p class="course-description">{{ course.description }}</p>
+<div class="enrollment-page">
+    <div class="enrollment-container">
+        <div class="enrollment-card">
+            <!-- Course header with decorative elements -->
+            <div class="course-header">
+                <div class="course-badge">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <h1 class="enroll-title">Записване в курса</h1>
+                <div class="course-rating">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star-half-alt"></i>
+                    <span class="rating-text">4.7 (128 оценки)</span>
+                </div>
+            </div>
 
+            <!-- Course content -->
+            <div class="course-content">
+                <h2 class="course-name">{{ course.name }}</h2>
+                <p class="course-description">{{ course.description }}</p>
+
+                <div class="course-highlights">
+                    <div class="highlight-item">
+                        <i class="fas fa-clock"></i>
+                        <span>8 седмици</span>
+                    </div>
+                    <div class="highlight-item">
+                        <i class="fas fa-certificate"></i>
+                        <span>Сертификат</span>
+                    </div>
+                    <div class="highlight-item">
+                        <i class="fas fa-user-graduate"></i>
+                        <span>За начинаещи</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Enrollment form -->
             <form method="post" class="enroll-form">
                 {% csrf_token %}
-                {#            {{ form.as_p }}#}
-                <a href="{% url 'courses:checkout' %}" class="enroll-button">✅ Запиши се</a>
-
+                <a href="{% url 'courses:checkout' %}" class="enroll-button">
+                    <span class="button-icon">✅</span>
+                    <span class="button-text">Запиши се сега</span>
+                    <span class="button-price">Безплатно</span>
+                </a>
             </form>
-            <a href="{% url 'courses:course_detail' course.id %}" class="back-link">← Назад към курса</a>
+
+            <div class="enrollment-footer">
+                <a href="{% url 'courses:course_detail' course.id %}" class="back-link">
+                    <i class="fas fa-arrow-left"></i>
+                    Назад към курса
+                </a>
+                <div class="guarantee-badge">
+                    <i class="fas fa-shield-alt"></i>
+                    30-дневна гаранция
+                </div>
+            </div>
         </div>
     </div>
+</div>
 
-    <style>
-        :root {
-            --primary-color: #4a6fa5;
-            --accent-color: #ff7e5f;
-            --bg-light: #f7f9fc;
-            --shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            --radius: 10px;
-        }
+<style>
+    :root {
+        --primary-color: #4a6fa5;
+        --primary-light: rgba(74, 111, 165, 0.1);
+        --accent-color: #ff7e5f;
+        --accent-light: rgba(255, 126, 95, 0.1);
+        --text-dark: #2d3748;
+        --text-medium: #4a5568;
+        --text-light: #718096;
+        --bg-light: #f7f9fc;
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+        --radius-sm: 8px;
+        --radius-md: 12px;
+        --radius-lg: 16px;
+        --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
 
-        .enroll-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 80vh;
-            background-color: var(--bg-light);
-            padding: 2rem;
-        }
+    .enrollment-page {
+        background-color: var(--bg-light);
+        min-height: 100vh;
+        padding: 2rem 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-        .enroll-box {
-            background: white;
-            padding: 3rem 2.5rem;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            max-width: 600px;
-            width: 100%;
-            text-align: center;
-        }
+    .enrollment-container {
+        width: 100%;
+        max-width: 640px;
+        margin: 0 auto;
+    }
 
+    .enrollment-card {
+        background: white;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+        transition: var(--transition);
+    }
+
+    .enrollment-card:hover {
+        box-shadow: var(--shadow-lg);
+        transform: translateY(-3px);
+    }
+
+    .course-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, #3a5a8a 100%);
+        color: white;
+        padding: 2.5rem 2rem 1.5rem;
+        text-align: center;
+        position: relative;
+    }
+
+    .course-badge {
+        width: 80px;
+        height: 80px;
+        background: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .course-badge i {
+        font-size: 2.5rem;
+        color: var(--primary-color);
+    }
+
+    .enroll-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        position: relative;
+        display: inline-block;
+    }
+
+    .enroll-title::after {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 3px;
+        background: rgba(255, 255, 255, 0.5);
+        border-radius: 3px;
+    }
+
+    .course-rating {
+        margin-top: 1rem;
+        font-size: 0.9rem;
+    }
+
+    .course-rating i {
+        color: #fbbf24;
+        margin: 0 1px;
+    }
+
+    .rating-text {
+        margin-left: 8px;
+        opacity: 0.9;
+    }
+
+    .course-content {
+        padding: 2rem;
+    }
+
+    .course-name {
+        font-size: 1.6rem;
+        color: var(--text-dark);
+        margin-bottom: 1rem;
+        font-weight: 700;
+        text-align: center;
+    }
+
+    .course-description {
+        color: var(--text-medium);
+        font-size: 1rem;
+        line-height: 1.7;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .course-highlights {
+        display: flex;
+        justify-content: center;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .highlight-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.9rem;
+        color: var(--text-medium);
+        background: var(--primary-light);
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius-sm);
+    }
+
+    .highlight-item i {
+        color: var(--primary-color);
+    }
+
+    .enroll-form {
+        padding: 0 2rem 2rem;
+    }
+
+    .enroll-button {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: linear-gradient(to right, var(--accent-color), #ff6a45);
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        transition: var(--transition);
+        text-decoration: none;
+        box-shadow: 0 4px 15px rgba(255, 126, 95, 0.3);
+        width: 100%;
+    }
+
+    .enroll-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255, 126, 95, 0.4);
+    }
+
+    .button-icon {
+        font-size: 1.2rem;
+    }
+
+    .button-text {
+        flex-grow: 1;
+        text-align: center;
+    }
+
+    .button-price {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 0.25rem 0.75rem;
+        border-radius: 50px;
+        font-size: 0.9rem;
+    }
+
+    .enrollment-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 2rem 2rem;
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--primary-color);
+        text-decoration: none;
+        font-size: 0.95rem;
+        transition: var(--transition);
+    }
+
+    .back-link:hover {
+        color: #3a5a8a;
+        text-decoration: underline;
+    }
+
+    .back-link i {
+        font-size: 0.8rem;
+    }
+
+    .guarantee-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.85rem;
+        color: var(--text-light);
+    }
+
+    .guarantee-badge i {
+        color: var(--accent-color);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
         .enroll-title {
-            font-size: 2rem;
-            color: var(--primary-color);
-            margin-bottom: 1rem;
+            font-size: 1.6rem;
         }
 
         .course-name {
-            font-size: 1.5rem;
-            color: #333;
-            margin-bottom: 0.5rem;
+            font-size: 1.4rem;
         }
 
-        .course-description {
-            color: #555;
-            font-size: 1rem;
-            margin-bottom: 2rem;
-            line-height: 1.6;
+        .course-content {
+            padding: 1.5rem;
         }
 
-        .enroll-form {
-            margin-bottom: 1.5rem;
+        .enroll-form, .enrollment-footer {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .course-header {
+            padding: 2rem 1rem 1rem;
         }
 
-        .enroll-form button.enroll-button {
-            background-color: var(--accent-color);
-            color: white;
-            border: none;
-            padding: 0.75rem 2rem;
-            font-size: 1rem;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: background 0.3s ease, transform 0.2s ease;
+        .course-badge {
+            width: 70px;
+            height: 70px;
+            margin-bottom: 1rem;
         }
 
-        .enroll-form button.enroll-button:hover {
-            background-color: #ff6a45;
-            transform: translateY(-2px);
+        .course-badge i {
+            font-size: 2rem;
         }
 
-        .back-link {
-            display: inline-block;
-            margin-top: 1rem;
-            color: var(--primary-color);
-            text-decoration: none;
-            font-size: 0.95rem;
+        .enroll-button {
+            flex-direction: column;
+            gap: 0.5rem;
+            padding: 1rem;
         }
 
-        .back-link:hover {
-            text-decoration: underline;
+        .button-text {
+            order: 1;
         }
 
-        @media (max-width: 600px) {
-            .enroll-box {
-                padding: 2rem 1.5rem;
-            }
-
-            .enroll-title {
-                font-size: 1.6rem;
-            }
-
-            .course-name {
-                font-size: 1.3rem;
-            }
+        .button-icon {
+            order: 2;
         }
-    </style>
+
+        .button-price {
+            order: 3;
+        }
+
+        .enrollment-footer {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+    }
+</style>
 {% endblock %}

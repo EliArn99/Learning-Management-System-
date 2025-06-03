@@ -1,18 +1,28 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="teacher-registration">
-    <div class="container mt-5">
+    <div class="container py-5">
         <div class="row justify-content-center">
-            <div class="col-md-8 col-lg-6">
-                <div class="card shadow-lg border-0 rounded-4 registration-card">
-                    <div class="card-body p-4 p-md-5">
-                        <div class="text-center mb-4">
-                            <i class="fas fa-chalkboard-teacher registration-icon"></i>
-                            <h2 class="card-title registration-title">Регистрация като преподавател</h2>
-                            <p class="text-muted">Присъединете се към нашата образователна общност</p>
+            <div class="col-xl-6 col-lg-7 col-md-9">
+                <div class="card shadow-lg border-0 rounded-lg registration-card overflow-hidden">
+                    <!-- Decorative header with wave shape -->
+                    <div class="card-header position-relative p-0">
+                        <div class="wave-shape">
+                            <svg viewBox="0 0 500 150" preserveAspectRatio="none">
+                                <path d="M0.00,49.98 C149.99,150.00 349.20,-49.98 500.00,49.98 L500.00,150.00 L0.00,150.00 Z" style="stroke: none; fill: rgba(78, 115, 223, 0.1);"></path>
+                            </svg>
                         </div>
+                        <div class="text-center py-4 position-relative z-index-1">
+                            <div class="registration-icon-container">
+                                <i class="fas fa-chalkboard-teacher registration-icon"></i>
+                            </div>
+                            <h2 class="card-title registration-title">Регистрация като преподавател</h2>
+                            <p class="registration-subtitle">Присъединете се към нашата образователна общност</p>
+                        </div>
+                    </div>
 
-                        <form method="post" class="registration-form">
+                    <div class="card-body p-4 p-md-5">
+                        <form method="post" class="registration-form needs-validation" novalidate>
                             {% csrf_token %}
                             {% for field in form %}
                                 <div class="mb-3 form-group">
@@ -22,7 +32,7 @@
                                         <small class="form-text text-muted">{{ field.help_text }}</small>
                                     {% endif %}
                                     {% if field.errors %}
-                                        <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
+                                        <div class="invalid-feedback d-block">{{ field.errors|striptags }}</div>
                                     {% endif %}
                                 </div>
                             {% endfor %}
@@ -34,7 +44,7 @@
                             </div>
 
                             <div class="text-center mt-4">
-                                <p class="mb-0">Вече имате акаунт? <a href="#" class="text-decoration-none">Влезте</a></p>
+                                <p class="mb-0">Вече имате акаунт? <a href="#" class="login-link">Влезте</a></p>
                             </div>
                         </form>
                     </div>
@@ -44,46 +54,86 @@
     </div>
 </div>
 
-
-
 <style>
     .teacher-registration {
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        background: linear-gradient(135deg, #f8f9fc 0%, #e0e6f8 100%);
         min-height: 100vh;
         padding: 2rem 0;
     }
 
     .registration-card {
         border: none;
-        overflow: hidden;
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        border-radius: 15px;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        background: white;
+        border-radius: 12px;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+        overflow: visible;
     }
 
     .registration-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+        color: white;
+        border-radius: 12px 12px 0 0 !important;
+        position: relative;
+        overflow: hidden;
+        border-bottom: none !important;
+    }
+
+    .wave-shape {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 100px;
+    }
+
+    .wave-shape svg {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    .registration-icon-container {
+        background: white;
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 1rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     }
 
     .registration-icon {
-        font-size: 3rem;
+        font-size: 2.5rem;
         color: #4e73df;
-        margin-bottom: 1rem;
     }
 
     .registration-title {
-        color: #2c3e50;
+        color: white;
         font-weight: 700;
         margin-bottom: 0.5rem;
+        font-size: 1.8rem;
+    }
+
+    .registration-subtitle {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1rem;
     }
 
     .registration-form .form-control {
         border-radius: 8px;
-        padding: 12px 15px;
-        border: 1px solid #ddd;
+        padding: 14px 16px;
+        border: 2px solid #e9ecef;
         transition: all 0.3s;
+        font-size: 0.95rem;
     }
 
     .registration-form .form-control:focus {
@@ -91,27 +141,109 @@
         box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
     }
 
+    .registration-form .form-label {
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 0.5rem;
+    }
+
     .registration-button {
         background: linear-gradient(to right, #4e73df, #224abe);
         border: none;
         border-radius: 8px;
-        padding: 12px;
+        padding: 14px;
         font-weight: 600;
         letter-spacing: 0.5px;
         text-transform: uppercase;
         transition: all 0.3s;
+        box-shadow: 0 4px 15px rgba(78, 115, 223, 0.3);
     }
 
-
-        .registration-button:hover {
-        background: linear-gradient(to right, #224abe, #4e73df);
+    .registration-button:hover {
+        background: linear-gradient(to right, #3a56b6, #1a3ab0);
         transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(78, 115, 223, 0.4);
     }
 
+    .login-link {
+        color: #4e73df;
+        font-weight: 600;
+        transition: all 0.2s;
+        position: relative;
+        text-decoration: none;
+    }
+
+    .login-link:hover {
+        color: #224abe;
+    }
+
+    .login-link::after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 2px;
+        bottom: -2px;
+        left: 0;
+        background-color: #4e73df;
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
+
+    .login-link:hover::after {
+        transform: scaleX(1);
+    }
+
+    /* Responsive adjustments */
     @media (max-width: 768px) {
         .registration-card {
-            margin: 1rem;
+            margin: 0.5rem;
+        }
+
+        .registration-title {
+            font-size: 1.5rem;
+        }
+
+        .card-body {
+            padding: 1.5rem;
         }
     }
+
+    @media (max-width: 576px) {
+        .registration-icon-container {
+            width: 70px;
+            height: 70px;
+        }
+
+        .registration-icon {
+            font-size: 2rem;
+        }
+
+        .registration-form .form-control {
+            padding: 12px 14px;
+        }
+
+        .registration-button {
+            padding: 12px;
+            font-size: 0.9rem;
+        }
+    }
+
+    /* Animation for form elements */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .form-group {
+        animation: fadeIn 0.4s ease forwards;
+        opacity: 0;
+    }
+
+    .form-group:nth-child(1) { animation-delay: 0.1s; }
+    .form-group:nth-child(2) { animation-delay: 0.2s; }
+    .form-group:nth-child(3) { animation-delay: 0.3s; }
+    .form-group:nth-child(4) { animation-delay: 0.4s; }
+    .form-group:nth-child(5) { animation-delay: 0.5s; }
+    .form-group:nth-child(6) { animation-delay: 0.6s; }
 </style>
 {% endblock %}

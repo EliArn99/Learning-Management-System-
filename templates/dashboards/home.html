@@ -4,157 +4,372 @@
 
 {% block extra_css %}
     <style>
+        /* Hero Section */
         .hero {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background: linear-gradient(135deg, var(--primary-dark), var(--secondary-color));
             color: white;
-            padding: 100px 0;
+            padding: 120px 0 100px;
             text-align: center;
-            border-radius: 0 0 20px 20px;
-            margin-bottom: 50px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 60px;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSg0NSkiPjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3QgZmlsbD0idXJsKCNwYXR0ZXJuKSIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIvPjwvc3ZnPg==');
+            opacity: 0.5;
         }
 
         .hero-content {
             max-width: 800px;
             margin: 0 auto;
+            position: relative;
+            z-index: 1;
         }
 
         .hero-content h1 {
-            font-size: 48px;
+            font-size: 52px;
             margin-bottom: 20px;
             line-height: 1.2;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            animation: fadeInUp 0.8s ease-out;
         }
 
         .hero-content p {
-            font-size: 20px;
-            margin-bottom: 30px;
+            font-size: 22px;
+            margin-bottom: 40px;
             opacity: 0.9;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
         }
 
         .hero-buttons {
             display: flex;
             gap: 20px;
             justify-content: center;
+            animation: fadeInUp 0.8s ease-out 0.4s both;
         }
 
+        .hero-buttons .btn {
+            padding: 14px 32px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: var(--transition);
+        }
+
+        .hero-buttons .btn-primary {
+            background-color: white;
+            color: var(--primary-dark);
+        }
+
+        .hero-buttons .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .hero-buttons .btn-outline {
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            background: transparent;
+        }
+
+        .hero-buttons .btn-outline:hover {
+            background-color: rgba(255,255,255,0.1);
+            border-color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        /* Features Section */
         .features {
-            padding: 80px 0;
+            padding: 100px 0;
         }
 
         .section-title {
             text-align: center;
-            margin-bottom: 50px;
+            margin-bottom: 60px;
         }
 
         .section-title h2 {
-            font-size: 36px;
-            color: var(--dark-color);
+            font-size: 42px;
+            color: var(--darker-color);
             margin-bottom: 15px;
+            font-weight: 700;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+            border-radius: 2px;
         }
 
         .section-title p {
-            color: #64748b;
-            max-width: 600px;
+            color: var(--gray-color);
+            max-width: 700px;
             margin: 0 auto;
+            font-size: 18px;
         }
-
-        .feature-card a.btn {
-            display: inline-block;
-            margin-top: 10px;
-            padding: 8px 16px;
-            background-color: var(--primary-color);
-            color: white;
-            text-decoration: none;
-            border-radius: 6px;
-            font-weight: 500;
-            transition: background-color 0.3s ease;
-        }
-
-        .feature-card a.btn:hover {
-            background-color: #4338ca;
-        }
-
 
         .features-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 30px;
         }
 
         .feature-card {
             background-color: white;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
+            border-radius: var(--border-radius);
+            padding: 40px 30px;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            text-align: center;
+            border: 1px solid rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
         }
 
         .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transform: translateY(-10px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(to right, var(--primary-color), var(--accent-color));
         }
 
         .feature-icon {
-            font-size: 40px;
+            font-size: 48px;
+            margin-bottom: 25px;
             color: var(--primary-color);
-            margin-bottom: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: rgba(99, 102, 241, 0.1);
+            transition: var(--transition);
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1);
+            background-color: rgba(99, 102, 241, 0.2);
         }
 
         .feature-card h3 {
-            font-size: 22px;
+            font-size: 24px;
             margin-bottom: 15px;
-            color: var(--dark-color);
+            color: var(--darker-color);
+            font-weight: 600;
         }
 
         .feature-card p {
-            color: #64748b;
+            color: var(--gray-color);
+            margin-bottom: 20px;
+            font-size: 16px;
         }
 
+        .feature-card a.btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 15px;
+            padding: 10px 24px;
+            background-color: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 500;
+            transition: var(--transition);
+            font-size: 15px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .feature-card a.btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px rgba(79, 70, 229, 0.2);
+        }
+
+        .feature-card a.btn i {
+            font-size: 14px;
+        }
+
+        /* CTA Section */
         .cta {
-            background-color: white;
-            padding: 80px 0;
+            background: linear-gradient(135deg, var(--darker-color), var(--dark-color));
+            color: white;
+            padding: 100px 0;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+            margin-top: 60px;
+        }
+
+        .cta::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSg0NSkiPjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3QgZmlsbD0idXJsKCNwYXR0ZXJuKSIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIvPjwvc3ZnPg==');
+            opacity: 0.3;
         }
 
         .cta-content {
-            max-width: 600px;
+            max-width: 700px;
             margin: 0 auto;
+            position: relative;
+            z-index: 1;
         }
 
         .cta h2 {
-            font-size: 36px;
+            font-size: 42px;
             margin-bottom: 20px;
-            color: var(--dark-color);
+            color: white;
+            font-weight: 700;
         }
 
         .cta p {
-            color: #64748b;
-            margin-bottom: 30px;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 40px;
+            font-size: 18px;
+        }
+
+        .cta .btn {
+            padding: 16px 40px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 50px;
+            background-color: var(--accent-color);
+            color: white;
+            box-shadow: 0 4px 20px rgba(236, 72, 153, 0.3);
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cta .btn:hover {
+            background-color: #db2777;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(236, 72, 153, 0.4);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 1024px) {
+            .hero-content h1 {
+                font-size: 46px;
+            }
+
+            .section-title h2 {
+                font-size: 36px;
+            }
+
+            .cta h2 {
+                font-size: 36px;
+            }
         }
 
         @media (max-width: 768px) {
             .hero {
-                padding: 80px 0;
+                padding: 100px 0 80px;
             }
 
             .hero-content h1 {
+                font-size: 36px;
+            }
+
+            .hero-content p {
+                font-size: 18px;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+            }
+
+            .hero-buttons .btn {
+                width: 100%;
+                max-width: 280px;
+            }
+
+            .section-title h2 {
                 font-size: 32px;
+            }
+
+            .cta h2 {
+                font-size: 32px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-content h1 {
+                font-size: 30px;
             }
 
             .hero-content p {
                 font-size: 16px;
             }
 
-            .hero-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
-
             .section-title h2 {
                 font-size: 28px;
             }
 
+            .section-title p {
+                font-size: 16px;
+            }
+
             .cta h2 {
                 font-size: 28px;
+            }
+
+            .cta p {
+                font-size: 16px;
             }
         }
     </style>
@@ -167,8 +382,12 @@
                 <h1>Добре дошли в LMS!</h1>
                 <p>Иновативна платформа за онлайн обучение, която ви помага да постигнете вашите образователни цели.</p>
                 <div class="hero-buttons">
-                    {#                <a href="{% url 'register' %}" class="btn btn-primary">Започнете сега</a>#}
-                    <a href="#" class="btn btn-outline">Научете повече</a>
+                    <a href="#" class="btn btn-primary">
+                        <i class="fas fa-rocket"></i> Започнете сега
+                    </a>
+                    <a href="#" class="btn btn-outline">
+                        <i class="fas fa-info-circle"></i> Научете повече
+                    </a>
                 </div>
             </div>
         </div>
@@ -216,12 +435,12 @@
 
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <i class="fas fa-chalkboard-teacher"></i> {# по-подходяща иконка за преподавател #}
+                        <i class="fas fa-users"></i>
                     </div>
                     <h3>Работа</h3>
-                    <p>Включете се в нашия екип .</p>
-                    <a href="{% url 'users:register_teacher' %}" class="btn btn-primary">
-                        Кандидатствай
+                    <p>Включете се в нашия екип от преподаватели и ментори.</p>
+                    <a href="{% url 'users:register_teacher' %}" class="btn">
+                        <i class="fas fa-arrow-right"></i> Кандидатствай
                     </a>
                 </div>
 
@@ -238,11 +457,13 @@
 
     <section class="cta">
         <div class="container">
-            {#        <div class="cta-content">#}
-            {#            <h2>Готови ли сте да започнете?</h2>#}
-            {#            <p>Присъединете се към нашата общност от обучаващи се и отключете своя път към знанието днес.</p>#}
-            {#            <a href="{% url 'register' %}" class="btn btn-primary">Регистрирайте се безплатно</a>#}
-            {#        </div>#}
+            <div class="cta-content">
+                <h2>Готови ли сте да започнете?</h2>
+                <p>Присъединете се към нашата общност от обучаващи се и отключете своя път към знанието днес.</p>
+                <a href="#" class="btn">
+                    <i class="fas fa-user-plus"></i> Регистрирайте се безплатно
+                </a>
+            </div>
         </div>
     </section>
 {% endblock %}

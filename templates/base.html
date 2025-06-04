@@ -4,17 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}LMS System{% endblock %}</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #4f46e5;
-            --secondary-color: #6366f1;
+            --primary-color: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary-color: #8b5cf6;
+            --accent-color: #ec4899;
             --dark-color: #1e293b;
+            --darker-color: #0f172a;
             --light-color: #f8fafc;
+            --lighter-color: #ffffff;
+            --gray-color: #94a3b8;
             --success-color: #10b981;
             --warning-color: #f59e0b;
             --danger-color: #ef4444;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * {
@@ -27,88 +35,165 @@
             font-family: 'Poppins', sans-serif;
             line-height: 1.6;
             color: var(--dark-color);
-            background-color: #f1f5f9;
+            background-color: #f8fafc;
+            overflow-x: hidden;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1280px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 0 24px;
         }
 
+        /* Header Styles */
         header {
-            background-color: white;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            background-color: var(--lighter-color);
+            box-shadow: var(--box-shadow);
             position: fixed;
             width: 100%;
             top: 0;
             z-index: 1000;
+            transition: var(--transition);
+        }
+
+        header.scrolled {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
         nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 0;
+            padding: 16px 0;
+            position: relative;
         }
 
         .logo {
-            font-size: 24px;
+            font-size: 28px;
             font-weight: 700;
-            color: var(--primary-color);
+            color: var(--primary-dark);
             text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+
+        .logo:hover {
+            color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .logo-icon {
+            font-size: 32px;
         }
 
         .nav-links {
             display: flex;
-            gap: 30px;
+            gap: 28px;
+            align-items: center;
         }
 
         .nav-links a {
             text-decoration: none;
             color: var(--dark-color);
             font-weight: 500;
-            transition: color 0.3s;
+            transition: var(--transition);
+            position: relative;
+            padding: 8px 0;
+        }
+
+        .nav-links a:not(.dropdown-toggle):after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: var(--primary-color);
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover:not(.dropdown-toggle):after {
+            width: 100%;
         }
 
         .nav-links a:hover {
             color: var(--primary-color);
         }
 
-        .auth-buttons .btn {
-            margin-left: 15px;
-            padding: 8px 16px;
-            border-radius: 6px;
+        .auth-buttons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--border-radius);
             font-weight: 500;
             text-decoration: none;
-            transition: all 0.3s;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+            border: none;
+            cursor: pointer;
         }
 
         .btn-primary {
             background-color: var(--primary-color);
             color: white;
+            box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2);
         }
 
         .btn-primary:hover {
-            background-color: #4338ca;
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px rgba(79, 70, 229, 0.3);
         }
 
         .btn-outline {
             border: 1px solid var(--primary-color);
             color: var(--primary-color);
+            background: transparent;
         }
 
         .btn-outline:hover {
             background-color: var(--primary-color);
             color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-accent {
+            background-color: var(--accent-color);
+            color: white;
+            box-shadow: 0 4px 6px rgba(236, 72, 153, 0.2);
+        }
+
+        .btn-accent:hover {
+            background-color: #db2777;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px rgba(236, 72, 153, 0.3);
         }
 
         .hamburger {
             display: none;
             cursor: pointer;
             font-size: 24px;
+            color: var(--dark-color);
+            transition: var(--transition);
+            padding: 8px;
+            border-radius: 6px;
         }
 
+        .hamburger:hover {
+            background-color: #f1f5f9;
+            color: var(--primary-color);
+        }
+
+        /* Dropdown Styles */
         .dropdown {
             position: relative;
         }
@@ -116,19 +201,34 @@
         .dropdown-toggle {
             cursor: pointer;
             font-weight: 500;
-            color: var(--primary-color);
+            color: var(--dark-color);
             text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .dropdown-toggle:hover {
+            color: var(--primary-color);
         }
 
         .dropdown-menu {
             display: none;
             position: absolute;
             right: 0;
+            top: 100%;
             background-color: white;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
+            box-shadow: var(--box-shadow);
+            border-radius: var(--border-radius);
             overflow: hidden;
             z-index: 999;
+            min-width: 200px;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .dropdown:hover .dropdown-menu {
@@ -136,93 +236,187 @@
         }
 
         .dropdown-menu a {
-            display: block;
-            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
             color: var(--dark-color);
             text-decoration: none;
             white-space: nowrap;
+            transition: var(--transition);
         }
 
         .dropdown-menu a:hover {
-            background-color: var(--light-color);
+            background-color: #f1f5f9;
+            color: var(--primary-color);
+            padding-left: 20px;
         }
 
-
-        main {
-            margin-top: 80px;
-            min-height: calc(100vh - 160px);
-        }
-
-        footer {
-            background-color: var(--dark-color);
-            color: white;
-            padding: 40px 0;
+        .dropdown-menu i {
+            width: 20px;
             text-align: center;
         }
 
+        /* Main Content */
+        main {
+            margin-top: 80px;
+            min-height: calc(100vh - 160px);
+            padding: 40px 0;
+        }
+
+        /* Footer Styles */
+        footer {
+            background: linear-gradient(135deg, var(--darker-color), var(--dark-color));
+            color: white;
+            padding: 60px 0 30px;
+        }
+
         .footer-content {
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
         }
 
         .footer-section {
-            flex: 1;
-            min-width: 250px;
+            display: flex;
+            flex-direction: column;
         }
 
         .footer-section h3 {
             margin-bottom: 20px;
             font-size: 18px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .footer-section h3:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 50px;
+            height: 2px;
+            background-color: var(--primary-color);
         }
 
         .footer-section p, .footer-section a {
             color: #cbd5e1;
-            margin-bottom: 10px;
-            display: block;
+            margin-bottom: 12px;
             text-decoration: none;
+            transition: var(--transition);
         }
 
         .footer-section a:hover {
             color: white;
+            transform: translateX(5px);
+        }
+
+        .footer-contact p {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .social-icons {
             display: flex;
-            gap: 15px;
-            justify-content: center;
+            gap: 16px;
+            margin-top: 20px;
         }
 
         .social-icons a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
             color: white;
-            font-size: 20px;
+            font-size: 18px;
+            transition: var(--transition);
+        }
+
+        .social-icons a:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-3px);
         }
 
         .copyright {
-            margin-top: 30px;
-            padding-top: 20px;
+            text-align: center;
+            padding-top: 30px;
             border-top: 1px solid #334155;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        /* Mobile Menu */
+        .mobile-menu {
+            position: fixed;
+            top: 80px;
+            left: 0;
+            width: 100%;
+            height: calc(100vh - 80px);
+            background-color: var(--lighter-color);
+            z-index: 999;
+            transform: translateX(100%);
+            transition: var(--transition);
+            overflow-y: auto;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .mobile-menu.active {
+            transform: translateX(0);
+        }
+
+        .mobile-menu .nav-links {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 20px;
+        }
+
+        .mobile-menu .nav-links a {
+            font-size: 18px;
+            padding: 10px 0;
+        }
+
+        .mobile-menu .auth-buttons {
+            flex-direction: column;
+            width: 100%;
+            margin-top: 30px;
+            gap: 15px;
+        }
+
+        .mobile-menu .auth-buttons .btn {
+            width: 100%;
+            justify-content: center;
+            padding: 12px;
+        }
+
+        .mobile-menu .dropdown-menu {
+            position: static;
+            box-shadow: none;
+            display: none;
+            width: 100%;
+            margin-top: 10px;
+            background-color: #f8fafc;
+            border-radius: 8px;
+        }
+
+        .mobile-menu .dropdown.active .dropdown-menu {
+            display: block;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 1024px) {
+            .nav-links {
+                gap: 20px;
+            }
         }
 
         @media (max-width: 768px) {
-            .nav-links {
-                display: none;
-                flex-direction: column;
-                position: absolute;
-                top: 70px;
-                left: 0;
-                width: 100%;
-                background-color: white;
-                padding: 20px;
-                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            }
-
-            .nav-links.active {
-                display: flex;
-            }
-
-            .auth-buttons {
+            .nav-links, .auth-buttons {
                 display: none;
             }
 
@@ -230,22 +424,54 @@
                 display: block;
             }
 
-            .hero-content h1 {
-                font-size: 32px;
+            .logo {
+                font-size: 24px;
             }
 
-            .hero-content p {
-                font-size: 16px;
+            .logo-icon {
+                font-size: 28px;
             }
+
+            main {
+                margin-top: 70px;
+                padding: 30px 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 16px;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Animation Classes */
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .slide-up {
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-<header>
+<header id="main-header">
     <div class="container">
         <nav>
-            <a href="{% url 'home' %}" class="logo">LMS</a>
+            <a href="{% url 'home' %}" class="logo">
+                <i class="fas fa-graduation-cap logo-icon"></i>
+                <span>LMS</span>
+            </a>
 
             <div class="nav-links">
                 <a href="{% url 'home' %}">Начало</a>
@@ -257,45 +483,133 @@
             {% if user.is_authenticated %}
                 <div class="nav-links">
                     <div class="dropdown">
-                        <a href="#" class="dropdown-toggle">👤 {{ user.get_full_name|default:user.username }}</a>
+                        <a href="#" class="dropdown-toggle">
+                            <i class="fas fa-user-circle"></i>
+                            <span>{{ user.get_full_name|default:user.username }}</span>
+                            <i class="fas fa-chevron-down" style="font-size: 12px;"></i>
+                        </a>
                         <div class="dropdown-menu">
-                            <a href="{% url 'users:profile' %}">Профил</a>
+                            <a href="{% url 'users:profile' %}">
+                                <i class="fas fa-user"></i>
+                                Профил
+                            </a>
                             {% if user.is_teacher %}
-                                <a href="{% url 'dashboards:teacher_dashboard' %}">Моят дашборд</a>
+                                <a href="{% url 'dashboards:teacher_dashboard' %}">
+                                    <i class="fas fa-chalkboard-teacher"></i>
+                                    Моят дашборд
+                                </a>
                             {% elif user.is_student %}
-                                <a href="{% url 'dashboards:student_dashboard' %}">Моят дашборд</a>
+                                <a href="{% url 'dashboards:student_dashboard' %}">
+                                    <i class="fas fa-book-open"></i>
+                                    Моят дашборд
+                                </a>
                             {% endif %}
-                            <a href="{% url 'users:logout' %}">⬅️ Изход</a>
+                            <a href="{% url 'users:logout' %}">
+                                <i class="fas fa-sign-out-alt"></i>
+                                Изход
+                            </a>
                         </div>
                     </div>
                 </div>
             {% else %}
                 <div class="auth-buttons">
-                    <a href="{% url 'users:login' %}" class="btn btn-outline">🔐 Вход</a>
-                    <a href="{% url 'users:register_student' %}" class="btn btn-primary">🎓 Регистрация</a>
+                    <a href="{% url 'users:login' %}" class="btn btn-outline">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Вход
+                    </a>
+                    <a href="{% url 'users:register_student' %}" class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i>
+                        Регистрация
+                    </a>
                 </div>
             {% endif %}
 
-
-
-
-
-            <div class="hamburger">☰</div>
+            <div class="hamburger" id="hamburger">
+                <i class="fas fa-bars"></i>
+            </div>
         </nav>
     </div>
 </header>
 
-<main>
+<!-- Mobile Menu -->
+<div class="mobile-menu" id="mobileMenu">
+    <div class="nav-links">
+        <a href="{% url 'home' %}">Начало</a>
+        <a href="{% url 'courses:course_list' %}">Курсове</a>
+        <a href="{% url 'dashboards:about' %}">За нас</a>
+        <a href="{% url 'dashboards:contacts' %}">Контакти</a>
+
+        {% if user.is_authenticated %}
+            <div class="dropdown" id="mobileDropdown">
+                <a href="#" class="dropdown-toggle" onclick="toggleMobileDropdown()">
+                    <i class="fas fa-user-circle"></i>
+                    {{ user.get_full_name|default:user.username }}
+                    <i class="fas fa-chevron-down" style="font-size: 12px;"></i>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="{% url 'users:profile' %}">
+                        <i class="fas fa-user"></i>
+                        Профил
+                    </a>
+                    {% if user.is_teacher %}
+                        <a href="{% url 'dashboards:teacher_dashboard' %}">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                            Моят дашборд
+                        </a>
+                    {% elif user.is_student %}
+                        <a href="{% url 'dashboards:student_dashboard' %}">
+                            <i class="fas fa-book-open"></i>
+                            Моят дашборд
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'users:logout' %}">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Изход
+                    </a>
+                </div>
+            </div>
+        {% else %}
+            <div class="auth-buttons">
+                <a href="{% url 'users:login' %}" class="btn btn-outline">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Вход
+                </a>
+                <a href="{% url 'users:register_student' %}" class="btn btn-primary">
+                    <i class="fas fa-user-plus"></i>
+                    Регистрация
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<main class="fade-in">
     {% block content %}
     {% endblock %}
 </main>
 
-<footer>
+<footer class="slide-up">
     <div class="container">
         <div class="footer-content">
             <div class="footer-section">
                 <h3>За LMS</h3>
-                <p>Нашата платформа предоставя иновативни решения за онлайн обучение и управление на курсове.</p>
+                <p>Нашата иновативна платформа предлага модерни решения за онлайн обучение и управление на курсове.</p>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h3>Курсове</h3>
+                <a href="#">Програмиране</a>
+                <a href="#">Дизайн</a>
+                <a href="#">Бизнес</a>
+                <a href="#">Маркетинг</a>
+                <a href="#">Личностно развитие</a>
             </div>
 
             <div class="footer-section">
@@ -307,31 +621,55 @@
                 <a href="#">ЧЗВ</a>
             </div>
 
-            <div class="footer-section">
+            <div class="footer-section footer-contact">
                 <h3>Контакти</h3>
                 <p><i class="fas fa-envelope"></i> info@lms.com</p>
                 <p><i class="fas fa-phone"></i> +359 888 123 456</p>
                 <p><i class="fas fa-map-marker-alt"></i> София, България</p>
+                <p><i class="fas fa-clock"></i> Пон-Пет: 9:00 - 18:00</p>
             </div>
         </div>
 
-        <div class="social-icons">
-            <a href="#"><i class="fab fa-facebook"></i></a>
-            <a href="#"><i class="fab fa-twitter"></i></a>
-            <a href="#"><i class="fab fa-linkedin"></i></a>
-            <a href="#"><i class="fab fa-instagram"></i></a>
-        </div>
-
         <div class="copyright">
-            <p>&copy; 2023 LMS System. Всички права запазени.</p>
+            <p>&copy; 2023 <strong>LMS System</strong>. Всички права запазени.</p>
         </div>
     </div>
 </footer>
 
 <script>
     // Mobile menu toggle
-    document.querySelector('.hamburger').addEventListener('click', function () {
-        document.querySelector('.nav-links').classList.toggle('active');
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+
+    hamburger.addEventListener('click', function() {
+        mobileMenu.classList.toggle('active');
+        hamburger.innerHTML = mobileMenu.classList.contains('active')
+            ? '<i class="fas fa-times"></i>'
+            : '<i class="fas fa-bars"></i>';
+    });
+
+    // Mobile dropdown toggle
+    function toggleMobileDropdown() {
+        const dropdown = document.getElementById('mobileDropdown');
+        dropdown.classList.toggle('active');
+    }
+
+    // Header scroll effect
+    const header = document.getElementById('main-header');
+    window.addEventListener('scroll', function() {
+        if (window.scrollY > 50) {
+            header.classList.add('scrolled');
+        } else {
+            header.classList.remove('scrolled');
+        }
+    });
+
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', function(event) {
+        if (!hamburger.contains(event.target) {
+            mobileMenu.classList.remove('active');
+            hamburger.innerHTML = '<i class="fas fa-bars"></i>';
+        }
     });
 </script>
 

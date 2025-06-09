@@ -4,9 +4,10 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect, get_object_or_404
 
+from assignments.models import Submission
 from quizz.models import Quiz
 from .decorators import student_required, teacher_required
-from .forms import StudentRegisterForm, TeacherRegisterForm
+from .forms import StudentRegisterForm, TeacherRegisterForm, StudentProfileForm, TeacherProfileForm
 from .models import StudentProfile, TeacherProfile, CustomUser
 from django.contrib.auth.decorators import login_required
 
@@ -67,8 +68,7 @@ def teacher_profile_view(request):
 
 @login_required
 def approval_pending_view(request):
-    return redirect('users:approval_pending')
-
+    return render(request, 'users/approval_pending.html')
 
 
 def register_student(request):
@@ -94,12 +94,15 @@ def register_teacher(request):
         form = TeacherRegisterForm()
     return render(request, 'users/register_teacher.html', {'form': form})
 
+
 @student_required
 def student_dashboard(request):
-    student = request.user.studentprofile
+    profile = request.user.studentprofile
+    if not profile.is_approved:
+        return redirect('users:approval_pending')
+
     now = timezone.now()
-    # Пример: студентът е записан в courses
-    courses = student.courses.all()
+    courses = profile.courses.all()
     upcoming_quizzes = Quiz.objects.filter(
         course__in=courses,
         available_from__lte=now,
@@ -109,12 +112,28 @@ def student_dashboard(request):
         'upcoming_quizzes': upcoming_quizzes
     })
 
+
 @teacher_required
 def teacher_dashboard(request):
     profile = request.user.teacherprofile
+
     if not profile.is_approved:
         return redirect('users:approval_pending')
-    return render(request, 'dashboards/teacher.html')
+
+    # Предавания за курсовете на учителя
+    total_submissions = Submission.objects.filter(quiz__course__teacher=profile).count()
+    graded_submissions = Submission.objects.filter(quiz__course__teacher=profile, is_graded=True).count()
+    pending_submissions = total_submissions - graded_submissions
+
+    # Всички студенти, записани в курсовете на този учител
+    total_students = StudentProfile.objects.filter(courses__in=profile.courses.all()).distinct().count()
+
+    return render(request, 'dashboards/teacher.html', {
+        'total_submissions': total_submissions,
+        'graded_submissions': graded_submissions,
+        'pending_submissions': pending_submissions,
+        'total_students': total_students,
+    })
 
 
 def custom_login_view(request):
@@ -149,7 +168,6 @@ def custom_login_view(request):
     return render(request, 'users/login.html', {'form': form})
 
 
-
 def login_view(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
@@ -181,7 +199,6 @@ def custom_logout_view(request):
     return render(request, 'users/logout.html')
 
 
-
 @login_required
 def edit_profile_view(request):
     user = request.user
@@ -193,7 +210,7 @@ def edit_profile_view(request):
         profile = user.teacherprofile
         form_class = TeacherProfileForm
     else:
-        return redirect('users:profile')
+        return redirect('users:profile')  # fallback
 
     if request.method == 'POST':
         form = form_class(request.POST, request.FILES, instance=profile)
@@ -207,3 +224,22 @@ def edit_profile_view(request):
 
 
 
+# views.py
+@teacher_required
+def grade_submission_view(request, submission_id):
+    submission = get_object_or_404(Submission, id=submission_id)
+
+    if request.method == 'POST':
+        form = SubmissionGradeForm(request.POST, request.FILES, instance=submission)
+        if form.is_valid():
+            submission = form.save(commit=False)
+            submission.is_graded = True
+            submission.save()
+            return redirect('teacher_dashboard')
+    else:
+        form = SubmissionGradeForm(instance=submission)
+
+    return render(request, 'grading/grade_submission.html', {
+        'submission': submission,
+        'form': form
+    })

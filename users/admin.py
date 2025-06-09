@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import CustomUser, StudentProfile, TeacherProfile, RegistrationCode
+from .models import CustomUser, StudentProfile, TeacherProfile
 
 
 @admin.register(CustomUser)
@@ -11,20 +11,19 @@ class CustomUserAdmin(admin.ModelAdmin):
 
 @admin.register(StudentProfile)
 class StudentProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'age', 'faculty_number', 'is_approved')
+    list_display = ('user', 'age', 'is_approved')
     list_filter = ('is_approved',)
-    search_fields = ('user__username', 'faculty_number')
-    readonly_fields = ('faculty_number',)
-
+    search_fields = ('user__username',)
 
 @admin.register(TeacherProfile)
 class TeacherProfileAdmin(admin.ModelAdmin):
     list_display = ('user', 'age', 'education', 'is_approved')
     list_filter = ('is_approved',)
-    search_fields = ('user__username', 'education')
+    search_fields = ('user__username',)
 
 
-@admin.register(RegistrationCode)
-class RegistrationCodeAdmin(admin.ModelAdmin):
-    list_display = ('code', 'is_used', 'user', 'created_at')
-    search_fields = ('code',)
+
+# @admin.register(RegistrationCode)
+# class RegistrationCodeAdmin(admin.ModelAdmin):
+#     list_display = ('code', 'is_used', 'user', 'created_at')
+#     search_fields = ('code',)

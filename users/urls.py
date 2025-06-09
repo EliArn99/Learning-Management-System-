@@ -18,5 +18,6 @@ urlpatterns = [
     path('profile/edit/', views.edit_profile_view, name='edit_profile'),
     path('register/student/', views.register_student, name='register_student'),
     path('register/teacher/', views.register_teacher, name='register_teacher'),
+    path('grade/<int:submission_id>/', views.grade_submission_view, name='grade_submission'),
 
 ]

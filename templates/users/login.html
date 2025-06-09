@@ -1,19 +1,119 @@
-<!-- users/templates/users/login.html -->
 {% extends 'base.html' %}
 {% block content %}
-<div class="container mt-4">
-  <h2 class="mb-4">Login</h2>
+<style>
+/* Container styling */
+.login-container {
+  max-width: 400px;
+  margin: 60px auto;
+  padding: 30px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  font-family: 'Arial', sans-serif;
+}
 
-  <form method="post">
+/* Title styling */
+.login-title {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 2em;
+  color: #333;
+}
+
+/* Form styling */
+.login-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.login-form p {
+  margin-bottom: 10px;
+}
+
+/* Buttons inside form */
+.login-btn {
+  width: 100%;
+  padding: 12px;
+  font-size: 1em;
+  margin-top: 15px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.login-btn:hover {
+  background-color: #0056b3;
+}
+
+/* Divider styling */
+.divider {
+  text-align: center;
+  margin: 20px 0;
+  font-weight: bold;
+  color: #999;
+  position: relative;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  height: 1px;
+  background-color: #ccc;
+  position: absolute;
+  top: 50%;
+  width: 40%;
+}
+
+.divider::before {
+  left: 0;
+}
+
+.divider::after {
+  right: 0;
+}
+
+/* Registration section */
+.register-p {
+  text-align: center;
+  margin-bottom: 15px;
+  font-size: 1.1em;
+  color: #555;
+}
+
+/* Registration buttons styling */
+.register-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.register-btn {
+  text-align: center;
+  padding: 10px;
+  font-size: 1em;
+  border-radius: 5px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.register-btn:hover {
+  opacity: 0.9;
+}
+</style>
+
+<div class="login-container">
+  <h2 class="login-title">Login</h2>
+
+  <form method="post" class="login-form">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Login</button>
+    <button type="submit" class="btn btn-primary login-btn">Login</button>
   </form>
 
-  <hr>
+  <div class="divider">или</div>
 
-  <p>Нямаш акаунт?</p>
-  <a href="{% url 'users:register_student' %}" class="btn btn-outline-success">Регистрация като студент</a>
-  <a href="{% url 'users:register_teacher' %}" class="btn btn-outline-info">Регистрация като преподавател</a>
+  <p class="register-p">Нямаш акаунт?</p>
+  <div class="register-buttons">
+    <a href="{% url 'users:register_student' %}" class="btn btn-outline-success register-btn">Регистрация като студент</a>
+    <a href="{% url 'users:register_teacher' %}" class="btn btn-outline-info register-btn">Регистрация като преподавател</a>
+  </div>
 </div>
 {% endblock %}

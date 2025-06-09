@@ -37,6 +37,7 @@ class Submission(models.Model):
     grade = models.FloatField(null=True, blank=True)
     feedback = models.TextField(null=True, blank=True)
     graded_at = models.DateTimeField(null=True, blank=True)
+    graded_file = models.FileField(upload_to='graded_files/', null=True, blank=True)
 
     class Meta:
         constraints = [

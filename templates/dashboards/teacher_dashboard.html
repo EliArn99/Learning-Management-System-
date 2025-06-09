@@ -48,10 +48,11 @@
                 </div>
                 <div class="stat-content">
                     <h3>Чакащи оценка</h3>
-                    {# TODO: FIX IT #}
-                    {#                <p class="stat-value">{{ total_submissions|add:-graded_submissions }}</p>#}
+                    <p class="stat-value">{{ pending_submissions|default:"0" }}</p>
+
                 </div>
             </div>
+
 
             <div class="stat-card info">
                 <div class="stat-icon">
@@ -59,7 +60,7 @@
                 </div>
                 <div class="stat-content">
                     <h3>Общо студенти</h3>
-                    <p class="stat-value">{{ total_students }}</p>
+                    <p class="stat-value">{{ total_students|default:"0" }}</p>
                 </div>
             </div>
         </div>
@@ -175,7 +176,8 @@
                                         <p>{{ sub.student.user.username }} | {{ sub.submitted_at|date:"d.m.Y H:i" }}</p>
                                     </div>
                                 </div>
-                                <div class="submission-status">
+                                {# TODO: FIX HERE #}
+{#                                <a href="{% url 'submissions:grade_submission' submission_id=sub.id %}">#}
                                     {% if sub.grade %}
                                         <span class="status-badge success"><i
                                                 class="bi bi-check-circle"></i> Оценено</span>
@@ -183,7 +185,8 @@
                                         <span class="status-badge warning"><i
                                                 class="bi bi-clock"></i> Чака оценка</span>
                                     {% endif %}
-                                </div>
+                                </a>
+                            </div>
                             </div>
                         {% endfor %}
                     </div>
@@ -193,68 +196,68 @@
                         <p>Няма скорошни предавания.</p>
                     </div>
                 {% endif %}
-            </div>
+        </div>
+    </div>
+
+    <!-- Students by Course -->
+    <section class="dashboard-section">
+        <div class="section-header">
+            <h2><i class="bi bi-people-fill"></i> Студенти по курсове</h2>
         </div>
 
-        <!-- Students by Course -->
-        <section class="dashboard-section">
-            <div class="section-header">
-                <h2><i class="bi bi-people-fill"></i> Студенти по курсове</h2>
+        <div class="enrollments-table">
+            <div class="table-header">
+                <div class="header-cell">Курс</div>
+                <div class="header-cell">Записани студенти</div>
+                <div class="header-cell">Последна активност</div>
+                <div class="header-cell">Действия</div>
             </div>
 
-            <div class="enrollments-table">
-                <div class="table-header">
-                    <div class="header-cell">Курс</div>
-                    <div class="header-cell">Записани студенти</div>
-                    <div class="header-cell">Последна активност</div>
-                    <div class="header-cell">Действия</div>
-                </div>
-
-                {% for course in courses %}
-                    <div class="table-row">
-                        <div class="table-cell course-cell">
-                            <h4>{{ course.name }}</h4>
-                        </div>
-                        <div class="table-cell">
-                            <div class="student-avatars">
-                                {% for enrollment in course.enrollments.all|slice:":5" %}
-                                    <div class="avatar-tooltip">
-                                        {% if enrollment.student.user.profile_picture %}
-                                            <img src="{{ enrollment.student.user.profile_picture.url }}"
-                                                 alt="{{ enrollment.student.user.username }}">
-                                        {% else %}
-                                            <i class="bi bi-person-circle"></i>
-                                        {% endif %}
-                                        <span class="tooltip-text">{{ enrollment.student.user.username }}</span>
-                                    </div>
-                                {% endfor %}
-                                {% if course.enrollments.count > 5 %}
-                                    <div class="more-students">+{{ course.enrollments.count|add:-5 }}</div>
-                                {% endif %}
-                            </div>
-                            <span>{{ course.enrollments.count }} студенти</span>
-                        </div>
-                        <div class="table-cell">
-                            {% if course.last_activity %}
-                                {{ course.last_activity|date:"d.m.Y H:i" }}
-                            {% else %}
-                                Няма активност
+            {% for course in courses %}
+                <div class="table-row">
+                    <div class="table-cell course-cell">
+                        <h4>{{ course.name }}</h4>
+                    </div>
+                    <div class="table-cell">
+                        <div class="student-avatars">
+                            {% for enrollment in course.enrollments.all|slice:":5" %}
+                                <div class="avatar-tooltip">
+                                    {% if enrollment.student.user.profile_picture %}
+                                        <img src="{{ enrollment.student.user.profile_picture.url }}"
+                                             alt="{{ enrollment.student.user.username }}">
+                                    {% else %}
+                                        <i class="bi bi-person-circle"></i>
+                                    {% endif %}
+                                    <span class="tooltip-text">{{ enrollment.student.user.username }}</span>
+                                </div>
+                            {% endfor %}
+                            {% if course.enrollments.count > 5 %}
+                                <div class="more-students">+{{ course.enrollments.count|add:-5 }}</div>
                             {% endif %}
                         </div>
-                        <div class="table-cell">
-                            <a href="{% url 'courses:course_detail' course.id %}" class="action-btn small">
-                                <i class="bi bi-eye"></i> Преглед
-                            </a>
-                        </div>
+                        <span>{{ course.enrollments.count }} студенти</span>
                     </div>
-                {% empty %}
-                    <div class="empty-row">
-                        <i class="bi bi-book"></i>
-                        <p>Няма курсове с записани студенти.</p>
+                    <div class="table-cell">
+                        {% if course.last_activity %}
+                            {{ course.last_activity|date:"d.m.Y H:i" }}
+                        {% else %}
+                            Няма активност
+                        {% endif %}
                     </div>
-                {% endfor %}
-            </div>
-        </section>
+                    <div class="table-cell">
+                        <a href="{% url 'courses:course_detail' course.id %}" class="action-btn small">
+                            <i class="bi bi-eye"></i> Преглед
+                        </a>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="empty-row">
+                    <i class="bi bi-book"></i>
+                    <p>Няма курсове с записани студенти.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
     </div>
 
     <style>

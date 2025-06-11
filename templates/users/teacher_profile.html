@@ -1,6 +1,246 @@
+{# TODO: Нямя прявилна връзка между ученическия и учителския профил. Свържи ги правилно  #}
+
 {% extends 'base.html' %}
 
 {% block content %}
+<style>
+    /* Color Scheme */
+    :root {
+        --primary-light: #FFECD1;
+        --primary-dark: #3E000C;
+        --primary-light-transparent: rgba(255, 236, 209, 0.7);
+        --primary-dark-transparent: rgba(62, 0, 12, 0.1);
+    }
+
+    /* Base Styles */
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f9f9f9;
+        color: #333;
+        line-height: 1.6;
+    }
+
+    .teacher-profile-container {
+        max-width: 1000px;
+        margin: 30px auto;
+        padding: 20px;
+    }
+
+    /* Profile Card */
+    .teacher-profile-card {
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+    }
+
+    /* Header Section */
+    .teacher-profile-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 25px 30px;
+        background-color: var(--primary-dark);
+        color: white;
+    }
+
+    .teacher-title-wrapper {
+        display: flex;
+        align-items: center;
+    }
+
+    .teacher-icon {
+        font-size: 2rem;
+        margin-right: 15px;
+        color: var(--primary-light);
+    }
+
+    .teacher-profile-title {
+        margin: 0;
+        font-size: 1.8rem;
+        font-weight: 600;
+    }
+
+    .teacher-status-badge {
+        background-color: rgba(255, 255, 255, 0.2);
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .teacher-status-badge i {
+        margin-right: 8px;
+        color: #4CAF50;
+    }
+
+    /* Form Content */
+    .teacher-profile-content {
+        padding: 30px;
+    }
+
+    .teacher-profile-form {
+        margin-top: 10px;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 25px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: var(--primary-dark);
+    }
+
+    .required-star {
+        color: #e53935;
+        margin-left: 4px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 1rem;
+        transition: border-color 0.3s, box-shadow 0.3s;
+        background-color: var(--primary-light-transparent);
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary-dark);
+        box-shadow: 0 0 0 3px rgba(62, 0, 12, 0.1);
+    }
+
+    select.form-control {
+        appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        background-size: 1em;
+    }
+
+    .form-help-text {
+        font-size: 0.85rem;
+        color: #666;
+        margin-top: 5px;
+    }
+
+    .error-message {
+        color: #e53935;
+        font-size: 0.85rem;
+        margin-top: 5px;
+    }
+
+    /* Form Actions */
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 15px;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+    }
+
+    .save-button, .cancel-button {
+        padding: 12px 25px;
+        border-radius: 6px;
+        font-size: 1rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .save-button {
+        background-color: var(--primary-dark);
+        color: white;
+        border: none;
+    }
+
+    .save-button:hover {
+        background-color: #2d0009;
+        transform: translateY(-2px);
+    }
+
+    .save-button i {
+        margin-right: 8px;
+    }
+
+    .cancel-button {
+        background-color: white;
+        color: var(--primary-dark);
+        border: 1px solid var(--primary-dark);
+        text-decoration: none;
+    }
+
+    .cancel-button:hover {
+        background-color: var(--primary-dark-transparent);
+        transform: translateY(-2px);
+    }
+
+    .cancel-button i {
+        margin-right: 8px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .teacher-profile-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .teacher-status-badge {
+            align-self: flex-start;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .form-actions {
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .teacher-profile-container {
+            padding: 10px;
+        }
+
+        .teacher-profile-header {
+            padding: 20px;
+        }
+
+        .teacher-profile-title {
+            font-size: 1.5rem;
+        }
+
+        .teacher-profile-content {
+            padding: 20px;
+        }
+
+        .save-button, .cancel-button {
+            padding: 10px 20px;
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+
 <div class="teacher-profile-container">
     <div class="teacher-profile-card">
         <div class="teacher-profile-header">
@@ -16,22 +256,21 @@
         <div class="teacher-profile-content">
             <form method="post" class="teacher-profile-form">
                 {% csrf_token %}
-
                 <div class="form-grid">
                     {% for field in form %}
-                    <div class="form-group">
-                        <label for="{{ field.id_for_label }}" class="form-label">
-                            {{ field.label }}
-                            {% if field.field.required %}<span class="required-star">*</span>{% endif %}
-                        </label>
-                        {{ field }}
-                        {% if field.help_text %}
-                            <div class="form-help-text">{{ field.help_text }}</div>
-                        {% endif %}
-                        {% if field.errors %}
-                            <div class="error-message">{{ field.errors|striptags }}</div>
-                        {% endif %}
-                    </div>
+                        <div class="form-group">
+                            <label for="{{ field.id_for_label }}" class="form-label">
+                                {{ field.label }}
+                                {% if field.field.required %}<span class="required-star">*</span>{% endif %}
+                            </label>
+                            {{ field }}
+                            {% if field.help_text %}
+                                <div class="form-help-text">{{ field.help_text }}</div>
+                            {% endif %}
+                            {% if field.errors %}
+                                <div class="error-message">{{ field.errors|striptags }}</div>
+                            {% endif %}
+                        </div>
                     {% endfor %}
                 </div>
 
@@ -47,336 +286,4 @@
         </div>
     </div>
 </div>
-
-<style>
-/* Base Styles */
-:root {
-    --primary-color: #4a6fa5;
-    --secondary-color: #4ca1af;
-    --dark-color: #2c3e50;
-    --light-color: #f8f9fa;
-    --danger-color: #e74c3c;
-    --success-color: #2ecc71;
-    --border-radius: 10px;
-    --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-    --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-}
-
-.teacher-profile-container {
-    max-width: 900px;
-    margin: 2rem auto;
-    padding: 0 1rem;
-    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    color: #333;
-}
-
-.teacher-profile-card {
-    background: white;
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    overflow: hidden;
-    transition: var(--transition);
-}
-
-.teacher-profile-card:hover {
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
-    transform: translateY(-2px);
-}
-
-.teacher-profile-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.5rem 2rem;
-    background: linear-gradient(135deg, var(--dark-color) 0%, var(--secondary-color) 100%);
-    color: white;
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-
-.teacher-title-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.teacher-profile-title {
-    margin: 0;
-    font-size: 1.75rem;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-}
-
-.teacher-icon {
-    font-size: 2.2rem;
-    color: rgba(255, 255, 255, 0.9);
-}
-
-.teacher-status-badge {
-    background: rgba(255, 255, 255, 0.15);
-    padding: 0.5rem 1.25rem;
-    border-radius: 50px;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.95rem;
-    backdrop-filter: blur(5px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.teacher-profile-content {
-    padding: 2.5rem 2rem;
-}
-
-.teacher-profile-form {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-}
-
-.form-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.75rem;
-}
-
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    position: relative;
-}
-
-.form-label {
-    font-weight: 600;
-    color: var(--dark-color);
-    font-size: 0.95rem;
-    display: flex;
-    align-items: center;
-}
-
-.required-star {
-    color: var(--danger-color);
-    margin-left: 0.3rem;
-    font-size: 1.1rem;
-}
-
-.form-control {
-    width: 100%;
-    padding: 0.85rem 1.25rem;
-    border: 1px solid #e0e0e0;
-    border-radius: var(--border-radius);
-    font-size: 1rem;
-    transition: var(--transition);
-    background-color: #f9f9f9;
-    color: #333;
-    line-height: 1.5;
-}
-
-.form-control:focus {
-    border-color: var(--secondary-color);
-    box-shadow: 0 0 0 3px rgba(76, 161, 175, 0.2);
-    outline: none;
-    background-color: white;
-}
-
-select.form-control {
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%232c3e50' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 1rem center;
-    background-size: 16px 12px;
-    padding-right: 2.5rem;
-}
-
-textarea.form-control {
-    min-height: 120px;
-    resize: vertical;
-}
-
-.form-help-text {
-    font-size: 0.85rem;
-    color: #6c757d;
-    margin-top: 0.25rem;
-    line-height: 1.4;
-}
-
-.error-message {
-    color: var(--danger-color);
-    font-size: 0.85rem;
-    margin-top: 0.25rem;
-    font-weight: 500;
-}
-
-.form-actions {
-    display: flex;
-    gap: 1rem;
-    margin-top: 1rem;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-}
-
-.save-button {
-    background: linear-gradient(135deg, var(--dark-color) 0%, var(--secondary-color) 100%);
-    color: white;
-    border: none;
-    padding: 0.85rem 2rem;
-    border-radius: var(--border-radius);
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    transition: var(--transition);
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    font-size: 0.9rem;
-}
-
-.save-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(44, 62, 80, 0.3);
-    background: linear-gradient(135deg, #34495e 0%, #5cb3bf 100%);
-}
-
-.cancel-button {
-    background: #f5f5f5;
-    color: var(--dark-color);
-    border: none;
-    padding: 0.85rem 2rem;
-    border-radius: var(--border-radius);
-    font-weight: 600;
-    cursor: pointer;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    transition: var(--transition);
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    font-size: 0.9rem;
-}
-
-.cancel-button:hover {
-    background: #e0e0e0;
-    transform: translateY(-2px);
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-}
-
-/* Animation for form elements */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.form-group {
-    animation: fadeIn 0.4s ease-out forwards;
-    opacity: 0;
-}
-
-.form-group:nth-child(1) { animation-delay: 0.1s; }
-.form-group:nth-child(2) { animation-delay: 0.2s; }
-.form-group:nth-child(3) { animation-delay: 0.3s; }
-.form-group:nth-child(4) { animation-delay: 0.4s; }
-.form-group:nth-child(5) { animation-delay: 0.5s; }
-.form-group:nth-child(6) { animation-delay: 0.6s; }
-
-/* Responsive Adjustments */
-@media (max-width: 992px) {
-    .teacher-profile-container {
-        max-width: 95%;
-    }
-}
-
-@media (max-width: 768px) {
-    .teacher-profile-header {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 1.25rem;
-    }
-
-    .teacher-status-badge {
-        margin-top: 0.5rem;
-        align-self: flex-start;
-    }
-
-    .teacher-profile-content {
-        padding: 1.75rem;
-    }
-
-    .form-grid {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-    }
-}
-
-@media (max-width: 576px) {
-    .teacher-profile-container {
-        padding: 0 0.75rem;
-    }
-
-    .teacher-profile-header {
-        padding: 1rem;
-    }
-
-    .teacher-profile-title {
-        font-size: 1.5rem;
-    }
-
-    .teacher-icon {
-        font-size: 1.8rem;
-    }
-
-    .teacher-profile-content {
-        padding: 1.5rem 1rem;
-    }
-
-    .form-actions {
-        flex-direction: column;
-        gap: 0.75rem;
-    }
-
-    .save-button, .cancel-button {
-        width: 100%;
-        justify-content: center;
-        padding: 0.75rem;
-    }
-}
-
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-    .teacher-profile-card {
-        background: #2d3748;
-        color: #f7fafc;
-    }
-
-    .form-control {
-        background-color: #4a5568;
-        border-color: #4a5568;
-        color: #f7fafc;
-    }
-
-    .form-control:focus {
-        background-color: #4a5568;
-    }
-
-    .form-label {
-        color: #e2e8f0;
-    }
-
-    .form-help-text {
-        color: #a0aec0;
-    }
-
-    .cancel-button {
-        background: #4a5568;
-        color: #f7fafc;
-    }
-
-    .cancel-button:hover {
-        background: #2d3748;
-    }
-}
-</style>
 {% endblock %}

@@ -2,43 +2,52 @@
 
 {% block extra_css %}
 <style>
-    /* Base Styles */
+    /* Modern Color Scheme */
     :root {
-        --primary-color: #4361ee;
-        --secondary-color: #3a0ca3;
-        --accent-color: #f72585;
-        --success-color: #4cc9f0;
-        --light-color: #f8f9fa;
-        --dark-color: #212529;
-        --text-color: #2b2d42;
-        --text-light: #8d99ae;
-        --bg-gradient: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
-        --shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        --radius: 12px;
-        --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        --primary-color: #4f46e5;
+        --primary-dark: #4338ca;
+        --primary-light: #6366f1;
+        --secondary-color: #f59e0b;
+        --secondary-light: #fbbf24;
+        --accent-color: #ec4899;
+        --success-color: #10b981;
+        --light-color: #f8fafc;
+        --dark-color: #1e293b;
+        --text-color: #334155;
+        --text-light: #64748b;
+        --bg-gradient: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+        --radius-sm: 0.375rem;
+        --radius-md: 0.5rem;
+        --radius-lg: 0.75rem;
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
+    /* Base Styles */
     .courses-page {
-        padding: 4rem 0;
-        background-color: #f9fafb;
+        padding: 5rem 0;
+        background-color: var(--light-color);
         min-height: calc(100vh - 120px);
     }
 
     .container {
         max-width: 1400px;
+        padding: 0 2rem;
     }
 
     /* Page Title */
     .page-title {
         font-size: 2.8rem;
         font-weight: 700;
-        color: var(--primary-color);
+        color: var(--dark-color);
         margin-bottom: 3rem;
         position: relative;
         padding-bottom: 1.5rem;
         text-align: center;
-        text-transform: uppercase;
-        letter-spacing: 1px;
+        letter-spacing: -0.5px;
+        line-height: 1.2;
     }
 
     .page-title:after {
@@ -58,53 +67,64 @@
         text-align: center;
         padding: 4rem 2rem;
         background: white;
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
         max-width: 700px;
         margin: 0 auto;
         transition: var(--transition);
+        border: 1px solid rgba(0, 0, 0, 0.05);
     }
 
     .empty-courses:hover {
         transform: translateY(-5px);
-        box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        box-shadow: var(--shadow-lg);
     }
 
     .empty-courses i {
         font-size: 4rem;
-        color: #e0e0e0;
+        color: var(--primary-light);
         margin-bottom: 1.5rem;
+        opacity: 0.8;
     }
 
     .empty-courses h5 {
         font-size: 1.5rem;
-        color: var(--text-color);
+        color: var(--dark-color);
         margin-bottom: 1rem;
+        font-weight: 600;
     }
 
     .empty-courses p {
         color: var(--text-light);
         font-size: 1.1rem;
         max-width: 500px;
-        margin: 0 auto;
+        margin: 0 auto 1.5rem;
+        line-height: 1.6;
+    }
+
+    .empty-courses .btn {
+        padding: 0.75rem 2rem;
+        font-weight: 500;
+        border-radius: var(--radius-md);
+        transition: var(--transition);
     }
 
     /* Course Cards */
     .course-card {
         border: none;
-        border-radius: var(--radius);
+        border-radius: var(--radius-lg);
         overflow: hidden;
         transition: var(--transition);
         height: 100%;
         background: white;
-        box-shadow: var(--shadow);
+        box-shadow: var(--shadow-md);
         position: relative;
-        border-top: 5px solid var(--primary-color);
+        border-top: 4px solid var(--primary-color);
     }
 
     .course-card:hover {
         transform: translateY(-10px);
-        box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        box-shadow: var(--shadow-lg);
     }
 
     .course-card .card-body {
@@ -117,11 +137,11 @@
     .course-card .card-title {
         font-size: 1.4rem;
         font-weight: 700;
-        color: var(--text-color);
+        color: var(--dark-color);
         margin-bottom: 1rem;
-        min-height: 3.5rem;
         position: relative;
         padding-bottom: 0.75rem;
+        line-height: 1.3;
     }
 
     .course-card .card-title:after {
@@ -154,6 +174,7 @@
         display: flex;
         align-items: center;
         color: var(--primary-color);
+        font-weight: 500;
     }
 
     .course-card .teacher-info i {
@@ -172,13 +193,14 @@
         font-size: 1.1rem;
     }
 
+    /* Button Styles */
     .course-card .btn-details {
         align-self: flex-start;
         background: var(--bg-gradient);
         border: none;
         color: white;
         padding: 0.75rem 1.75rem;
-        border-radius: 30px;
+        border-radius: var(--radius-md);
         font-size: 0.95rem;
         font-weight: 600;
         transition: var(--transition);
@@ -186,6 +208,12 @@
         position: relative;
         overflow: hidden;
         z-index: 1;
+        box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2);
+    }
+
+    .course-card .btn-details:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 15px rgba(79, 70, 229, 0.3);
     }
 
     .course-card .btn-details:before {
@@ -195,15 +223,10 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+        background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
         z-index: -1;
         transition: var(--transition);
         opacity: 1;
-    }
-
-    .course-card .btn-details:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 15px rgba(67, 97, 238, 0.3);
     }
 
     .course-card .btn-details:hover:before {
@@ -218,10 +241,10 @@
         background: var(--accent-color);
         color: white;
         padding: 0.5rem 1rem;
-        border-radius: var(--radius);
+        border-radius: var(--radius-md);
         font-size: 0.9rem;
         font-weight: 700;
-        box-shadow: 0 5px 15px rgba(247, 37, 133, 0.3);
+        box-shadow: 0 5px 15px rgba(236, 72, 153, 0.3);
         z-index: 2;
         transition: var(--transition);
     }
@@ -237,44 +260,46 @@
         left: 15px;
         font-size: 0.8rem;
         font-weight: 600;
-        padding: 0.25rem 0.75rem;
+        padding: 0.35rem 0.85rem;
         border-radius: 30px;
-        background-color: rgba(255,255,255,0.9);
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        background-color: rgba(255,255,255,0.95);
+        box-shadow: var(--shadow-sm);
+        backdrop-filter: blur(4px);
     }
 
     .beginner {
-        color: #2ecc71;
-        border: 1px solid #2ecc71;
+        color: var(--success-color);
     }
 
     .intermediate {
-        color: #f39c12;
-        border: 1px solid #f39c12;
+        color: var(--secondary-color);
     }
 
     .advanced {
-        color: #e74c3c;
-        border: 1px solid #e74c3c;
+        color: #ef4444;
     }
 
     /* Course Grid */
     .courses-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
         gap: 2rem;
     }
 
     /* Responsive Design */
     @media (max-width: 1199.98px) {
         .courses-grid {
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
         }
     }
 
     @media (max-width: 991.98px) {
         .page-title {
             font-size: 2.4rem;
+        }
+
+        .course-card .card-body {
+            padding: 1.75rem;
         }
     }
 
@@ -285,6 +310,7 @@
 
         .page-title {
             font-size: 2rem;
+            margin-bottom: 2rem;
         }
 
         .courses-grid {
@@ -295,6 +321,10 @@
     }
 
     @media (max-width: 575.98px) {
+        .container {
+            padding: 0 1.5rem;
+        }
+
         .page-title {
             font-size: 1.8rem;
             padding-bottom: 1rem;
@@ -306,7 +336,11 @@
         }
 
         .course-card .card-title {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
+        }
+
+        .empty-courses {
+            padding: 3rem 1.5rem;
         }
     }
 
@@ -348,10 +382,12 @@
                 <!-- Price Badge -->
                 <span class="price-badge">{{ course.price|default:"300$" }}</span>
 
-                <!-- Difficulty Level (you would need to add this field to your course model) -->
-{#                <span class="difficulty-level {{ course.difficulty|default:'beginner'|lower }}">#}
-{#                    {{ course.difficulty|default:"Начинаещ" }}#}
-{#                </span>#}
+                <!-- Difficulty Level -->
+                {% if course.difficulty %}
+                <span class="difficulty-level {{ course.difficulty|lower }}">
+                    {{ course.get_difficulty_display|default:"Начинаещ" }}
+                </span>
+                {% endif %}
 
                 <div class="card-body">
                     <h5 class="card-title">{{ course.name }}</h5>
@@ -359,7 +395,7 @@
                     <div class="course-meta">
                         <div class="teacher-info">
                             <i class="fas fa-chalkboard-teacher"></i>
-                            {{ course.teacher.user.username|default:"Анонимен" }}
+                            {{ course.teacher.user.get_full_name|default:course.teacher.user.username|default:"Анонимен" }}
                         </div>
                         <div class="duration-info">
                             <i class="far fa-clock"></i>
@@ -371,7 +407,7 @@
 
                     <a href="{% url 'courses:course_detail' course.slug %}"
                        class="btn-details stretched-link">
-                        Виж повече
+                        Виж повече <i class="fas fa-arrow-right ml-1"></i>
                     </a>
                 </div>
             </div>
@@ -382,7 +418,7 @@
             <i class="fas fa-book-open"></i>
             <h5>Няма налични курсове в момента</h5>
             <p>Нашият екип работи по създаването на нови и интересни курсове. Абонирайте се за нашия бюлетин, за да научите първи кога ще бъдат пуснати.</p>
-            <button class="btn btn-primary mt-3">Абонирай се</button>
+            <a href="#" class="btn btn-primary">Абонирай се</a>
         </div>
         {% endif %}
     </div>

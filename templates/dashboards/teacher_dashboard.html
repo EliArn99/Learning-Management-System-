@@ -6,16 +6,15 @@
         <!-- Dashboard Header -->
         <div class="dashboard-header">
             <div class="header-content">
-                <h1><i class="bi bi-person-badge"></i> Учителски Dashboard</h1>
-                <p class="welcome-message">Добре дошли обратно, {{ request.user.username }}! Ето преглед на вашите
-                    курсове и активност.</p>
+                <h1><i class="bi bi-person-badge"></i> Teacher Dashboard</h1>
+                <p class="welcome-message">Welcome back, {{ request.user.username }}! Here's an overview of your courses and activity.</p>
             </div>
             <div class="quick-actions">
-                <a href="{% url 'courses:create_course' %}" class="action-btn primary">
-                    <i class="bi bi-plus-circle"></i> Нов курс
-                </a>
+{#                <a href="{% url 'courses:create_course' %}" class="action-btn primary">#}
+{#                    <i class="bi bi-plus-circle"></i> New Course#}
+{#                </a>#}
                 <a href="{% url 'assignments:create_assignment' %}" class="action-btn secondary">
-                    <i class="bi bi-file-earmark-plus"></i> Ново задание
+                    <i class="bi bi-file-earmark-plus"></i> New Assignment
                 </a>
             </div>
         </div>
@@ -27,7 +26,7 @@
                     <i class="bi bi-file-earmark-text"></i>
                 </div>
                 <div class="stat-content">
-                    <h3>Общо предавания</h3>
+                    <h3>Total Submissions</h3>
                     <p class="stat-value">{{ total_submissions }}</p>
                 </div>
             </div>
@@ -37,7 +36,7 @@
                     <i class="bi bi-check-circle"></i>
                 </div>
                 <div class="stat-content">
-                    <h3>Оценени предавания</h3>
+                    <h3>Graded Submissions</h3>
                     <p class="stat-value">{{ graded_submissions }}</p>
                 </div>
             </div>
@@ -47,19 +46,17 @@
                     <i class="bi bi-clock-history"></i>
                 </div>
                 <div class="stat-content">
-                    <h3>Чакащи оценка</h3>
+                    <h3>Pending Grading</h3>
                     <p class="stat-value">{{ pending_submissions|default:"0" }}</p>
-
                 </div>
             </div>
-
 
             <div class="stat-card info">
                 <div class="stat-icon">
                     <i class="bi bi-people"></i>
                 </div>
                 <div class="stat-content">
-                    <h3>Общо студенти</h3>
+                    <h3>Total Students</h3>
                     <p class="stat-value">{{ total_students|default:"0" }}</p>
                 </div>
             </div>
@@ -68,11 +65,11 @@
         <!-- Courses Section -->
         <section class="dashboard-section">
             <div class="section-header">
-                <h2><i class="bi bi-book"></i> Курсове, които преподавате</h2>
+                <h2><i class="bi bi-book"></i> Your Courses</h2>
                 <div class="filter-controls">
                     <form method="get" class="course-filter">
                         <select name="course" id="course" class="filter-select" onchange="this.form.submit()">
-                            <option value="">-- Всички курсове --</option>
+                            <option value="">-- All Courses --</option>
                             {% for course in courses %}
                                 <option value="{{ course.id }}"
                                         {% if course.id|stringformat:"s" == selected_course_id %}selected{% endif %}>
@@ -90,16 +87,16 @@
                         <div class="course-card">
                             <div class="course-header">
                                 <h3>{{ course.name }}</h3>
-                                <span class="enrollment-count">{{ course.enrollments.count }} студенти</span>
+                                <span class="enrollment-count">{{ course.enrollments.count }} students</span>
                             </div>
                             <p class="course-description">{{ course.description|truncatewords:20 }}</p>
                             <div class="course-footer">
-                                <a href="{% url 'courses:course_detail' course.id %}" class="action-btn small">
-                                    <i class="bi bi-eye"></i> Преглед
+                                <a href="{% url 'courses:course_detail' course.id %}" class="action-btn small primary">
+                                    <i class="bi bi-eye"></i> View
                                 </a>
                                 <div class="progress-container">
                                     <div class="progress-bar" style="width: {{ course.completion_rate }}%"></div>
-                                    <span>{{ course.completion_rate }}% завършеност</span>
+                                    <span>{{ course.completion_rate }}% completed</span>
                                 </div>
                             </div>
                         </div>
@@ -108,9 +105,9 @@
             {% else %}
                 <div class="empty-state">
                     <i class="bi bi-book"></i>
-                    <p>Нямате създадени курсове.</p>
+                    <p>You haven't created any courses yet.</p>
                     <a href="{% url 'courses:create_course' %}" class="action-btn primary">
-                        <i class="bi bi-plus-circle"></i> Създайте първия си курс
+                        <i class="bi bi-plus-circle"></i> Create Your First Course
                     </a>
                 </div>
             {% endif %}
@@ -121,7 +118,7 @@
             <!-- Active Students -->
             <div class="activity-column">
                 <div class="section-header">
-                    <h2><i class="bi bi-lightning-charge"></i> Най-активни студенти</h2>
+                    <h2><i class="bi bi-lightning-charge"></i> Most Active Students</h2>
                 </div>
 
                 {% if active_students %}
@@ -138,16 +135,16 @@
                                 </div>
                                 <div class="student-info">
                                     <h4>{{ student.user.username }}</h4>
-                                    <p>Последна активност: {{ student.latest_submission_time|date:"d.m.Y H:i" }}</p>
+                                    <p>Last activity: {{ student.latest_submission_time|date:"d.m.Y H:i" }}</p>
                                 </div>
-                                <span class="submission-count">{{ student.submission_count }} предавания</span>
+                                <span class="submission-count">{{ student.submission_count }} submissions</span>
                             </div>
                         {% endfor %}
                     </div>
                 {% else %}
                     <div class="empty-state small">
                         <i class="bi bi-people"></i>
-                        <p>Няма активност от студенти.</p>
+                        <p>No recent student activity.</p>
                     </div>
                 {% endif %}
             </div>
@@ -155,7 +152,7 @@
             <!-- Recent Submissions -->
             <div class="activity-column">
                 <div class="section-header">
-                    <h2><i class="bi bi-clock-history"></i> Последни предавания</h2>
+                    <h2><i class="bi bi-clock-history"></i> Recent Submissions</h2>
                 </div>
 
                 {% if recent_submissions %}
@@ -176,105 +173,110 @@
                                         <p>{{ sub.student.user.username }} | {{ sub.submitted_at|date:"d.m.Y H:i" }}</p>
                                     </div>
                                 </div>
-                                {# TODO: FIX HERE #}
 {#                                <a href="{% url 'submissions:grade_submission' submission_id=sub.id %}">#}
                                     {% if sub.grade %}
                                         <span class="status-badge success"><i
-                                                class="bi bi-check-circle"></i> Оценено</span>
+                                                class="bi bi-check-circle"></i> Graded</span>
                                     {% else %}
                                         <span class="status-badge warning"><i
-                                                class="bi bi-clock"></i> Чака оценка</span>
+                                                class="bi bi-clock"></i> Pending</span>
                                     {% endif %}
                                 </a>
-                            </div>
                             </div>
                         {% endfor %}
                     </div>
                 {% else %}
                     <div class="empty-state small">
                         <i class="bi bi-file-earmark-text"></i>
-                        <p>Няма скорошни предавания.</p>
+                        <p>No recent submissions.</p>
                     </div>
                 {% endif %}
-        </div>
-    </div>
-
-    <!-- Students by Course -->
-    <section class="dashboard-section">
-        <div class="section-header">
-            <h2><i class="bi bi-people-fill"></i> Студенти по курсове</h2>
+            </div>
         </div>
 
-        <div class="enrollments-table">
-            <div class="table-header">
-                <div class="header-cell">Курс</div>
-                <div class="header-cell">Записани студенти</div>
-                <div class="header-cell">Последна активност</div>
-                <div class="header-cell">Действия</div>
+        <!-- Students by Course -->
+        <section class="dashboard-section">
+            <div class="section-header">
+                <h2><i class="bi bi-people-fill"></i> Students by Course</h2>
             </div>
 
-            {% for course in courses %}
-                <div class="table-row">
-                    <div class="table-cell course-cell">
-                        <h4>{{ course.name }}</h4>
-                    </div>
-                    <div class="table-cell">
-                        <div class="student-avatars">
-                            {% for enrollment in course.enrollments.all|slice:":5" %}
-                                <div class="avatar-tooltip">
-                                    {% if enrollment.student.user.profile_picture %}
-                                        <img src="{{ enrollment.student.user.profile_picture.url }}"
-                                             alt="{{ enrollment.student.user.username }}">
-                                    {% else %}
-                                        <i class="bi bi-person-circle"></i>
-                                    {% endif %}
-                                    <span class="tooltip-text">{{ enrollment.student.user.username }}</span>
-                                </div>
-                            {% endfor %}
-                            {% if course.enrollments.count > 5 %}
-                                <div class="more-students">+{{ course.enrollments.count|add:-5 }}</div>
+            <div class="enrollments-table">
+                <div class="table-header">
+                    <div class="header-cell">Course</div>
+                    <div class="header-cell">Enrolled Students</div>
+                    <div class="header-cell">Last Activity</div>
+                    <div class="header-cell">Actions</div>
+                </div>
+
+                {% for course in courses %}
+                    <div class="table-row">
+                        <div class="table-cell course-cell">
+                            <h4>{{ course.name }}</h4>
+                        </div>
+                        <div class="table-cell">
+                            <div class="student-avatars">
+                                {% for enrollment in course.enrollments.all|slice:":5" %}
+                                    <div class="avatar-tooltip">
+                                        {% if enrollment.student.user.profile_picture %}
+                                            <img src="{{ enrollment.student.user.profile_picture.url }}"
+                                                 alt="{{ enrollment.student.user.username }}">
+                                        {% else %}
+                                            <i class="bi bi-person-circle"></i>
+                                        {% endif %}
+                                        <span class="tooltip-text">{{ enrollment.student.user.username }}</span>
+                                    </div>
+                                {% endfor %}
+                                {% if course.enrollments.count > 5 %}
+                                    <div class="more-students">+{{ course.enrollments.count|add:-5 }}</div>
+                                {% endif %}
+                            </div>
+                            <span>{{ course.enrollments.count }} students</span>
+                        </div>
+                        <div class="table-cell">
+                            {% if course.last_activity %}
+                                {{ course.last_activity|date:"d.m.Y H:i" }}
+                            {% else %}
+                                No activity
                             {% endif %}
                         </div>
-                        <span>{{ course.enrollments.count }} студенти</span>
+                        <div class="table-cell">
+                            <a href="{% url 'courses:course_detail' course.id %}" class="action-btn small primary">
+                                <i class="bi bi-eye"></i> View
+                            </a>
+                        </div>
                     </div>
-                    <div class="table-cell">
-                        {% if course.last_activity %}
-                            {{ course.last_activity|date:"d.m.Y H:i" }}
-                        {% else %}
-                            Няма активност
-                        {% endif %}
+                {% empty %}
+                    <div class="empty-row">
+                        <i class="bi bi-book"></i>
+                        <p>No courses with enrolled students.</p>
                     </div>
-                    <div class="table-cell">
-                        <a href="{% url 'courses:course_detail' course.id %}" class="action-btn small">
-                            <i class="bi bi-eye"></i> Преглед
-                        </a>
-                    </div>
-                </div>
-            {% empty %}
-                <div class="empty-row">
-                    <i class="bi bi-book"></i>
-                    <p>Няма курсове с записани студенти.</p>
-                </div>
-            {% endfor %}
-        </div>
-    </section>
+                {% endfor %}
+            </div>
+        </section>
     </div>
 
     <style>
-        /* Base Styles */
+        /* Base Styles with New Color Scheme */
         .teacher-dashboard {
             max-width: 1400px;
             margin: 0 auto;
             padding: 1.5rem;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: #333;
+            background-color: #f8f9fa;
         }
 
+        /* Header Styles */
         .dashboard-header {
+            background-color: #002147;
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 33, 71, 0.2);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2rem;
             flex-wrap: wrap;
             gap: 1.5rem;
         }
@@ -283,7 +285,7 @@
             font-size: 2rem;
             font-weight: 700;
             margin: 0;
-            color: #2c3e50;
+            color: white;
             display: flex;
             align-items: center;
             gap: 0.75rem;
@@ -291,16 +293,11 @@
 
         .welcome-message {
             margin: 0.5rem 0 0;
-            color: #7f8c8d;
+            color: rgba(255, 255, 255, 0.8);
             font-size: 1rem;
         }
 
-        .quick-actions {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
+        /* Button Styles */
         .action-btn {
             padding: 0.75rem 1.5rem;
             border-radius: 8px;
@@ -312,29 +309,26 @@
             transition: all 0.3s ease;
         }
 
-        .action-btn i {
-            font-size: 1.1rem;
-        }
-
         .action-btn.primary {
-            background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
-            color: white;
+            background-color: #d2b48c;
+            color: #002147;
             border: none;
         }
 
-        .action-btn.secondary {
-            background: white;
-            color: #2c3e50;
-            border: 1px solid #ddd;
+        .action-btn.primary:hover {
+            background-color: #c0a57b;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(210, 180, 140, 0.4);
         }
 
-        .action-btn.primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        .action-btn.secondary {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
         .action-btn.secondary:hover {
-            background: #f8f9fa;
+            background-color: rgba(255, 255, 255, 0.2);
             transform: translateY(-2px);
         }
 
@@ -367,19 +361,20 @@
         }
 
         .stat-card.primary {
-            background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
+            background: linear-gradient(135deg, #002147 0%, #003366 100%);
         }
 
         .stat-card.success {
-            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
         }
 
         .stat-card.warning {
-            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            background: linear-gradient(135deg, #d2b48c 0%, #b39c7d 100%);
+            color: #002147;
         }
 
         .stat-card.info {
-            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+            background: linear-gradient(135deg, #5d6d7e 0%, #34495e 100%);
         }
 
         .stat-icon {
@@ -417,7 +412,7 @@
             font-size: 1.5rem;
             font-weight: 600;
             margin: 0;
-            color: #2c3e50;
+            color: #002147;
             display: flex;
             align-items: center;
             gap: 0.75rem;
@@ -430,7 +425,7 @@
 
         .filter-select {
             padding: 0.5rem 1rem;
-            border: 1px solid #ddd;
+            border: 1px solid rgba(0, 33, 71, 0.2);
             border-radius: 8px;
             font-size: 0.9rem;
             background-color: white;
@@ -439,8 +434,8 @@
 
         .filter-select:focus {
             outline: none;
-            border-color: #3498db;
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+            border-color: #d2b48c;
+            box-shadow: 0 0 0 3px rgba(210, 180, 140, 0.3);
         }
 
         /* Courses Grid */
@@ -454,14 +449,14 @@
             background: white;
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 6px rgba(0, 33, 71, 0.1);
             transition: all 0.3s ease;
-            border: 1px solid #eee;
+            border: 1px solid rgba(0, 33, 71, 0.1);
         }
 
         .course-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 20px rgba(0, 33, 71, 0.15);
         }
 
         .course-header {
@@ -475,22 +470,22 @@
             margin: 0;
             font-size: 1.1rem;
             font-weight: 600;
-            color: #2c3e50;
+            color: #002147;
         }
 
         .enrollment-count {
-            background: #f8f9fa;
+            background: rgba(0, 33, 71, 0.1);
             padding: 0.25rem 0.5rem;
             border-radius: 50px;
             font-size: 0.8rem;
             font-weight: 500;
-            color: #7f8c8d;
+            color: #002147;
         }
 
         .course-description {
             padding: 0 1.5rem;
             margin: 0.75rem 0 1.25rem;
-            color: #7f8c8d;
+            color: #5d6d7e;
             font-size: 0.9rem;
             line-height: 1.5;
         }
@@ -502,21 +497,6 @@
             align-items: center;
         }
 
-        .view-btn {
-            color: #3498db;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.3s ease;
-        }
-
-        .view-btn:hover {
-            color: #2980b9;
-        }
-
         .progress-container {
             width: 60%;
             position: relative;
@@ -524,14 +504,14 @@
 
         .progress-bar {
             height: 6px;
-            background: #3498db;
+            background: #d2b48c;
             border-radius: 3px;
             margin-bottom: 0.25rem;
         }
 
         .progress-container span {
             font-size: 0.75rem;
-            color: #7f8c8d;
+            color: #5d6d7e;
         }
 
         /* Activity Columns */
@@ -546,8 +526,8 @@
             background: white;
             border-radius: 12px;
             padding: 1.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            border: 1px solid #eee;
+            box-shadow: 0 4px 6px rgba(0, 33, 71, 0.1);
+            border: 1px solid rgba(0, 33, 71, 0.1);
         }
 
         .student-list, .submissions-list {
@@ -566,18 +546,18 @@
         }
 
         .student-item:hover {
-            background: #f8f9fa;
+            background: rgba(210, 180, 140, 0.1);
         }
 
         .student-avatar {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: #f8f9fa;
+            background: rgba(0, 33, 71, 0.1);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #7f8c8d;
+            color: #002147;
             overflow: hidden;
         }
 
@@ -597,19 +577,20 @@
             margin: 0;
             font-size: 0.95rem;
             font-weight: 600;
+            color: #002147;
         }
 
         .student-info p {
             margin: 0.25rem 0 0;
             font-size: 0.8rem;
-            color: #7f8c8d;
+            color: #5d6d7e;
         }
 
         .submission-count {
             margin-left: auto;
             font-size: 0.8rem;
             font-weight: 500;
-            color: #3498db;
+            color: #d2b48c;
         }
 
         .submission-item {
@@ -620,13 +601,13 @@
         }
 
         .submission-item.graded {
-            border-left-color: #2ecc71;
-            background: rgba(46, 204, 113, 0.05);
+            border-left-color: #2e7d32;
+            background: rgba(46, 125, 50, 0.05);
         }
 
         .submission-item.pending {
-            border-left-color: #f39c12;
-            background: rgba(243, 156, 18, 0.05);
+            border-left-color: #d2b48c;
+            background: rgba(210, 180, 140, 0.1);
         }
 
         .submission-item:hover {
@@ -643,16 +624,13 @@
             margin: 0;
             font-size: 0.95rem;
             font-weight: 600;
+            color: #002147;
         }
 
         .submission-info p {
             margin: 0.25rem 0 0;
             font-size: 0.8rem;
-            color: #7f8c8d;
-        }
-
-        .submission-status {
-            margin-top: 0.5rem;
+            color: #5d6d7e;
         }
 
         .status-badge {
@@ -666,13 +644,13 @@
         }
 
         .status-badge.success {
-            background: rgba(46, 204, 113, 0.1);
-            color: #27ae60;
+            background: rgba(46, 125, 50, 0.1);
+            color: #2e7d32;
         }
 
         .status-badge.warning {
-            background: rgba(243, 156, 18, 0.1);
-            color: #e67e22;
+            background: rgba(210, 180, 140, 0.2);
+            color: #002147;
         }
 
         /* Enrollments Table */
@@ -680,25 +658,25 @@
             background: white;
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            border: 1px solid #eee;
+            box-shadow: 0 4px 6px rgba(0, 33, 71, 0.1);
+            border: 1px solid rgba(0, 33, 71, 0.1);
         }
 
         .table-header {
             display: grid;
             grid-template-columns: 2fr 1.5fr 1fr 1fr;
-            background: #f8f9fa;
+            background: #002147;
             padding: 1rem 1.5rem;
             font-weight: 600;
-            color: #2c3e50;
-            border-bottom: 1px solid #eee;
+            color: white;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .table-row {
             display: grid;
             grid-template-columns: 2fr 1.5fr 1fr 1fr;
             padding: 1rem 1.5rem;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid rgba(0, 33, 71, 0.1);
             transition: all 0.3s ease;
         }
 
@@ -707,7 +685,7 @@
         }
 
         .table-row:hover {
-            background: #f8f9fa;
+            background: rgba(210, 180, 140, 0.1);
         }
 
         .table-cell {
@@ -719,6 +697,7 @@
             margin: 0;
             font-size: 0.95rem;
             font-weight: 600;
+            color: #002147;
         }
 
         .student-avatars {
@@ -732,7 +711,7 @@
             width: 28px;
             height: 28px;
             border-radius: 50%;
-            background: #f8f9fa;
+            background: rgba(0, 33, 71, 0.1);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -748,7 +727,7 @@
         .tooltip-text {
             visibility: hidden;
             width: 120px;
-            background-color: #333;
+            background-color: #002147;
             color: #fff;
             text-align: center;
             border-radius: 6px;
@@ -771,28 +750,28 @@
             width: 28px;
             height: 28px;
             border-radius: 50%;
-            background: #e0e0e0;
+            background: rgba(0, 33, 71, 0.1);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 0.7rem;
             font-weight: 600;
-            color: #7f8c8d;
+            color: #002147;
         }
 
         /* Empty States */
         .empty-state {
-            background: #f8f9fa;
+            background: rgba(0, 33, 71, 0.05);
             border-radius: 12px;
             padding: 3rem 2rem;
             text-align: center;
-            color: #7f8c8d;
+            color: #002147;
         }
 
         .empty-state i {
             font-size: 2.5rem;
             margin-bottom: 1rem;
-            color: #bdc3c7;
+            color: rgba(0, 33, 71, 0.3);
         }
 
         .empty-state p {
@@ -817,7 +796,7 @@
         .empty-row {
             padding: 2rem;
             text-align: center;
-            color: #7f8c8d;
+            color: #002147;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -826,7 +805,7 @@
 
         .empty-row i {
             font-size: 1.5rem;
-            color: #bdc3c7;
+            color: rgba(0, 33, 71, 0.3);
         }
 
         /* Responsive Adjustments */

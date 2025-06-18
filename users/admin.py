@@ -17,13 +17,9 @@ class StudentProfileAdmin(admin.ModelAdmin):
 
 @admin.register(TeacherProfile)
 class TeacherProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'age', 'education', 'is_approved')
+    list_display = ('user', 'is_approved')   #age', 'education',
     list_filter = ('is_approved',)
     search_fields = ('user__username',)
 
 
 
-# @admin.register(RegistrationCode)
-# class RegistrationCodeAdmin(admin.ModelAdmin):
-#     list_display = ('code', 'is_used', 'user', 'created_at')
-#     search_fields = ('code',)

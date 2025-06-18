@@ -19,9 +19,8 @@ class StudentProfile(models.Model):
     is_approved = models.BooleanField(default=False)
     profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
 
-
     def clean(self):
-        if self.age < 18:
+        if self.age is not None and self.age < 18:
             raise ValidationError("Student age must be at least 18.")
 
     def save(self, *args, **kwargs):
@@ -36,8 +35,8 @@ class StudentProfile(models.Model):
 
 class TeacherProfile(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    age = models.PositiveIntegerField()
-    education = models.CharField(max_length=225)
+    age = models.PositiveIntegerField(null=True, blank=True)
+    education = models.CharField(max_length=255, blank=True)
     experience_years = models.PositiveIntegerField(null=True, blank=True)  # ⬅️ добавено
     is_approved = models.BooleanField(default=False)
     profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)

@@ -49,7 +49,10 @@ def register_student(request):
             user = form.save(commit=False)
             user.is_student = True
             user.save()
-            StudentProfile.objects.create(user=user)
+            StudentProfile.objects.create(
+                user=user,
+                age=form.cleaned_data['age']  # only if age is in the form
+            )
             login(request, user)
             return redirect('users:student_profile')  # 👈 директно към профила
     else:

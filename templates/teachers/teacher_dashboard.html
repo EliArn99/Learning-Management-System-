@@ -1,0 +1,366 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --primary-color: #4f46e5;
+        --primary-dark: #4338ca;
+        --primary-light: #818cf8;
+        --secondary-color: #f59e0b;
+        --secondary-light: #fbbf24;
+        --accent-color: #ec4899;
+        --success-color: #10b981;
+        --light-color: #f8fafc;
+        --dark-color: #1e293b;
+        --text-color: #334155;
+        --text-light: #64748b;
+        --border-color: #e2e8f0;
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+        --radius-sm: 0.375rem;
+        --radius-md: 0.5rem;
+        --radius-lg: 0.75rem;
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        font-family: 'Inter', sans-serif;
+    }
+
+    body {
+        background-color: var(--light-color);
+        color: var(--text-color);
+    }
+
+    .teacher-dashboard {
+        min-height: calc(100vh - 120px);
+        background-color: #f5f7ff;
+        padding: 3rem 0;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .dashboard-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        position: relative;
+        z-index: 2;
+    }
+
+    .dashboard-header {
+        text-align: center;
+        margin-bottom: 3rem;
+        animation: fadeIn 0.6s ease-out forwards;
+    }
+
+    .dashboard-header h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--dark-color);
+        margin-bottom: 1rem;
+        line-height: 1.2;
+        position: relative;
+        display: inline-block;
+    }
+
+    .dashboard-header h1:after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+        border-radius: 2px;
+    }
+
+    .dashboard-header p {
+        font-size: 1.2rem;
+        color: var(--text-light);
+        max-width: 700px;
+        margin: 0 auto;
+        line-height: 1.6;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        box-shadow: var(--shadow-md);
+        border-left: 4px solid var(--primary-color);
+        text-align: center;
+        animation: floatIn 0.8s ease-out forwards;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .stat-card i {
+        font-size: 2.5rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+
+    .stat-card h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--dark-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-card p {
+        color: var(--text-light);
+        font-size: 1rem;
+    }
+
+    .quick-actions {
+        background: white;
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        box-shadow: var(--shadow-md);
+        margin-bottom: 3rem;
+        animation: floatIn 0.8s ease-out forwards;
+    }
+
+    .quick-actions h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--dark-color);
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .quick-actions h2 i {
+        margin-right: 0.75rem;
+        color: var(--primary-color);
+    }
+
+    .action-buttons {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .action-button {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        border-radius: var(--radius-md);
+        background: var(--light-color);
+        border: 1px solid var(--border-color);
+        text-decoration: none;
+        text-align: center;
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+    }
+
+    .action-button::after {
+        content: '';
+        position: absolute;
+        width: 120%;
+        height: 0;
+        top: 0;
+        left: -10%;
+        background: rgba(255, 255, 255, 0.08);
+        transform: rotate(45deg);
+        transition: all 0.5s ease;
+    }
+
+    .action-button:hover::after {
+        height: 300%;
+    }
+
+    .action-button:hover {
+        background: var(--primary-color);
+        border-color: var(--primary-dark);
+        color: white;
+    }
+
+    .action-button:hover i,
+    .action-button:hover h3,
+    .action-button:hover p {
+        color: white;
+    }
+
+    .action-button i {
+        font-size: 1.75rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+        transition: var(--transition);
+    }
+
+    .action-button h3 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--dark-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .action-button p {
+        font-size: 0.9rem;
+        color: var(--text-light);
+    }
+
+    .dashboard-decoration {
+        position: absolute;
+        z-index: 1;
+        opacity: 0.1;
+    }
+
+    .decoration-1 {
+        top: 10%;
+        left: 5%;
+        font-size: 10rem;
+        color: var(--primary-color);
+    }
+
+    .decoration-2 {
+        bottom: 15%;
+        right: 5%;
+        font-size: 8rem;
+        color: var(--secondary-color);
+    }
+
+    @media (max-width: 768px) {
+        .stats-grid,
+        .action-buttons {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (prefers-color-scheme: dark) {
+        body {
+            background-color: #0f172a;
+            color: #f1f5f9;
+        }
+
+        .teacher-dashboard {
+            background-color: #0f172a;
+        }
+
+        .stat-card,
+        .quick-actions,
+        .action-button {
+            background: #1e293b;
+            color: #f1f5f9;
+        }
+
+        .dashboard-header h1,
+        .quick-actions h2,
+        .stat-card h3 {
+            color: #f8fafc;
+        }
+
+        .dashboard-header p,
+        .stat-card p,
+        .action-button p {
+            color: #cbd5e1;
+        }
+
+        .action-button:hover {
+            background: var(--accent-color);
+        }
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes floatIn {
+        0% {
+            opacity: 0;
+            transform: translateY(30px) scale(0.95);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="teacher-dashboard">
+    <i class="fas fa-chalkboard-teacher dashboard-decoration decoration-1" aria-hidden="true"></i>
+    <i class="fas fa-book-open dashboard-decoration decoration-2" aria-hidden="true"></i>
+
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <h1>Добре дошъл в учителския панел!</h1>
+            <p>Тук ще можеш да създаваш задания, да оценяваш студенти и да управляваш своите курсове.</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <i class="fas fa-tasks"></i>
+                <h3>{{ assignments_count }}</h3>
+                <p>Активни задания</p>
+            </div>
+
+            <div class="stat-card">
+                <i class="fas fa-users"></i>
+                <h3>{{ student_count }}</h3>
+                <p>Студенти</p>
+            </div>
+
+            <div class="stat-card">
+                <i class="fas fa-book"></i>
+                <h3>{{ course_count }}</h3>
+                <p>Курсове</p>
+            </div>
+        </div>
+
+        <div class="quick-actions">
+            <h2><i class="fas fa-bolt"></i>Бързи действия</h2>
+{# TODO: WORK ON THESE #}
+            <div class="action-buttons">
+{#                <a href="{% url 'create_assignment' %}" class="action-button" aria-label="Създай задание">#}
+                    <i class="fas fa-plus-circle"></i>
+                    <h3>Ново задание</h3>
+                    <p>Създай ново задание за студентите</p>
+{#                </a>#}
+
+{#                <a href="{% url 'grade_assignments' %}" class="action-button" aria-label="Оцени задания">#}
+                    <i class="fas fa-check-circle"></i>
+                    <h3>Оцени работа</h3>
+                    <p>Прегледай и оцени студентски задания</p>
+{#                </a>#}
+
+{#                <a href="{% url 'student_stats' %}" class="action-button" aria-label="Статистика">#}
+                    <i class="fas fa-chart-line"></i>
+                    <h3>Статистика</h3>
+                    <p>Виж прогреса на студентите</p>
+{#                </a>#}
+
+{#                <a href="{% url 'messages' %}" class="action-button" aria-label="Съобщения">#}
+                    <i class="fas fa-comments"></i>
+                    <h3>Съобщения</h3>
+                    <p>Провери новите съобщения</p>
+{#                </a>#}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

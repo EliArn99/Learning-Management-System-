@@ -1,5 +1,7 @@
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
+
+from courses.models import Enrollment
 from .forms import StudentRegisterForm, LoginForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -30,7 +32,14 @@ def user_login(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            return redirect('users:home')
+
+            if user.is_teacher:
+                return redirect('teachers:dashboard')
+            elif user.is_student:
+                return redirect('users:dashboard')
+            else:
+                return redirect('users:profile')  # fallback
+
         else:
             messages.error(request, "Грешно потребителско име или парола.")
     else:
@@ -44,8 +53,6 @@ def logout(request):
     return redirect('users:home')
 
 
-
-
 @login_required
 def profile(request):
     return render(request, 'users/profile.html')
@@ -53,8 +60,10 @@ def profile(request):
 
 @login_required
 def dashboard(request):
-    return render(request, 'users/dashboard.html')
-
+    enrolled_courses = Enrollment.objects.filter(student=request.user)
+    return render(request, 'users/dashboard.html', {
+        'enrolled_courses': enrolled_courses,
+    })
 
 
 

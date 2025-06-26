@@ -1,458 +1,483 @@
-{% extends 'base.html' %}
-{% load static %}
+{% extends "base.html" %}
 
 {% block content %}
-<style>
-    /* Main Color Scheme */
-    :root {
-        --primary-dark: #3B153A;
-        --primary-light: #F0C987;
-        --primary-dark-transparent: rgba(59, 21, 58, 0.9);
-        --primary-light-transparent: rgba(240, 201, 135, 0.2);
-    }
+    <div class="dashboard-container">
+        <div class="container py-4">
+            <!-- Dashboard Header -->
+            <div class="dashboard-header mb-4">
+                <h2 class="mb-2"><i class="fas fa-tachometer-alt me-2"></i>Моят Дашборд</h2>
+                <p class="text-muted">Добре дошъл, {{ user.get_full_name|default:user.username }}! Това е твоят
+                    централен панел за обучение.</p>
+                <div class="alert alert-info d-flex align-items-center">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <div>Имаш 3 нови съобщения и 2 предстоящи задачи.</div>
+                </div>
+            </div>
 
-    /* Base Styles */
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background-color: #f8f9fa;
-        color: #333;
-        line-height: 1.6;
-    }
+            <!-- Quick Stats -->
+            <div class="row mb-4">
+                <div class="col-md-3 mb-3">
+                    <div class="stat-card bg-primary text-white">
+                        <div class="stat-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>{{ enrolled_courses_count }}</h3>
+                            <p>Активни курса</p>
+                        </div>
 
-    .dashboard-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 20px;
-    }
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="stat-card bg-success text-white">
+                        <div class="stat-icon">
+                            <i class="fas fa-tasks"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>12</h3>
+                            <p>Задачи</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="stat-card bg-warning text-dark">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>3</h3>
+                            <p>Изтичащи срокове</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="stat-card bg-info text-white">
+                        <div class="stat-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>5</h3>
+                            <p>Нови съобщения</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-    /* Header Styles */
-    .dashboard-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 30px;
-        padding: 20px;
-        background-color: white;
-        border-radius: 10px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    }
+            <div class="row">
+                <!-- Left Column -->
+                <div class="col-lg-8 mb-4">
+                    <!-- Upcoming Deadlines -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-white border-bottom">
+                            <h5 class="mb-0"><i class="fas fa-calendar-day me-2 text-danger"></i>Предстоящи срокове</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="deadline-list">
+                                <div class="deadline-item">
+                                    <div class="deadline-date bg-danger text-white">
+                                        <span class="day">15</span>
+                                        <span class="month">Май</span>
+                                    </div>
+                                    <div class="deadline-info">
+                                        <h6>Домашно 3 - Функции и рекурсия</h6>
+                                        <p class="mb-1">Въведение в програмирането</p>
+                                        <small class="text-muted">Оставащи дни: 3</small>
+                                    </div>
+                                    <div class="deadline-actions">
+                                        <a href="#" class="btn btn-sm btn-outline-primary">Преглед</a>
+                                    </div>
+                                </div>
+                                <div class="deadline-item">
+                                    <div class="deadline-date bg-warning text-dark">
+                                        <span class="day">18</span>
+                                        <span class="month">Май</span>
+                                    </div>
+                                    <div class="deadline-info">
+                                        <h6>Тест - SQL заявки</h6>
+                                        <p class="mb-1">Бази данни</p>
+                                        <small class="text-muted">Оставащи дни: 6</small>
+                                    </div>
+                                    <div class="deadline-actions">
+                                        <a href="#" class="btn btn-sm btn-outline-primary">Преглед</a>
+                                    </div>
+                                </div>
+                                <div class="deadline-item">
+                                    <div class="deadline-date bg-secondary text-white">
+                                        <span class="day">22</span>
+                                        <span class="month">Май</span>
+                                    </div>
+                                    <div class="deadline-info">
+                                        <h6>Курсов проект - Първа фаза</h6>
+                                        <p class="mb-1">Уеб технологии</p>
+                                        <small class="text-muted">Оставащи дни: 10</small>
+                                    </div>
+                                    <div class="deadline-actions">
+                                        <a href="#" class="btn btn-sm btn-outline-primary">Преглед</a>
+                                    </div>
+                                </div>
+                            </div>
+                            {#                        <a href="{% url 'tasks:list' %}" class="btn btn-primary mt-3">#}
+                            {#                            <i class="fas fa-list me-1"></i> Виж всички задачи#}
+                            {#                        </a>#}
+                        </div>
+                    </div>
 
-    .dashboard-title {
-        color: var(--primary-dark);
-        font-size: 2.2rem;
-        font-weight: 700;
-        margin-bottom: 5px;
-    }
+                    <!-- Recent Announcements -->
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-white border-bottom">
+                            <h5 class="mb-0"><i class="fas fa-bullhorn me-2 text-info"></i>Скорошни съобщения</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="announcement-list">
+                                <div class="announcement-item">
+                                    <div class="announcement-badge bg-info text-white">
+                                        <i class="fas fa-info-circle"></i>
+                                    </div>
+                                    <div class="announcement-content">
+                                        <h6>Важно: Промяна в учебния план</h6>
+                                        <p class="mb-1">Има промяна в учебния план по "Бази данни". Моля, проверете
+                                            новите дати.</p>
+                                        <small class="text-muted">Публикувано: 10.05.2023 от проф. Иванов</small>
+                                    </div>
+                                </div>
+                                <div class="announcement-item">
+                                    <div class="announcement-badge bg-success text-white">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <div class="announcement-content">
+                                        <h6>Резултати от изпит</h6>
+                                        <p class="mb-1">Резултатите от изпита по "Уеб дизайн" са публикувани.</p>
+                                        <small class="text-muted">Публикувано: 08.05.2023 от проф. Петрова</small>
+                                    </div>
+                                </div>
+                                <div class="announcement-item">
+                                    <div class="announcement-badge bg-warning text-dark">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                    </div>
+                                    <div class="announcement-content">
+                                        <h6>Напомняне: Практическо упражнение</h6>
+                                        <p class="mb-1">Не забравяйте за практическото упражнение утре в 10:00 ч.</p>
+                                        <small class="text-muted">Публикувано: 07.05.2023 от ас. Димитрова</small>
+                                    </div>
+                                </div>
+                            </div>
+                            {#                        <a href="{% url 'announcements:list' %}" class="btn btn-outline-primary mt-3">#}
+                            {#                            <i class="fas fa-newspaper me-1"></i> Виж всички съобщения#}
+                            {#                        </a>#}
+                        </div>
+                    </div>
+                </div>
 
-    .dashboard-subtitle {
-        color: #6c757d;
-        font-size: 1rem;
-        margin: 0;
-    }
+                <!-- Right Column -->
+                <div class="col-lg-4 mb-4">
+                    <!-- Current Courses -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-white border-bottom">
+                            <h5 class="mb-0"><i class="fas fa-book-open me-2 text-primary"></i>Моите курсове</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="course-list">
+                                <a href="#" class="course-item">
+                                    <div class="course-icon bg-primary text-white">
+                                        <i class="fas fa-laptop-code"></i>
+                                    </div>
+                                    <div class="course-info">
+                                        <h6>Въведение в програмирането</h6>
+                                        <div class="progress mt-2" style="height: 5px;">
+                                            <div class="progress-bar bg-success" style="width: 75%"></div>
+                                        </div>
+                                        <small>75% завършен</small>
+                                    </div>
+                                </a>
+                                <a href="#" class="course-item">
+                                    <div class="course-icon bg-info text-white">
+                                        <i class="fas fa-code"></i>
+                                    </div>
+                                    <div class="course-info">
+                                        <h6>Уеб дизайн</h6>
+                                        <div class="progress mt-2" style="height: 5px;">
+                                            <div class="progress-bar bg-info" style="width: 45%"></div>
+                                        </div>
+                                        <small>45% завършен</small>
+                                    </div>
+                                </a>
+                                <a href="#" class="course-item">
+                                    <div class="course-icon bg-success text-white">
+                                        <i class="fas fa-database"></i>
+                                    </div>
+                                    <div class="course-info">
+                                        <h6>Бази данни</h6>
+                                        <div class="progress mt-2" style="height: 5px;">
+                                            <div class="progress-bar bg-warning" style="width: 30%"></div>
+                                        </div>
+                                        <small>30% завършен</small>
+                                    </div>
+                                </a>
+                                <a href="#" class="course-item">
+                                    <div class="course-icon bg-warning text-dark">
+                                        <i class="fas fa-network-wired"></i>
+                                    </div>
+                                    <div class="course-info">
+                                        <h6>Мрежови технологии</h6>
+                                        <div class="progress mt-2" style="height: 5px;">
+                                            <div class="progress-bar bg-danger" style="width: 15%"></div>
+                                        </div>
+                                        <small>15% завършен</small>
+                                    </div>
+                                </a>
+                            </div>
+                            {#                        <a href="{% url 'courses:list' %}" class="btn btn-outline-primary w-100 mt-2">#}
+                            {#                            <i class="fas fa-plus me-1"></i> Добави курс#}
+                            {#                        </a>#}
+                        </div>
+                    </div>
 
-    .student-avatar {
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 3px solid var(--primary-light);
-    }
+                    <!-- Quick Links -->
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-white border-bottom">
+                            <h5 class="mb-0"><i class="fas fa-link me-2 text-secondary"></i>Бързи връзки</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="quick-links">
+                                <a href="#" class="quick-link-item">
+                                    <div class="quick-link-icon bg-primary text-white">
+                                        <i class="fas fa-calendar-check"></i>
+                                    </div>
+                                    <span>Учебен календар</span>
+                                </a>
+                                <a href="#" class="quick-link-item">
+                                    <div class="quick-link-icon bg-success text-white">
+                                        <i class="fas fa-file-upload"></i>
+                                    </div>
+                                    <span>Качи задача</span>
+                                </a>
+                                <a href="#" class="quick-link-item">
+                                    <div class="quick-link-icon bg-info text-white">
+                                        <i class="fas fa-question-circle"></i>
+                                    </div>
+                                    <span>Често задавани въпроси</span>
+                                </a>
+                                <a href="#" class="quick-link-item">
+                                    <div class="quick-link-icon bg-warning text-dark">
+                                        <i class="fas fa-book"></i>
+                                    </div>
+                                    <span>Учебни материали</span>
+                                </a>
+                                <a href="#" class="quick-link-item">
+                                    <div class="quick-link-icon bg-danger text-white">
+                                        <i class="fas fa-chart-line"></i>
+                                    </div>
+                                    <span>Моите резултати</span>
+                                </a>
+                                <a href="#" class="quick-link-item">
+                                    <div class="quick-link-icon bg-secondary text-white">
+                                        <i class="fas fa-user-friends"></i>
+                                    </div>
+                                    <span>Студентски форум</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    /* Card Styles */
-    .dashboard-card {
-        background-color: white;
-        border-radius: 10px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-        margin-bottom: 30px;
-        overflow: hidden;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
+    <style>
+        /* Dashboard Custom Styles */
+        .dashboard-container {
+            background-color: #f8f9fa;
+            min-height: calc(100vh - 56px);
+        }
 
-    .dashboard-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    }
-
-    .card-header {
-        padding: 20px;
-        border-bottom: 1px solid #eee;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .card-title {
-        color: var(--primary-dark);
-        font-size: 1.5rem;
-        font-weight: 600;
-        margin: 0;
-    }
-
-    /* Progress Bar Styles */
-    .progress-container {
-        padding: 20px;
-    }
-
-    .progress-bar-custom {
-        height: 10px;
-        background-color: #e9ecef;
-        border-radius: 5px;
-        overflow: hidden;
-    }
-
-    .progress-fill {
-        height: 100%;
-        background-color: var(--primary-dark);
-        border-radius: 5px;
-        transition: width 0.6s ease;
-    }
-
-    /* Badge Styles */
-    .status-badge {
-        padding: 5px 12px;
-        border-radius: 20px;
-        font-size: 0.85rem;
-        font-weight: 600;
-    }
-
-    .urgent-badge {
-        background-color: #ff6b6b;
-        color: white;
-        padding: 2px 8px;
-        border-radius: 4px;
-        font-size: 0.75rem;
-    }
-
-    /* Assignment List Styles */
-    .assignment-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-
-    .assignment-item {
-        padding: 15px 20px;
-        border-bottom: 1px solid #eee;
-        transition: background-color 0.2s ease;
-    }
-
-    .assignment-item:hover {
-        background-color: #f9f9f9;
-    }
-
-    .assignment-item:last-child {
-        border-bottom: none;
-    }
-
-    .assignment-icon {
-        width: 40px;
-        height: 40px;
-        background-color: var(--primary-light-transparent);
-        color: var(--primary-dark);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-right: 15px;
-    }
-
-    .assignment-title {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: var(--primary-dark);
-        margin-bottom: 5px;
-    }
-
-    .assignment-due {
-        font-size: 0.85rem;
-        color: #6c757d;
-    }
-
-    /* Button Styles */
-    .view-btn {
-        padding: 6px 15px;
-        background-color: var(--primary-dark);
-        color: white;
-        border-radius: 5px;
-        text-decoration: none;
-        font-size: 0.85rem;
-        font-weight: 500;
-        transition: background-color 0.2s ease;
-    }
-
-    .view-btn:hover {
-        background-color: #2a0f29;
-        color: white;
-    }
-
-    /* Courses Grid Styles */
-    .courses-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 20px;
-        padding: 20px;
-    }
-
-    .course-card {
-        background-color: white;
-        border-radius: 8px;
-        border: 1px solid #eee;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .course-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-    }
-
-    .course-icon {
-        width: 50px;
-        height: 50px;
-        background-color: var(--primary-light-transparent);
-        color: var(--primary-dark);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 15px;
-        font-size: 1.2rem;
-    }
-
-    .course-name {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: var(--primary-dark);
-        margin-bottom: 10px;
-    }
-
-    .course-description {
-        font-size: 0.9rem;
-        color: #6c757d;
-        margin-bottom: 15px;
-    }
-
-    .continue-btn {
-        display: inline-block;
-        padding: 8px 15px;
-        background-color: var(--primary-light);
-        color: var(--primary-dark);
-        border-radius: 5px;
-        text-decoration: none;
-        font-size: 0.85rem;
-        font-weight: 500;
-        transition: background-color 0.2s ease;
-    }
-
-    .continue-btn:hover {
-        background-color: #e8b974;
-        color: var(--primary-dark);
-    }
-
-    /* Empty State Styles */
-    .empty-state {
-        text-align: center;
-        padding: 40px 20px;
-    }
-
-    .empty-state-img {
-        width: 150px;
-        height: auto;
-        margin-bottom: 20px;
-        opacity: 0.7;
-    }
-
-    .browse-btn {
-        display: inline-block;
-        padding: 8px 20px;
-        background-color: var(--primary-dark);
-        color: white;
-        border-radius: 5px;
-        text-decoration: none;
-        font-size: 0.9rem;
-        margin-top: 15px;
-        transition: background-color 0.2s ease;
-    }
-
-    .browse-btn:hover {
-        background-color: #2a0f29;
-        color: white;
-    }
-
-    /* Responsive Styles */
-    @media (max-width: 768px) {
         .dashboard-header {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-card {
+            display: flex;
+            align-items: center;
+            padding: 1.25rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-icon {
+            font-size: 1.75rem;
+            margin-right: 1rem;
+        }
+
+        .stat-info h3 {
+            margin-bottom: 0.25rem;
+            font-weight: 700;
+        }
+
+        .stat-info p {
+            margin-bottom: 0;
+            opacity: 0.9;
+        }
+
+        /* Deadline List */
+        .deadline-list {
+            margin: -0.5rem;
+        }
+
+        .deadline-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 0.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .deadline-item:last-child {
+            border-bottom: none;
+        }
+
+        .deadline-date {
+            display: flex;
             flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .deadline-date .day {
+            font-size: 1.5rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .deadline-date .month {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        .deadline-info {
+            flex-grow: 1;
+        }
+
+        .deadline-info h6 {
+            margin-bottom: 0.25rem;
+        }
+
+        /* Announcement List */
+        .announcement-list {
+            margin: -0.5rem;
+        }
+
+        .announcement-item {
+            display: flex;
+            padding: 1rem 0.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .announcement-item:last-child {
+            border-bottom: none;
+        }
+
+        .announcement-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        /* Course List */
+        .course-list {
+            margin: -0.5rem;
+        }
+
+        .course-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 0.5rem;
+            border-radius: 6px;
+            margin-bottom: 0.25rem;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .course-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .course-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        /* Quick Links */
+        .quick-links {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+        }
+
+        .quick-link-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem 0.5rem;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            color: inherit;
             text-align: center;
         }
 
-        .student-avatar {
-            margin-top: 15px;
+        .quick-link-item:hover {
+            background-color: #e9ecef;
+            transform: translateY(-2px);
         }
 
-        .dashboard-title {
-            font-size: 1.8rem;
+        .quick-link-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
         }
 
-        .card-title {
-            font-size: 1.3rem;
+        @media (max-width: 768px) {
+            .stat-card {
+                padding: 1rem;
+            }
+
+            .stat-icon {
+                font-size: 1.5rem;
+                margin-right: 0.75rem;
+            }
+
+            .quick-links {
+                grid-template-columns: repeat(3, 1fr);
+            }
         }
-
-        .courses-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .assignment-item {
-            flex-direction: column;
-        }
-
-        .assignment-icon {
-            margin-right: 0;
-            margin-bottom: 10px;
-        }
-
-        .view-btn {
-            margin-top: 10px;
-            align-self: flex-end;
-        }
-    }
-
-    @media (max-width: 576px) {
-        .dashboard-container {
-            padding: 10px;
-        }
-
-        .dashboard-header {
-            padding: 15px;
-        }
-
-        .dashboard-title {
-            font-size: 1.5rem;
-        }
-
-        .card-header {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .status-badge {
-            margin-top: 10px;
-            align-self: flex-start;
-        }
-    }
-</style>
-
-<div class="dashboard-container">
-    <!-- Header Section -->
-    <div class="dashboard-header">
-        <div>
-            <h1 class="dashboard-title">Student Dashboard</h1>
-            <p class="dashboard-subtitle">Welcome back! Here's what's happening today.</p>
-        </div>
-        <img src="{% static 'images/avatar.svg' %}" alt="Student Avatar" class="student-avatar">
-    </div>
-
-    <!-- Progress Card -->
-    <div class="dashboard-card">
-        <div class="progress-container">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h2 class="card-title">Your Learning Progress</h2>
-                <span class="status-badge" style="background-color: rgba(59, 21, 58, 0.1); color: var(--primary-dark);">
-                    {{ progress }}% Complete
-                </span>
-            </div>
-            <div class="progress-bar-custom">
-                <div class="progress-fill" style="width: {{ progress }}%;"></div>
-            </div>
-            <div class="d-flex justify-content-between mt-2">
-                <small class="text-muted">Started</small>
-                <small class="text-muted">Goal: 100%</small>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <!-- Upcoming Assignments Column -->
-        <div class="col-lg-6">
-            <div class="dashboard-card">
-                <div class="card-header">
-                    <h2 class="card-title">📝 Upcoming Assignments</h2>
-                    <span class="status-badge" style="background-color: rgba(59, 21, 58, 0.1); color: var(--primary-dark);">
-                        {{ upcoming_assignments|length }} due
-                    </span>
-                </div>
-
-                {% if upcoming_assignments %}
-                    <ul class="assignment-list">
-                        {% for assignment in upcoming_assignments %}
-                            <li class="assignment-item">
-                                <div class="d-flex align-items-center">
-                                    <div class="assignment-icon">
-                                        <i class="fas fa-book-open"></i>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <h3 class="assignment-title">{{ assignment.title }}</h3>
-                                        <div class="d-flex align-items-center">
-                                            <span class="assignment-due">
-                                                <i class="far fa-calendar-alt me-1"></i>
-                                                {{ assignment.due_date|date:"M d, Y H:i" }}
-                                            </span>
-                                            {% if assignment.is_urgent %}
-                                                <span class="urgent-badge ms-2">Urgent</span>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                    <a href="{% url 'assignments:assignment_detail' assignment.pk %}" class="view-btn">
-                                        View
-                                    </a>
-                                </div>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <div class="empty-state">
-{#                        <img src="{% static 'images/no-assignments.svg' %}" alt="No assignments" class="empty-state-img">#}
-                        <p class="text-muted">No upcoming assignments. Enjoy your free time!</p>
-                    </div>
-                {% endif %}
-            </div>
-        </div>
-
-        <!-- Your Courses Column -->
-        <div class="col-lg-6">
-            <div class="dashboard-card">
-                <div class="card-header">
-                    <h2 class="card-title">🎓 Your Courses</h2>
-                    <span class="status-badge" style="background-color: rgba(240, 201, 135, 0.2); color: var(--primary-dark);">
-                        {{ courses|length }} enrolled
-                    </span>
-                </div>
-
-                {% if courses %}
-                    <div class="courses-grid">
-                        {% for course in courses %}
-                            <div class="course-card">
-                                <div class="card-body" style="padding: 1.5rem;">
-                                    <div class="course-icon">
-                                        <i class="fas fa-graduation-cap"></i>
-                                    </div>
-                                    <h3 class="course-name">{{ course.name }}</h3>
-                                    <p class="course-description">{{ course.description|truncatewords:12 }}</p>
-                                    <a href="{% url 'courses:course_detail' course.pk %}" class="continue-btn">
-                                        Continue Learning
-                                    </a>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    <div class="empty-state">
-                        <img src="{% static 'images/no-courses.svg' %}" alt="No courses" class="empty-state-img">
-                        <p class="text-muted">You're not enrolled in any courses yet.</p>
-                        <a href="#" class="browse-btn">Browse Courses</a>
-                    </div>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-</div>
+    </style>
 {% endblock %}

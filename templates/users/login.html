@@ -1,119 +1,243 @@
-{% extends 'base.html' %}
-{% block content %}
-<style>
-/* Container styling */
-.login-container {
-  max-width: 400px;
-  margin: 60px auto;
-  padding: 30px;
-  background-color: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-  font-family: 'Arial', sans-serif;
-}
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход | LMS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #002147;
+            --secondary-color: #D2B48C;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --text-color: #333;
+            --text-light: #6c757d;
+            --white: #ffffff;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
 
-/* Title styling */
-.login-title {
-  text-align: center;
-  margin-bottom: 20px;
-  font-size: 2em;
-  color: #333;
-}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-/* Form styling */
-.login-form {
-  display: flex;
-  flex-direction: column;
-}
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(0, 33, 71, 0.05) 0%, rgba(210, 180, 140, 0.05) 100%);
+        }
 
-.login-form p {
-  margin-bottom: 10px;
-}
+        .login-container {
+            width: 100%;
+            max-width: 450px;
+            background-color: var(--white);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: var(--transition);
+            position: relative;
+            z-index: 1;
+        }
 
-/* Buttons inside form */
-.login-btn {
-  width: 100%;
-  padding: 12px;
-  font-size: 1em;
-  margin-top: 15px;
-  border-radius: 5px;
-  transition: background-color 0.3s ease;
-}
+        .login-container:hover {
+            box-shadow: 0 10px 30px rgba(0, 33, 71, 0.15);
+        }
 
-.login-btn:hover {
-  background-color: #0056b3;
-}
+        .login-header {
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
 
-/* Divider styling */
-.divider {
-  text-align: center;
-  margin: 20px 0;
-  font-weight: bold;
-  color: #999;
-  position: relative;
-}
+        .login-header h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
 
-.divider::before,
-.divider::after {
-  content: '';
-  height: 1px;
-  background-color: #ccc;
-  position: absolute;
-  top: 50%;
-  width: 40%;
-}
+        .login-header p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
 
-.divider::before {
-  left: 0;
-}
+        .login-header:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100%;
+            height: 20px;
+            background-color: var(--white);
+            clip-path: polygon(0 0, 100% 0, 50% 100%);
+        }
 
-.divider::after {
-  right: 0;
-}
+        .login-body {
+            padding: 30px;
+        }
 
-/* Registration section */
-.register-p {
-  text-align: center;
-  margin-bottom: 15px;
-  font-size: 1.1em;
-  color: #555;
-}
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
 
-/* Registration buttons styling */
-.register-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--primary-color);
+        }
 
-.register-btn {
-  text-align: center;
-  padding: 10px;
-  font-size: 1em;
-  border-radius: 5px;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
+        .form-group input {
+            width: 100%;
+            padding: 14px 20px 14px 45px;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
 
-.register-btn:hover {
-  opacity: 0.9;
-}
-</style>
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(210, 180, 140, 0.2);
+        }
 
-<div class="login-container">
-  <h2 class="login-title">Login</h2>
+        .form-group i {
+            position: absolute;
+            left: 15px;
+            top: 42px;
+            color: var(--secondary-color);
+            font-size: 1.1rem;
+        }
 
-  <form method="post" class="login-form">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary login-btn">Login</button>
-  </form>
+        .errorlist {
+            list-style: none;
+            color: #dc3545;
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
 
-  <div class="divider">или</div>
+        .non-field-errors {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
 
-  <p class="register-p">Нямаш акаунт?</p>
-  <div class="register-buttons">
-    <a href="{% url 'users:register_student' %}" class="btn btn-outline-success register-btn">Регистрация като студент</a>
-    <a href="{% url 'users:register_teacher' %}" class="btn btn-outline-info register-btn">Регистрация като преподавател</a>
-  </div>
-</div>
-{% endblock %}
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-login:hover {
+            background-color: var(--primary-color);
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+
+        .login-footer {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .login-footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .login-footer a:hover {
+            color: var(--secondary-color);
+            text-decoration: underline;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .login-header {
+                padding: 20px;
+            }
+            
+            .login-body {
+                padding: 20px;
+            }
+            
+            .login-header h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h2><i class="fas fa-sign-in-alt"></i> Вход в системата</h2>
+            <p>Моля, въведете вашите данни за вход</p>
+        </div>
+        
+        <div class="login-body">
+            {% if form.non_field_errors %}
+                <div class="non-field-errors">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+            
+            <form method="POST">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="{{ form.username.id_for_label }}">Потребителско име</label>
+                    <i class="fas fa-user"></i>
+                    {{ form.username }}
+                    {{ form.username.errors }}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.password.id_for_label }}">Парола</label>
+                    <i class="fas fa-lock"></i>
+                    {{ form.password }}
+                    {{ form.password.errors }}
+                </div>
+                
+                <button type="submit" class="btn-login">
+                    <i class="fas fa-sign-in-alt"></i> Влез
+                </button>
+            </form>
+            
+            <div class="login-footer">
+                <p>Нямате акаунт? <a href="{% url 'users:register' %}">Регистрирайте се</a></p>
+                <p><a href="#">Забравена парола?</a></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -11,11 +11,12 @@ class AssignmentForm(forms.ModelForm):
 
     class Meta:
         model = Assignment
-        fields = ['title', 'description', 'topic', 'due_date']
+        fields = ['title', 'description', 'topic', 'due_date', 'course']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Assignment Title'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Assignment Description'}),
             'topic': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Topic'}),
+            'course': forms.Select(attrs={'class': 'form-select'}),
         }
 
     def clean_due_date(self):

@@ -1,269 +1,896 @@
-{% extends "base.html" %}
-
-{% block extra_css %}
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-<style>
-    :root {
-        --primary: #4361ee;
-        --primary-light: #e6f0ff;
-        --secondary: #3f37c9;
-        --accent: #f72585;
-        --dark: #212529;
-        --light: #f8f9fa;
-        --success: #4cc9f0;
-        --warning: #f8961e;
-        --danger: #ef233c;
-        --gray: #6c757d;
-        --border-radius: 12px;
-        --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
-        --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
-        --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
-        --transition: all 0.3s ease;
-    }
-
-    .teacher-dashboard {
-        font-family: 'Inter', sans-serif;
-        position: relative;
-        overflow: hidden;
-        min-height: calc(100vh - 80px);
-        padding: 2rem 1rem;
-        background-color: #f5f7ff;
-        color: var(--dark);
-    }
-
-    .dashboard-decoration {
-        position: absolute;
-        color: rgba(67, 97, 238, 0.05);
-        font-size: 20vw;
-        z-index: 0;
-    }
-
-    .decoration-1 {
-        top: -50px;
-        left: -50px;
-    }
-
-    .decoration-2 {
-        bottom: -100px;
-        right: -50px;
-    }
-
-    .dashboard-container {
-        position: relative;
-        z-index: 1;
-        max-width: 1400px;
-        margin: 0 auto;
-    }
-
-    .dashboard-header {
-        text-align: center;
-        margin-bottom: 3rem;
-        padding: 0 1rem;
-    }
-
-    .dashboard-header h1 {
-        font-weight: 800;
-        font-size: 2.5rem;
-        margin-bottom: 1rem;
-        color: var(--primary);
-    }
-
-    .dashboard-header p {
-        font-size: 1.2rem;
-        color: var(--gray);
-        max-width: 700px;
-        margin: 0 auto;
-    }
-
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 1.5rem;
-        margin-bottom: 3rem;
-    }
-
-    .stat-card {
-        background: white;
-        border-radius: var(--border-radius);
-        padding: 2rem;
-        text-align: center;
-        box-shadow: var(--shadow-sm);
-        transition: var(--transition);
-        border-left: 4px solid var(--primary);
-    }
-
-    .stat-card:hover {
-        transform: translateY(-5px);
-        box-shadow: var(--shadow-lg);
-    }
-
-    .stat-card i {
-        font-size: 2.5rem;
-        color: var(--primary);
-        margin-bottom: 1rem;
-    }
-
-    .stat-card h3 {
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin: 0.5rem 0;
-        color: var(--dark);
-    }
-
-    .stat-card p {
-        color: var(--gray);
-        margin: 0;
-        font-size: 1rem;
-    }
-
-    .quick-actions {
-        background: white;
-        border-radius: var(--border-radius);
-        padding: 2rem;
-        box-shadow: var(--shadow-sm);
-    }
-
-    .quick-actions h2 {
-        font-weight: 700;
-        margin-bottom: 2rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        color: var(--primary);
-    }
-
-    .quick-actions h2 i {
-        font-size: 1.5rem;
-    }
-
-    .action-buttons {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 1.5rem;
-    }
-
-    .action-button {
-        display: flex;
-        flex-direction: column;
-        background: var(--primary-light);
-        border-radius: var(--border-radius);
-        padding: 1.5rem;
-        text-decoration: none;
-        color: var(--dark);
-        transition: var(--transition);
-        border-left: 4px solid var(--primary);
-    }
-
-    .action-button:hover {
-        transform: translateY(-3px);
-        box-shadow: var(--shadow-md);
-        background: white;
-    }
-
-    .action-button i {
-        font-size: 2rem;
-        color: var(--primary);
-        margin-bottom: 1rem;
-    }
-
-    .action-button h3 {
-        font-size: 1.25rem;
-        font-weight: 600;
-        margin: 0 0 0.5rem 0;
-    }
-
-    .action-button p {
-        color: var(--gray);
-        margin: 0;
-        font-size: 0.9rem;
-    }
-
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-        .dashboard-header h1 {
-            font-size: 2rem;
-        }
-        
-        .dashboard-header p {
-            font-size: 1rem;
-        }
-        
-        .stat-card, .action-button {
-            padding: 1.5rem 1rem;
-        }
-    }
-
-    @media (max-width: 480px) {
-        .stats-grid, .action-buttons {
-            grid-template-columns: 1fr;
-        }
-        
-        .dashboard-header h1 {
-            font-size: 1.8rem;
-        }
-    }
-</style>
-{% endblock %}
+{% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-<div class="teacher-dashboard">
-    <i class="fas fa-chalkboard-teacher dashboard-decoration decoration-1" aria-hidden="true"></i>
-    <i class="fas fa-book-open dashboard-decoration decoration-2" aria-hidden="true"></i>
-
-    <div class="dashboard-container">
+    <div class="teacher-dashboard">
+        <!-- Dashboard Header -->
         <div class="dashboard-header">
-            <h1>Добре дошъл в учителския панел!</h1>
-            <p>Тук ще можеш да създаваш задания, да оценяваш студенти и да управляваш своите курсове.</p>
+            <div class="header-content">
+                <h1><i class="bi bi-person-badge"></i> Teacher Dashboard</h1>
+                <p class="welcome-message">Welcome back, {{ request.user.username }}! Here's an overview of your courses and activity.</p>
+            </div>
+            <div class="quick-actions">
+{#                <a href="{% url 'courses:create_course' %}" class="action-btn primary">#}
+{#                    <i class="bi bi-plus-circle"></i> New Course#}
+{#                </a>#}
+                <a href="{% url 'assignments:create_assignment' %}" class="action-btn secondary">
+                    <i class="bi bi-file-earmark-plus"></i> New Assignment
+                </a>
+            </div>
         </div>
 
+        <!-- Stats Cards -->
         <div class="stats-grid">
-            <div class="stat-card">
-                <i class="fas fa-tasks"></i>
-                <h3>{{ assignments_count }}</h3>
-                <p>Активни задания</p>
+            <div class="stat-card primary">
+                <div class="stat-icon">
+                    <i class="bi bi-file-earmark-text"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>Total Submissions</h3>
+                    <p class="stat-value">{{ total_submissions }}</p>
+                </div>
             </div>
 
-            <div class="stat-card">
-                <i class="fas fa-users"></i>
-                <h3>{{ student_count }}</h3>
-                <p>Студенти</p>
+            <div class="stat-card success">
+                <div class="stat-icon">
+                    <i class="bi bi-check-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>Graded Submissions</h3>
+                    <p class="stat-value">{{ graded_submissions }}</p>
+                </div>
             </div>
 
-            <div class="stat-card">
-                <i class="fas fa-book"></i>
-                <h3>{{ course_count }}</h3>
-                <p>Курсове</p>
+            <div class="stat-card warning">
+                <div class="stat-icon">
+                    <i class="bi bi-clock-history"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>Pending Grading</h3>
+                    <p class="stat-value">{{ pending_submissions|default:"0" }}</p>
+                </div>
+            </div>
+
+            <div class="stat-card info">
+                <div class="stat-icon">
+                    <i class="bi bi-people"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>Total Students</h3>
+                    <p class="stat-value">{{ total_students|default:"0" }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Courses Section -->
+        <section class="dashboard-section">
+            <div class="section-header">
+                <h2><i class="bi bi-book"></i> Your Courses</h2>
+                <div class="filter-controls">
+                    <form method="get" class="course-filter">
+                        <select name="course" id="course" class="filter-select" onchange="this.form.submit()">
+                            <option value="">-- All Courses --</option>
+                            {% for course in courses %}
+                                <option value="{{ course.id }}"
+                                        {% if course.id|stringformat:"s" == selected_course_id %}selected{% endif %}>
+                                    {{ course.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </form>
+                </div>
+            </div>
+
+            {% if courses %}
+                <div class="courses-grid">
+                    {% for course in courses %}
+                        <div class="course-card">
+                            <div class="course-header">
+                                <h3>{{ course.name }}</h3>
+                                <span class="enrollment-count">{{ course.enrollments.count }} students</span>
+                            </div>
+                            <p class="course-description">{{ course.description|truncatewords:20 }}</p>
+                            <div class="course-footer">
+                                <a href="{% url 'courses:course_detail' course.id %}" class="action-btn small primary">
+                                    <i class="bi bi-eye"></i> View
+                                </a>
+                                <div class="progress-container">
+                                    <div class="progress-bar" style="width: {{ course.completion_rate }}%"></div>
+                                    <span>{{ course.completion_rate }}% completed</span>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <i class="bi bi-book"></i>
+                    <p>You haven't created any courses yet.</p>
+                    <a href="{% url 'courses:create_course' %}" class="action-btn primary">
+                        <i class="bi bi-plus-circle"></i> Create Your First Course
+                    </a>
+                </div>
+            {% endif %}
+        </section>
+
+        <!-- Recent Activity Section -->
+        <div class="activity-columns">
+            <!-- Active Students -->
+            <div class="activity-column">
+                <div class="section-header">
+                    <h2><i class="bi bi-lightning-charge"></i> Most Active Students</h2>
+                </div>
+
+                {% if active_students %}
+                    <div class="student-list">
+                        {% for student in active_students %}
+                            <div class="student-item">
+                                <div class="student-avatar">
+                                    {% if student.user.profile_picture %}
+                                        <img src="{{ student.user.profile_picture.url }}"
+                                             alt="{{ student.user.username }}">
+                                    {% else %}
+                                        <i class="bi bi-person-circle"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="student-info">
+                                    <h4>{{ student.user.username }}</h4>
+                                    <p>Last activity: {{ student.latest_submission_time|date:"d.m.Y H:i" }}</p>
+                                </div>
+                                <span class="submission-count">{{ student.submission_count }} submissions</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state small">
+                        <i class="bi bi-people"></i>
+                        <p>No recent student activity.</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Recent Submissions -->
+            <div class="activity-column">
+                <div class="section-header">
+                    <h2><i class="bi bi-clock-history"></i> Recent Submissions</h2>
+                </div>
+
+                {% if recent_submissions %}
+                    <div class="submissions-list">
+                        {% for sub in recent_submissions %}
+                            <div class="submission-item {% if sub.grade %}graded{% else %}pending{% endif %}">
+                                <div class="submission-meta">
+                                    <div class="student-avatar small">
+                                        {% if sub.student.user.profile_picture %}
+                                            <img src="{{ sub.student.user.profile_picture.url }}"
+                                                 alt="{{ sub.student.user.username }}">
+                                        {% else %}
+                                            <i class="bi bi-person-circle"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div class="submission-info">
+                                        <h4>{{ sub.assignment.title }}</h4>
+                                        <p>{{ sub.student.user.username }} | {{ sub.submitted_at|date:"d.m.Y H:i" }}</p>
+                                    </div>
+                                </div>
+{#                                <a href="{% url 'submissions:grade_submission' submission_id=sub.id %}">#}
+                                    {% if sub.grade %}
+                                        <span class="status-badge success"><i
+                                                class="bi bi-check-circle"></i> Graded</span>
+                                    {% else %}
+                                        <span class="status-badge warning"><i
+                                                class="bi bi-clock"></i> Pending</span>
+                                    {% endif %}
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state small">
+                        <i class="bi bi-file-earmark-text"></i>
+                        <p>No recent submissions.</p>
+                    </div>
+                {% endif %}
             </div>
         </div>
 
-        <div class="quick-actions">
-            <h2><i class="fas fa-bolt"></i>Бързи действия</h2>
-            <div class="action-buttons">
-                <a href="#" class="action-button" aria-label="Създай задание">
-                    <i class="fas fa-plus-circle"></i>
-                    <h3>Ново задание</h3>
-                    <p>Създай ново задание за студентите</p>
-                </a>
-
-                <a href="#" class="action-button" aria-label="Оцени задания">
-                    <i class="fas fa-check-circle"></i>
-                    <h3>Оцени работа</h3>
-                    <p>Прегледай и оцени студентски задания</p>
-                </a>
-
-                <a href="#" class="action-button" aria-label="Статистика">
-                    <i class="fas fa-chart-line"></i>
-                    <h3>Статистика</h3>
-                    <p>Виж прогреса на студентите</p>
-                </a>
-
-                <a href="#" class="action-button" aria-label="Съобщения">
-                    <i class="fas fa-comments"></i>
-                    <h3>Съобщения</h3>
-                    <p>Провери новите съобщения</p>
-                </a>
+        <!-- Students by Course -->
+        <section class="dashboard-section">
+            <div class="section-header">
+                <h2><i class="bi bi-people-fill"></i> Students by Course</h2>
             </div>
-        </div>
+
+            <div class="enrollments-table">
+                <div class="table-header">
+                    <div class="header-cell">Course</div>
+                    <div class="header-cell">Enrolled Students</div>
+                    <div class="header-cell">Last Activity</div>
+                    <div class="header-cell">Actions</div>
+                </div>
+
+                {% for course in courses %}
+                    <div class="table-row">
+                        <div class="table-cell course-cell">
+                            <h4>{{ course.name }}</h4>
+                        </div>
+                        <div class="table-cell">
+                            <div class="student-avatars">
+                                {% for enrollment in course.enrollments.all|slice:":5" %}
+                                    <div class="avatar-tooltip">
+                                        {% if enrollment.student.user.profile_picture %}
+                                            <img src="{{ enrollment.student.user.profile_picture.url }}"
+                                                 alt="{{ enrollment.student.user.username }}">
+                                        {% else %}
+                                            <i class="bi bi-person-circle"></i>
+                                        {% endif %}
+                                        <span class="tooltip-text">{{ enrollment.student.user.username }}</span>
+                                    </div>
+                                {% endfor %}
+                                {% if course.enrollments.count > 5 %}
+                                    <div class="more-students">+{{ course.enrollments.count|add:-5 }}</div>
+                                {% endif %}
+                            </div>
+                            <span>{{ course.enrollments.count }} students</span>
+                        </div>
+                        <div class="table-cell">
+                            {% if course.last_activity %}
+                                {{ course.last_activity|date:"d.m.Y H:i" }}
+                            {% else %}
+                                No activity
+                            {% endif %}
+                        </div>
+                        <div class="table-cell">
+                            <a href="{% url 'courses:course_detail' course.id %}" class="action-btn small primary">
+                                <i class="bi bi-eye"></i> View
+                            </a>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="empty-row">
+                        <i class="bi bi-book"></i>
+                        <p>No courses with enrolled students.</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
     </div>
-</div>
+
+    <style>
+        /* Base Styles with New Color Scheme */
+        .teacher-dashboard {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+
+        /* Header Styles */
+        .dashboard-header {
+            background-color: #002147;
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 33, 71, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .header-content h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .welcome-message {
+            margin: 0.5rem 0 0;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
+        }
+
+        /* Button Styles */
+        .action-btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn.primary {
+            background-color: #d2b48c;
+            color: #002147;
+            border: none;
+        }
+
+        .action-btn.primary:hover {
+            background-color: #c0a57b;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(210, 180, 140, 0.4);
+        }
+
+        .action-btn.secondary {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .action-btn.secondary:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .action-btn.small {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            padding: 1.5rem;
+            border-radius: 12px;
+            color: white;
+            display: flex;
+            gap: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card.primary {
+            background: linear-gradient(135deg, #002147 0%, #003366 100%);
+        }
+
+        .stat-card.success {
+            background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
+        }
+
+        .stat-card.warning {
+            background: linear-gradient(135deg, #d2b48c 0%, #b39c7d 100%);
+            color: #002147;
+        }
+
+        .stat-card.info {
+            background: linear-gradient(135deg, #5d6d7e 0%, #34495e 100%);
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            opacity: 0.8;
+        }
+
+        .stat-content h3 {
+            margin: 0 0 0.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        /* Sections */
+        .dashboard-section {
+            margin-bottom: 3rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+            color: #002147;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .filter-select {
+            padding: 0.5rem 1rem;
+            border: 1px solid rgba(0, 33, 71, 0.2);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            background-color: white;
+            transition: all 0.3s ease;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #d2b48c;
+            box-shadow: 0 0 0 3px rgba(210, 180, 140, 0.3);
+        }
+
+        /* Courses Grid */
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .course-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 33, 71, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 33, 71, 0.1);
+        }
+
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 33, 71, 0.15);
+        }
+
+        .course-header {
+            padding: 1.25rem 1.5rem 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .course-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #002147;
+        }
+
+        .enrollment-count {
+            background: rgba(0, 33, 71, 0.1);
+            padding: 0.25rem 0.5rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #002147;
+        }
+
+        .course-description {
+            padding: 0 1.5rem;
+            margin: 0.75rem 0 1.25rem;
+            color: #5d6d7e;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .course-footer {
+            padding: 0 1.5rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .progress-container {
+            width: 60%;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: #d2b48c;
+            border-radius: 3px;
+            margin-bottom: 0.25rem;
+        }
+
+        .progress-container span {
+            font-size: 0.75rem;
+            color: #5d6d7e;
+        }
+
+        /* Activity Columns */
+        .activity-columns {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .activity-column {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 33, 71, 0.1);
+            border: 1px solid rgba(0, 33, 71, 0.1);
+        }
+
+        .student-list, .submissions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .student-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .student-item:hover {
+            background: rgba(210, 180, 140, 0.1);
+        }
+
+        .student-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(0, 33, 71, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #002147;
+            overflow: hidden;
+        }
+
+        .student-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .student-avatar.small {
+            width: 32px;
+            height: 32px;
+            font-size: 1.2rem;
+        }
+
+        .student-info h4 {
+            margin: 0;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #002147;
+        }
+
+        .student-info p {
+            margin: 0.25rem 0 0;
+            font-size: 0.8rem;
+            color: #5d6d7e;
+        }
+
+        .submission-count {
+            margin-left: auto;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #d2b48c;
+        }
+
+        .submission-item {
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid;
+            transition: all 0.3s ease;
+        }
+
+        .submission-item.graded {
+            border-left-color: #2e7d32;
+            background: rgba(46, 125, 50, 0.05);
+        }
+
+        .submission-item.pending {
+            border-left-color: #d2b48c;
+            background: rgba(210, 180, 140, 0.1);
+        }
+
+        .submission-item:hover {
+            transform: translateX(5px);
+        }
+
+        .submission-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .submission-info h4 {
+            margin: 0;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #002147;
+        }
+
+        .submission-info p {
+            margin: 0.25rem 0 0;
+            font-size: 0.8rem;
+            color: #5d6d7e;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .status-badge.success {
+            background: rgba(46, 125, 50, 0.1);
+            color: #2e7d32;
+        }
+
+        .status-badge.warning {
+            background: rgba(210, 180, 140, 0.2);
+            color: #002147;
+        }
+
+        /* Enrollments Table */
+        .enrollments-table {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 33, 71, 0.1);
+            border: 1px solid rgba(0, 33, 71, 0.1);
+        }
+
+        .table-header {
+            display: grid;
+            grid-template-columns: 2fr 1.5fr 1fr 1fr;
+            background: #002147;
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            color: white;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .table-row {
+            display: grid;
+            grid-template-columns: 2fr 1.5fr 1fr 1fr;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid rgba(0, 33, 71, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .table-row:last-child {
+            border-bottom: none;
+        }
+
+        .table-row:hover {
+            background: rgba(210, 180, 140, 0.1);
+        }
+
+        .table-cell {
+            display: flex;
+            align-items: center;
+        }
+
+        .course-cell h4 {
+            margin: 0;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #002147;
+        }
+
+        .student-avatars {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .avatar-tooltip {
+            position: relative;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(0, 33, 71, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .avatar-tooltip img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .tooltip-text {
+            visibility: hidden;
+            width: 120px;
+            background-color: #002147;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .avatar-tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .more-students {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(0, 33, 71, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #002147;
+        }
+
+        /* Empty States */
+        .empty-state {
+            background: rgba(0, 33, 71, 0.05);
+            border-radius: 12px;
+            padding: 3rem 2rem;
+            text-align: center;
+            color: #002147;
+        }
+
+        .empty-state i {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: rgba(0, 33, 71, 0.3);
+        }
+
+        .empty-state p {
+            margin: 0 0 1.5rem;
+            font-size: 1rem;
+        }
+
+        .empty-state.small {
+            padding: 1.5rem;
+        }
+
+        .empty-state.small i {
+            font-size: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .empty-state.small p {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        .empty-row {
+            padding: 2rem;
+            text-align: center;
+            color: #002147;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .empty-row i {
+            font-size: 1.5rem;
+            color: rgba(0, 33, 71, 0.3);
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 1200px) {
+            .enrollments-table .table-header,
+            .enrollments-table .table-row {
+                grid-template-columns: 2fr 1.5fr 1fr;
+            }
+
+            .enrollments-table .header-cell:last-child,
+            .enrollments-table .table-cell:last-child {
+                display: none;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .activity-columns {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .filter-controls {
+                width: 100%;
+            }
+
+            .filter-select {
+                width: 100%;
+            }
+
+            .enrollments-table .table-header,
+            .enrollments-table .table-row {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+                padding: 1rem;
+            }
+
+            .header-cell, .table-cell {
+                padding: 0.25rem 0;
+            }
+
+            .student-avatars {
+                justify-content: flex-start;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .courses-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .course-footer {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .progress-container {
+                width: 100%;
+            }
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Add any interactive JavaScript functionality here
+            // For example, tooltips, dynamic filtering, etc.
+        });
+    </script>
 {% endblock %}

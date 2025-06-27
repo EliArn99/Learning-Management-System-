@@ -209,12 +209,12 @@
                     <label for="course">Избери курс:</label>
                     <select name="course" id="course" class="form-select" required>
                         {% for course in courses %}
-                            <option value="{{ course.id }}">{{ course.title }}</option>
+                            <option value="{{ course.id }}">{{ course.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
             </div>
-
+        {# TODO: FIX CREATE ASSIGNMENT #}
             <div class="form-actions">
                 <button type="submit" class="submit-button">
                     <span>Създай задание</span>

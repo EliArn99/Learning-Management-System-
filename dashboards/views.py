@@ -5,6 +5,7 @@ from django.db.models import Count, Q
 
 from courses.models import Course
 from assignments.models import Assignment, Submission
+from users.models import StudentProfile
 
 
 def home(request):
@@ -26,21 +27,22 @@ def teacher_dashboard_view(request):
     teacher = request.user.teacherprofile
     courses = Course.objects.filter(teacher=teacher)
 
-    # Всички задания и предадени задания по тези курсове
+    total_students = StudentProfile.objects.filter(
+        enrollment__course__in=courses
+    ).distinct().count()
+
     assignments = Assignment.objects.filter(course__in=courses)
     submissions = Submission.objects.filter(assignment__in=assignments)
 
-    # Статистика
     total_submissions = submissions.count()
     graded_submissions = submissions.filter(grade__isnull=False).count()
 
-    # Последни 5 предавания
     recent_submissions = submissions.order_by('-submitted_at')[:5]
 
-    # Филтриране по курс (опционално)
     selected_course_id = request.GET.get("course")
     if selected_course_id:
         submissions = submissions.filter(assignment__course__id=selected_course_id)
+
 
     return render(request, 'dashboards/teacher_dashboard.html', {
         'courses': courses,
@@ -50,8 +52,8 @@ def teacher_dashboard_view(request):
         'total_submissions': total_submissions,
         'graded_submissions': graded_submissions,
         'selected_course_id': selected_course_id,
+        'total_students': total_students,
     })
-
 
 @login_required
 def student_dashboard_view(request):

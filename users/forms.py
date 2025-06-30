@@ -51,30 +51,15 @@ class TeacherRegisterForm(UserCreationForm):
         return user
 
 
-
-# class StudentProfileForm(forms.ModelForm):
-#     class Meta:
-#         model = StudentProfile
-#         fields = ['age', 'achievements', 'profile_picture']
-#         widgets = {
-#             'achievements': forms.Textarea(attrs={'rows': 4}),
-#         }
-#
-#
-# class TeacherProfileForm(forms.ModelForm):
-#     class Meta:
-#         model = TeacherProfile
-#         fields = ['age', 'education', 'experience_years', 'profile_picture']
-#         widgets = {
-#             'education': forms.TextInput(attrs={'placeholder': 'Висше образование и специалност'}),
-#             'experience_years': forms.NumberInput(attrs={'min': 0}),
-#         }
-
-
 class StudentProfileForm(forms.ModelForm):
     class Meta:
         model = StudentProfile
-        fields = ['age', 'achievements', 'profile_picture']  # faculty_number се генерира автоматично
+        fields = ['age', 'achievements', 'profile_picture'] # Добави 'profile_picture'
+        widgets = {
+            'age': forms.NumberInput(attrs={'class': 'form-control'}),
+            'achievements': forms.Textarea(attrs={'class': 'form-control'}),
+            'profile_picture': forms.ClearableFileInput(attrs={'class': 'form-control'}), 
+        } 
 
 class TeacherProfileForm(forms.ModelForm):
     class Meta:

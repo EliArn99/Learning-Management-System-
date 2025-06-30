@@ -1,50 +1,181 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
+<style>
+    .profile-container {
+        max-width: 800px;
+        margin: 40px auto;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        font-family: 'Segoe UI', sans-serif;
+    }
 
-<div class="teacher-profile-container">
-    <div class="teacher-profile-card">
-        <div class="teacher-profile-header">
-            <div class="teacher-title-wrapper">
-                <i class="bi bi-person-badge teacher-icon"></i>
-                <h1 class="teacher-profile-title">Профил на преподавател</h1>
-            </div>
-            <div class="teacher-status-badge">
-                <i class="bi bi-check-circle-fill"></i> Активен
-            </div>
-        </div>
+    .profile-header {
+        font-size: 28px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #2c3e50;
+    }
 
-        <div class="teacher-profile-content">
-            <form method="post" class="teacher-profile-form">
-                {% csrf_token %}
-                <div class="form-grid">
-                    {% for field in form %}
-                        <div class="form-group">
-                            <label for="{{ field.id_for_label }}" class="form-label">
-                                {{ field.label }}
-                                {% if field.field.required %}<span class="required-star">*</span>{% endif %}
-                            </label>
-                            {{ field }}
-                            {% if field.help_text %}
-                                <div class="form-help-text">{{ field.help_text }}</div>
-                            {% endif %}
-                            {% if field.errors %}
-                                <div class="error-message">{{ field.errors|striptags }}</div>
-                            {% endif %}
-                        </div>
-                    {% endfor %}
-                </div>
+    .profile-details p {
+        font-size: 16px;
+        margin: 8px 0;
+        line-height: 1.6;
+    }
 
-                <div class="form-actions">
-                    <button type="submit" class="save-button">
-                        <i class="bi bi-save"></i> Запази промените
-                    </button>
-                    <a href="#" class="cancel-button">
-                        <i class="bi bi-x-circle"></i> Отказ
-                    </a>
-                </div>
-            </form>
-        </div>
+    .section-title {
+        margin-top: 40px;
+        font-size: 22px;
+        color: #34495e;
+        border-bottom: 2px solid #eee;
+        padding-bottom: 6px;
+    }
+
+    .quiz-list {
+        list-style: none;
+        padding-left: 0;
+    }
+
+    .quiz-list li {
+        margin-bottom: 12px;
+        background: #f9f9f9;
+        padding: 15px;
+        border-radius: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: background 0.2s;
+    }
+
+    .quiz-list li:hover {
+        background: #f0f0f0;
+    }
+
+    .quiz-list a {
+        background: #3498db;
+        color: white;
+        padding: 8px 14px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 14px;
+        transition: background 0.2s;
+    }
+
+    .quiz-list a:hover {
+        background: #2980b9;
+    }
+
+    @media (max-width: 600px) {
+        .profile-header {
+            font-size: 22px;
+        }
+
+        .quiz-list li {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .quiz-list a {
+            align-self: flex-end;
+        }
+    }
+
+    /* --- Нов CSS за бутона "Редактирай профил" --- */
+    .edit-profile-button {
+        /* Основни стилове */
+        display: inline-flex; /* Използваме flexbox за подравняване на текст и евентуална икона */
+        align-items: center; /* Центрира елементи по вертикала */
+        justify-content: center; /* Центрира елементи по хоризонтала */
+        gap: 8px; /* Разстояние между текст и евентуална икона */
+
+        background-color: #4CAF50; /* По-приятен зелен цвят */
+        color: white;
+        padding: 12px 25px; /* Повече padding за по-голям бутон */
+        border: none;
+        border-radius: 8px; /* Закръглени ъгли */
+        text-decoration: none;
+        font-size: 1.05rem; /* Малко по-голям шрифт */
+        font-weight: 600;
+        cursor: pointer;
+
+        /* Анимации и интеракции */
+        transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+
+        /* Позициониране */
+        margin-top: 25px; /* Отстъп отгоре */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Лека сянка */
+    }
+
+    .edit-profile-button:hover {
+        background-color: #45a049; /* По-тъмно зелено при hover */
+        transform: translateY(-2px); /* Издигане на бутона при hover */
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15); /* По-изразена сянка при hover */
+    }
+
+    .edit-profile-button:active {
+        background-color: #3e8e41; /* Още по-тъмно при натискане */
+        transform: translateY(0); /* Връщане в първоначална позиция */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* По-малка сянка при натискане */
+    }
+
+    /* Можеш да добавиш иконка, ако искаш */
+    .edit-profile-button svg {
+        width: 18px;
+        height: 18px;
+        fill: currentColor; /* Иконата да е със същия цвят като текста */
+    }
+
+    /* Responsive adjustments for the button */
+    @media (max-width: 480px) {
+        .edit-profile-button {
+            padding: 10px 18px;
+            font-size: 0.95rem;
+            width: 100%; /* На малки екрани бутонът да заема цяла ширина */
+            text-align: center;
+        }
+    }
+</style>
+
+<div class="profile-container">
+    <div class="profile-header">👤 Профил на студента</div>
+
+    <div class="profile-details">
+        <p><strong>Име:</strong> {{ student.user.get_full_name }}</p>
+        <p><strong>Имейл:</strong> {{ student.user.email }}</p>
+        <p><strong>Факултетен номер:</strong> {{ student.faculty_number }}</p>
+        <p><strong>Възраст:</strong> {{ student.age }}</p>
+        {% if student.achievements %}
+            <p><strong>Постижения:</strong> {{ student.achievements }}</p>
+        {% endif %}
+
+        {# Бутонът за редактиране на профил #}
+        <a href="{% url 'users:edit_profile' %}" class="edit-profile-button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+              <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.121z"/>
+              <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+            </svg>
+            Редактирай профил
+        </a>
+
     </div>
+
+    <div class="section-title">📝 Предстоящи тестове</div>
+    <ul class="quiz-list">
+        {% for quiz in upcoming_quizzes %}
+            <li>
+                <div>{{ quiz.title }} — {{ quiz.course.name }}</div>
+                <a href="{% url 'quizz:quiz_take' quiz.pk %}">Стартирай</a>
+            </li>
+        {% empty %}
+            <li>Нямате предстоящи тестове.</li>
+        {% endfor %}
+    </ul>
 </div>
 {% endblock %}

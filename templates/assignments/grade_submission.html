@@ -1,48 +1,269 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% load static %}
 
 {% block content %}
-<div class="container my-5">
-    <h2 class="mb-4">Оценяване на задание</h2>
+<style>
+    /* General body and container styles */
+    body {
+        font-family: 'Inter', sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background-color: #f8f9fa;
+        margin: 0;
+        padding: 0;
+    }
 
-    <div class="card mb-4">
-        <div class="card-body">
-            <h5 class="card-title">{{ submission.assignment.title }}</h5>
-            <p class="card-text"><strong>Студент:</strong> {{ submission.student.user.get_full_name }} ({{ submission.student.user.username }})</p>
-            <p class="card-text"><strong>Предадено на:</strong> {{ submission.submitted_at|date:"d.m.Y H:i" }}</p>
-            <p class="card-text">
-                <strong>Файл на студента:</strong><br>
-                <a href="{{ submission.file.url }}" class="btn btn-outline-primary btn-sm mt-2" download>
-                    📎 Изтегли предадения файл
-                </a>
-            </p>
+    .grade-submission-container {
+        max-width: 800px;
+        margin: 3rem auto;
+        padding: 0 1.5rem;
+    }
+
+    .grade-submission-card {
+        background: #ffffff;
+        border-radius: 15px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        padding: 2.5rem;
+    }
+
+    .page-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: #2c3e50;
+        text-align: center;
+        margin-bottom: 2.5rem;
+        position: relative;
+        padding-bottom: 10px;
+    }
+
+    .page-title::after {
+        content: '';
+        display: block;
+        width: 60px;
+        height: 4px;
+        background-color: #4299e1;
+        margin: 10px auto 0;
+        border-radius: 2px;
+    }
+
+    .submission-info {
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        background-color: #f0f4f8;
+        border-radius: 10px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .submission-info p {
+        margin: 0.5rem 0;
+        font-size: 1rem;
+        color: #4a5568;
+    }
+
+    .submission-info strong {
+        color: #2c3e50;
+    }
+
+    .file-attachment {
+        margin-top: 1.5rem;
+        padding: 1rem;
+        background-color: #f9fafb;
+        border-radius: 8px;
+        border: 1px dashed #d1d5db;
+        text-align: center; /* Center content */
+    }
+
+    .file-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        background-color: #e2e8f0;
+        color: #4a5568;
+        border: 1px solid #cbd5e0;
+    }
+
+    .file-btn:hover {
+        background-color: #cbd5e0;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .no-file-message {
+        color: #888;
+        font-style: italic;
+        font-size: 0.9rem;
+        padding: 1rem;
+    }
+
+    .grading-form {
+        margin-top: 2rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        font-weight: 600;
+        color: #4a5568;
+        font-size: 0.95rem;
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-group input[type="number"],
+    .form-group textarea {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.2s ease;
+        background-color: #f8fafc;
+    }
+
+    .form-group input[type="number"]:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #4299e1;
+        box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+        background-color: #ffffff;
+    }
+
+    .form-group textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .submit-grade-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        background-color: #28a745; /* Green for submit */
+        color: white;
+        padding: 0.8rem 1.8rem;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .submit-grade-btn:hover {
+        background-color: #218838;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    .submit-grade-btn:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .error-message {
+        color: #e53e3e;
+        font-size: 0.85rem;
+        margin-top: 0.25rem;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .grade-submission-container {
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .grade-submission-card {
+            padding: 1.5rem;
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+            margin-bottom: 2rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .grade-submission-card {
+            padding: 1.2rem;
+        }
+
+        .submit-grade-btn {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="grade-submission-container">
+    <div class="grade-submission-card">
+        <h1 class="page-title">Оцени Задание</h1>
+
+        <div class="submission-info">
+            <p><strong>Задание:</strong> {{ submission.assignment.title }}</p>
+            <p><strong>Студент:</strong> {{ submission.student.user.username }}</p>
+            <p><strong>Предадено на:</strong> {{ submission.submitted_at|date:"d.m.Y H:i" }}</p>
+            <p><strong>Описание на заданието:</strong> {{ submission.assignment.description|linebreaksbr }}</p>
+
+            {% if submission.assignment.file %}
+                <div class="file-attachment">
+                    <p>Прикачен файл към заданието:</p>
+                    <a href="{{ submission.assignment.file.url }}" class="file-btn" download>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                        </svg>
+                        Изтегли файл на заданието
+                    </a>
+                </div>
+            {% endif %}
+
+            {# --- КОРЕКЦИЯТА Е ТУК --- #}
+            {% if submission.file %}
+                <div class="file-attachment mt-3">
+                    <p>Прикачен файл от студента:</p>
+                    <a href="{{ submission.file.url }}" class="file-btn" download>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                        </svg>
+                        Изтегли предаден файл
+                    </a>
+                </div>
+            {% else %}
+                <div class="file-attachment mt-3">
+                    <p class="no-file-message">Студентът не е прикачил файл към това предаване.</p>
+                </div>
+            {% endif %}
+            {# --- КРАЙ НА КОРЕКЦИЯТА --- #}
         </div>
+
+        <form method="post" class="grading-form">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.grade.label_tag }}
+                {{ form.grade }}
+                {% if form.grade.errors %}
+                    <div class="error-message">{{ form.grade.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.feedback.label_tag }}
+                {{ form.feedback }}
+                {% if form.feedback.errors %}
+                    <div class="error-message">{{ form.feedback.errors }}</div>
+                {% endif %}
+            </div>
+            <button type="submit" class="submit-grade-btn">Запази оценка</button>
+        </form>
     </div>
-
-    <form method="post" enctype="multipart/form-data" class="card p-4 shadow-sm">
-        {% csrf_token %}
-        <div class="mb-3">
-            <label for="id_grade" class="form-label">Оценка</label>
-            {{ form.grade }}
-        </div>
-        <div class="mb-3">
-            <label for="id_feedback" class="form-label">Обратна връзка</label>
-            {{ form.feedback }}
-        </div>
-        <div class="mb-3">
-            <label for="id_graded_file" class="form-label">Коригиран файл (по избор)</label>
-            {{ form.graded_file }}
-        </div>
-        <button type="submit" class="btn btn-success">💾 Запази оценката</button>
-    </form>
-
-    {% if submission.graded_file %}
-    <div class="alert alert-info mt-4">
-        <strong>Качен от учителя файл:</strong><br>
-        <a href="{{ submission.graded_file.url }}" class="btn btn-outline-secondary btn-sm mt-2" download>
-            📥 Изтегли коригирания файл
-        </a>
-    </div>
-    {% endif %}
 </div>
 {% endblock %}

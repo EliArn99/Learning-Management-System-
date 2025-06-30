@@ -53,15 +53,3 @@ class GradeSubmissionForm(forms.ModelForm):
             'grade': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Grade'}),
             'feedback': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Feedback'}),
         }
-
-
-
-
-# class SubmissionForm(forms.ModelForm):
-#     class Meta:
-#         model = Submission
-#         fields = ['file']
-#         widgets = {
-#             'file': forms.ClearableFileInput(attrs={'class': 'form-control'}),
-#         }
-

@@ -3,165 +3,99 @@
 
 {% block content %}
 <style>
-    /* Assignment Detail Page Styles */
-    .assignment-detail-container {
-        max-width: 800px;
-        margin: 2rem auto;
-        padding: 0 1.5rem;
-    }
+    /* ... (твоят съществуващ CSS) ... */
 
-    .assignment-card {
-        background: #ffffff;
-        border-radius: 12px;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-        border: none;
-        overflow: hidden;
-    }
-
-    .assignment-card-body {
-        padding: 2rem;
-    }
-
-    .assignment-title {
-        font-size: 1.8rem;
-        font-weight: 700;
-        color: #2d3748;
-        margin-bottom: 0.5rem;
-    }
-
-    .assignment-due-date {
-        color: #6b7280;
-        font-size: 0.95rem;
-        margin-bottom: 1.5rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .assignment-divider {
-        border: none;
-        height: 1px;
-        background-color: #e5e7eb;
-        margin: 1.5rem 0;
-    }
-
-    .section-title {
-        font-size: 1.2rem;
-        font-weight: 600;
-        color: #2d3748;
-        margin-bottom: 1rem;
-    }
-
-    .assignment-description {
-        color: #4b5563;
-        line-height: 1.6;
-        white-space: pre-line;
-    }
-
-    .file-attachment {
-        margin-top: 1.5rem;
-        padding: 1rem;
-        background-color: #f9fafb;
-        border-radius: 8px;
-        border: 1px dashed #d1d5db;
-    }
-
-    .file-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.5rem 1rem;
-        border-radius: 8px;
-        font-size: 0.9rem;
-        font-weight: 500;
-        text-decoration: none;
-        transition: all 0.2s ease;
-    }
-
-    .file-download-btn {
-        background-color: #f3f4f6;
-        color: #374151;
-        border: 1px solid #e5e7eb;
-    }
-
-    .file-download-btn:hover {
-        background-color: #e5e7eb;
-    }
-
-    .submission-section {
+    /* Добавени/модифицирани стилове за секцията за учители */
+    .teacher-grading-section {
         margin-top: 2rem;
         padding-top: 1.5rem;
+        border-top: 1px dashed #e5e7eb; /* Разделител */
     }
 
-    .submission-status {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-weight: 500;
+    .teacher-grading-section h3 {
+        margin-bottom: 1rem;
+    }
+
+    .grading-form-group {
+        margin-bottom: 1rem;
+    }
+
+    .grading-form-group label {
+        font-weight: 600;
+        color: #4a5568;
+        font-size: 0.95rem;
+        display: block;
         margin-bottom: 0.5rem;
     }
 
-    .submitted-date {
-        color: #6b7280;
-        font-size: 0.9rem;
-        margin-bottom: 1rem;
-    }
-
-    .action-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.5rem 1.25rem;
+    .grading-form-group input[type="number"],
+    .grading-form-group textarea {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid #e2e8f0;
         border-radius: 8px;
-        font-weight: 500;
-        font-size: 0.9rem;
+        font-size: 1rem;
         transition: all 0.2s ease;
+        background-color: #f8fafc;
     }
 
-    .submit-btn {
-        background-color: #10b981;
+    .grading-form-group input[type="number"]:focus,
+    .grading-form-group textarea:focus {
+        outline: none;
+        border-color: #4299e1;
+        box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+        background-color: #ffffff;
+    }
+
+    .grading-form-group textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .grade-submit-btn {
+        background-color: #28a745; /* Зелен бутон за оценка */
         color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
         border: none;
+        cursor: pointer;
+        transition: background-color 0.2s ease, transform 0.2s ease;
+        margin-top: 1rem;
     }
 
-    .submit-btn:hover {
-        background-color: #0d9f6e;
-        color: white;
+    .grade-submit-btn:hover {
+        background-color: #218838;
         transform: translateY(-1px);
     }
 
-    .edit-btn {
-        background-color: #3b82f6;
-        color: white;
-        border: none;
-    }
-
-    .edit-btn:hover {
-        background-color: #2563eb;
-        color: white;
-        transform: translateY(-1px);
-    }
-
-    .warning-text {
-        color: #f59e0b;
-        font-weight: 500;
+    .current-grade-display {
+        background-color: #e6f7e9; /* Светло зелен фон за показана оценка */
+        border: 1px solid #c3e6cb;
+        padding: 1rem;
+        border-radius: 8px;
         margin-bottom: 1rem;
     }
 
-    /* Responsive Design */
-    @media (max-width: 768px) {
-        .assignment-detail-container {
-            padding: 0 1rem;
-        }
-
-        .assignment-card-body {
-            padding: 1.5rem;
-        }
-
-        .assignment-title {
-            font-size: 1.5rem;
-        }
+    .current-grade-display p {
+        margin: 0.5rem 0;
+        font-size: 1rem;
+        color: #155724;
     }
+
+    .current-grade-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #28a745;
+    }
+
+    .no-submission-message-teacher {
+        color: #6c757d;
+        font-style: italic;
+        margin-top: 1rem;
+    }
+
 </style>
 
 <div class="assignment-detail-container">
@@ -193,40 +127,120 @@
                 </div>
             {% endif %}
 
+            {# Секция за студентско предаване #}
             {% if user.is_authenticated and user.is_student %}
                 <div class="submission-section">
                     <hr class="assignment-divider">
-                    <h3 class="section-title">Your Submission</h3>
+                    <h3 class="section-title">Вашето предаване</h3>
 
                     {% if submission %}
                         <p class="submission-status">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                                 <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z"/>
                             </svg>
-                            Status: Submitted
+                            Статус: Предадено
                         </p>
                         <p class="submitted-date">
-                            Submitted on: {{ submission.submitted_at|date:"M d, Y H:i" }}
+                            Предадено на: {{ submission.submitted_at|date:"M d, Y H:i" }}
                         </p>
+                        {# Ако има прикачен файл от студента #}
+                        {% if submission.file %}
+                            <div class="file-attachment">
+                                <h4 class="section-title">Прикачен файл от вас</h4>
+                                <a href="{{ submission.file.url }}" class="file-btn file-download-btn" download>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293V6.5z"/>
+                                        <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
+                                    </svg>
+                                    {{ submission.file.name|cut:"submissions/files/" }} {# Промени пътя, ако е различен #}
+                                </a>
+                            </div>
+                        {% endif %}
+
+                        {# Показване на оценка и обратна връзка за студента #}
+                        {% if submission.grade %}
+                            <div class="current-grade-display mt-4">
+                                <p>Вашата оценка: <span class="current-grade-value">{{ submission.grade }}</span></p>
+                                {% if submission.feedback %}
+                                    <p>Обратна връзка: {{ submission.feedback }}</p>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            <p class="warning-text mt-4">Все още няма оценка за това задание.</p>
+                        {% endif %}
+
+
                         <a href="{% url 'assignments:edit_submission' submission.id %}" class="action-btn edit-btn">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                                 <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
                             </svg>
-                            Edit Submission
+                            Редактирай предаване
                         </a>
                     {% else %}
                         <p class="warning-text">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                                 <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
                             </svg>
-                            You haven't submitted this assignment yet
+                            Все още не сте предали това задание.
                         </p>
                         <a href="{% url 'assignments:submit' assignment.id %}" class="action-btn submit-btn">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                                 <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z"/>
                             </svg>
-                            Submit Assignment
+                            Предай задание
                         </a>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            {# Секция за оценка от преподавател #}
+            {% if user.is_authenticated and user.is_teacher %}
+                <div class="teacher-grading-section">
+                    <hr class="assignment-divider">
+                    <h3 class="section-title">Оценяване на задание</h3>
+
+                    {% if submission %} {# Проверяваме дали има submission, което да оценим #}
+                        <p class="submission-status">
+                            Студент: <strong>{{ submission.student.user.get_full_name|default:submission.student.user.username }}</strong>
+                            (Предадено на: {{ submission.submitted_at|date:"d.m.Y H:i" }})
+                        </p>
+                        {# Показваме файла, ако студентът е прикачил такъв #}
+                        {% if submission.file %}
+                            <div class="file-attachment mt-3">
+                                <h4 class="section-title">Прикачен файл от студента</h4>
+                                <a href="{{ submission.file.url }}" class="file-btn file-download-btn" download>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293V6.5z"/>
+                                        <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
+                                    </svg>
+                                    {{ submission.file.name|cut:"submissions/files/" }}
+                                </a>
+                            </div>
+                        {% else %}
+                             <p class="warning-text">Студентът не е прикачил файл.</p>
+                        {% endif %}
+
+
+                        <form method="post" action="{% url 'assignments:grade_submission' submission.id %}" class="mt-4">
+                            {% csrf_token %}
+                            <div class="grading-form-group">
+                                {{ grade_form.grade.label_tag }}
+                                {{ grade_form.grade }}
+                                {% if grade_form.grade.errors %}
+                                    <div class="error-message">{{ grade_form.grade.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="grading-form-group">
+                                {{ grade_form.feedback.label_tag }}
+                                {{ grade_form.feedback }}
+                                {% if grade_form.feedback.errors %}
+                                    <div class="error-message">{{ grade_form.feedback.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <button type="submit" class="grade-submit-btn">Запази оценка</button>
+                        </form>
+                    {% else %}
+                        <p class="no-submission-message-teacher">Няма предадени задания за този студент или задание, които да оцените тук. Моля, използвайте <a href="{% url 'assignments:teacher_submissions' %}">списъка с всички предавания</a>.</p>
                     {% endif %}
                 </div>
             {% endif %}

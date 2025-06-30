@@ -7,12 +7,13 @@
         <div class="dashboard-header">
             <div class="header-content">
                 <h1><i class="bi bi-person-badge"></i> Teacher Dashboard</h1>
-                <p class="welcome-message">Welcome back, {{ request.user.username }}! Here's an overview of your courses and activity.</p>
+                <p class="welcome-message">Welcome back, {{ request.user.username }}! Here's an overview of your courses
+                    and activity.</p>
             </div>
             <div class="quick-actions">
-{#                <a href="{% url 'courses:create_course' %}" class="action-btn primary">#}
-{#                    <i class="bi bi-plus-circle"></i> New Course#}
-{#                </a>#}
+                {#                <a href="{% url 'courses:create_course' %}" class="action-btn primary">#}
+                {#                    <i class="bi bi-plus-circle"></i> New Course#}
+                {#                </a>#}
                 <a href="{% url 'assignments:create_assignment' %}" class="action-btn secondary">
                     <i class="bi bi-file-earmark-plus"></i> New Assignment
                 </a>
@@ -28,6 +29,9 @@
                 <div class="stat-content">
                     <h3>Total Submissions</h3>
                     <p class="stat-value">{{ total_submissions }}</p>
+                    <a href="{% url 'assignments:assignment_list' %}" class="view-submissions-button">
+                        Виж всички задания
+                    </a>
                 </div>
             </div>
 
@@ -173,15 +177,15 @@
                                         <p>{{ sub.student.user.username }} | {{ sub.submitted_at|date:"d.m.Y H:i" }}</p>
                                     </div>
                                 </div>
-{#                                <a href="{% url 'submissions:grade_submission' submission_id=sub.id %}">#}
-                                    {% if sub.grade %}
-                                        <span class="status-badge success"><i
-                                                class="bi bi-check-circle"></i> Graded</span>
-                                    {% else %}
-                                        <span class="status-badge warning"><i
-                                                class="bi bi-clock"></i> Pending</span>
-                                    {% endif %}
-                                </a>
+                                {#                                <a href="{% url 'submissions:grade_submission' submission_id=sub.id %}">#}
+                                {% if sub.grade %}
+                                    <span class="status-badge success"><i
+                                            class="bi bi-check-circle"></i> Graded</span>
+                                {% else %}
+                                    <span class="status-badge warning"><i
+                                            class="bi bi-clock"></i> Pending</span>
+                                {% endif %}
+                                {#                                </a>#}
                             </div>
                         {% endfor %}
                     </div>
@@ -265,6 +269,53 @@
             color: #333;
             background-color: #f8f9fa;
         }
+
+        /* Стилове за бутона "Виж всички задания" */
+        .view-submissions-button {
+            display: inline-flex; /* Позволява подравняване на текст и икона, ако има */
+            align-items: center;
+            justify-content: center;
+            gap: 8px; /* Разстояние между текст и евентуална икона */
+
+            background-color: #007bff; /* Примерно син цвят за бутона */
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px; /* Леко заоблени ъгли */
+            text-decoration: none; /* Премахване на подчертаването на линка */
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+            margin-top: 15px; /* Отстъп от брояча */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Лека сянка */
+        }
+
+        .view-submissions-button:hover {
+            background-color: #0056b3; /* По-тъмно синьо при hover */
+            transform: translateY(-2px); /* Лек "повдигащ" ефект */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .view-submissions-button:active {
+            transform: translateY(0); /* Връщане при клик */
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Можеш да добавиш иконка, ако искаш */
+        .view-submissions-button svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor; /* Иконата да е със същия цвят като текста */
+        }
+
+        /* Ако stat-content има нужда от flexbox за подравняване на елементи: */
+        /* .stat-content {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            # ... други стилове ...
+        } */
 
         /* Header Styles */
         .dashboard-header {
@@ -885,6 +936,7 @@
                 width: 100%;
             }
         }
+
     </style>
 
     <script>

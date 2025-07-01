@@ -44,7 +44,10 @@ INSTALLED_APPS = [
     'assignments',
     'messaging',
     'dashboards',
-    'widget_tweaks'
+    'widget_tweaks',
+    'quizz.apps.QuizzConfig',
+    'crispy_forms',
+    'crispy_bootstrap5',
 ]
 
 MIDDLEWARE = [
@@ -136,8 +139,9 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_URL = '/users/login/'          
-LOGIN_REDIRECT_URL = '/'             
+LOGIN_URL = '/users/login/'          # ← Пътят, където е твоят custom login
+LOGIN_REDIRECT_URL = '/'             # накъде да идваш след логин
+# LOGOUT_REDIRECT_URL = '/users/login/'
 LOGOUT_REDIRECT_URL = 'home'
 
 
@@ -149,3 +153,5 @@ EMAIL_HOST_USER = 'your_email@gmail.com'
 EMAIL_HOST_PASSWORD = 'your_email_password'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"

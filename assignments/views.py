@@ -1,4 +1,3 @@
-# assignments/views.py
 from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
@@ -95,8 +94,7 @@ def is_teacher(user):
 def teacher_submissions_view(request):
     submissions = Submission.objects.all().order_by('-submitted_at')
 
-    status_filter = request.GET.get('status')  # Get the 'status' parameter from the URL
-
+    status_filter = request.GET.get('status') 
     if status_filter == 'pending':
         submissions = submissions.filter(grade__isnull=True)
     elif status_filter == 'graded':
@@ -105,7 +103,7 @@ def teacher_submissions_view(request):
 
     return render(request, 'assignments/teacher_submissions.html', {
         'submissions': submissions,
-        'current_status_filter': status_filter  # Pass the current filter to the template for UI
+        'current_status_filter': status_filter  
     })
 
 
@@ -212,7 +210,7 @@ def teacher_dashboard_view(request):
         'recent_submissions': recent_submissions,
         'total_submissions': total_submissions,
         'graded_submissions': graded_submissions,
-        'pending_submissions': pending_submissions,
+        # 'pending_submissions': pending_submissions,
         'selected_course_id': selected_course_id,
         'total_students': total_students,
     })

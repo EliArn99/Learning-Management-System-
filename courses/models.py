@@ -1,114 +1,66 @@
-from courses.models import Course
-from assignments.models import Submission
-from users.models import StudentProfile
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from django.utils import timezone
 
-from courses.models import Course
-from assignments.models import Assignment
-from quizz.models import Quiz, Submission 
+from django.db import models
+from users.models import TeacherProfile, StudentProfile
+
+from django.utils.text import slugify
 
 
-def home(request):
-    return render(request, 'dashboards/home.html')
+class Course(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.TextField()
+    university_name = models.CharField(max_length=255, default="Your University Name")
+    teacher = models.ForeignKey(TeacherProfile, on_delete=models.SET_NULL, null=True, blank=True,
+                                related_name='taught_courses')
+    slug = models.SlugField(unique=True, blank=True)
+    # Added price field for PayPal integration
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
 
-def about(request):
-    return render(request, 'dashboards/about.html')
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base_slug = slugify(self.name)
+            counter = 1
+            slug_candidate = base_slug
+            while Course.objects.filter(slug=slug_candidate).exists():
+                slug_candidate = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug_candidate
+        super().save(*args, **kwargs)
 
-def contacts(request):
-    return render(request, 'dashboards/contacts.html')
-
-
-def dashboard_home_view(request):
-    return render(request, 'dashboards/dashboard_home.html')
-
-
-@login_required
-def teacher_dashboard_view(request):
-    teacher = request.user.teacherprofile
-    courses = Course.objects.filter(teacher=teacher)
-
-    total_students = StudentProfile.objects.filter(
-        enrollment__course__in=courses
-    ).distinct().count()
-
-    assignments = Assignment.objects.filter(course__in=courses)
-    submissions = Submission.objects.filter(assignment__in=assignments)
-
-    total_submissions = submissions.count()
-    graded_submissions = submissions.filter(grade__isnull=False).count()
-
-    recent_submissions = submissions.order_by('-submitted_at')[:5]
-
-    selected_course_id = request.GET.get("course")
-    if selected_course_id:
-        submissions = submissions.filter(assignment__course__id=selected_course_id)
+    def __str__(self):
+        return f'{self.name} - {self.university_name}'
 
 
-    return render(request, 'dashboards/teacher_dashboard.html', {
-        'courses': courses,
-        'assignments': assignments,
-        'submissions': submissions,
-        'recent_submissions': recent_submissions,
-        'total_submissions': total_submissions,
-        'graded_submissions': graded_submissions,
-        'selected_course_id': selected_course_id,
-        'total_students': total_students,
-    })
+class Enrollment(models.Model):
+    course = models.ForeignKey(Course, related_name='enrollments', on_delete=models.CASCADE)
+    student = models.ForeignKey(StudentProfile, on_delete=models.CASCADE)
+    enrolled_at = models.DateTimeField(auto_now_add=True)
+    slug = models.SlugField(unique=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(f"{self.student.user.username}-{self.course.name}")
+        super().save(*args, **kwargs)
+
+    class Meta:
+        unique_together = ('student', 'course')
+
+    def __str__(self):
+        return f'{self.student.user.username} - {self.course.name}'
 
 
+class ModuleCategory(models.Model):
+    name = models.CharField(max_length=100, unique=True)
 
-@login_required
-def student_dashboard_view(request):
-    current_user = request.user 
-    student_profile = current_user.studentprofile 
+    def __str__(self):
+        return self.name
 
-    courses = Course.objects.filter(enrollments__student=student_profile).distinct()
 
-    all_assignments = Assignment.objects.filter(course__in=courses)
-    all_quizzes = Quiz.objects.filter(course__in=courses)
+class Module(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='modules')
+    category = models.ForeignKey(ModuleCategory, on_delete=models.CASCADE, related_name='modules')
+    title = models.CharField(max_length=255)
+    code = models.CharField(max_length=20)
+    description = models.TextField()
 
-    now = timezone.now()
-
-    upcoming_assignments_queryset = all_assignments.filter(
-        due_date__gt=now
-    )
-
-    upcoming_quizzes_queryset = all_quizzes.filter(
-        available_until__gt=now
-    ).exclude(submissions__student=current_user) 
-
-    combined_upcoming_items = []
-
-    for assignment in upcoming_assignments_queryset:
-        combined_upcoming_items.append({
-            'type': 'assignment',
-            'pk': assignment.pk,
-            'title': assignment.title,
-            'due_date': assignment.due_date,
-            'is_urgent': (assignment.due_date - now).days < 3
-        })
-
-    for quiz in upcoming_quizzes_queryset:
-        combined_upcoming_items.append({
-            'type': 'quiz',
-            'pk': quiz.pk,
-            'title': quiz.title,
-            'due_date': quiz.available_until,
-            'is_urgent': (quiz.available_until - now).days < 3
-        })
-
-    upcoming_items_sorted = sorted(combined_upcoming_items, key=lambda x: x['due_date'])
-
-    total_quizzes = all_quizzes.count()
-    submitted_quizzes = Submission.objects.filter(student=current_user, quiz__in=all_quizzes).count() 
-
-    quiz_progress = int((submitted_quizzes / total_quizzes) * 100) if total_quizzes else 0
-
-    context = {
-        'courses': courses,
-        'upcoming_assignments': upcoming_items_sorted[:5],
-        'progress': quiz_progress,
-    }
-    return render(request, 'dashboards/student_dashboard.html', context)
+    def __str__(self):
+        return f"{self.title} ({self.code})"

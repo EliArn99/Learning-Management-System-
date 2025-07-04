@@ -1,53 +1,267 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Simple Checkout</title>
-</head>
-<body>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        /* Import Google Font - Inter */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-<div id="paypal-button-container"></div>
-<script
-        src="https://www.paypal.com/sdk/js?client-id=ASxoozE8GYdL1otAfewYf3evZgo5r1DWsJ3NiIwoH_kjpdd_7-qX3uUsmy7mncp_I2-AbPBVePNkPMpd&buyer-country=US&currency=USD&disable-funding=credit"
-        data-sdk-integration-source="developer-studio"
-></script>
-
-<script>
-    // Render the PayPal button into #paypal-button-container
-    paypal.Buttons({
-
-        style: {
-            color: 'blue',
-            shape: 'rect',
-            label: 'pay',
-            height: 40
-        },
-
-        // Set up the transaction
-        createOrder: function (data, actions) {
-            return actions.order.create({
-                purchase_units: [{
-                    amount: {
-                        value: '0.01'
-                    }
-                }]
-            });
-        },
-
-        // Finalize the transaction
-        onApprove: function (data, actions) {
-            return actions.order.capture().then(function (details) {
-                // Show a success message to the buyer
-                alert('Transaction completed by ' + details.payer.name.given_name + '!');
-            });
+        :root {
+            --primary-color: #003060; /* PayPal Blue */
+            --secondary-color: #0070BA; /* Lighter PayPal Blue */
+            --accent-color: #FFC439; /* PayPal Yellow */
+            --text-color: #333;
+            --light-text-color: #666;
+            --bg-color: #F0F2F5;
+            --card-bg-color: #FFFFFF;
+            --border-color: #E0E0E0;
+            --shadow-light: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --border-radius-md: 0.75rem; /* 12px */
+            --border-radius-lg: 1rem; /* 16px */
         }
 
-    }).render('#paypal-button-container');
-</script>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .page-container {
+            width: 100%;
+            max-width: 1200px;
+            padding: 1rem;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: calc(100vh - 2rem);
+        }
+
+        .checkout-card {
+            background-color: var(--card-bg-color);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-md);
+            padding: 2.5rem 2rem;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .card-icon {
+            background-color: var(--primary-color);
+            color: white;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.2rem;
+            margin: -5rem auto 1.5rem auto; /* Pulls it up significantly */
+            box-shadow: var(--shadow-md);
+            border: 5px solid var(--card-bg-color);
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+
+        .info-text {
+            font-size: 1rem;
+            color: var(--light-text-color);
+            margin-bottom: 1.5rem;
+        }
+
+        #paypal-button-container {
+            margin-bottom: 1.5rem;
+            min-height: 40px; /* Ensure space for the button */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .message-box {
+            background-color: #FEF3C7; /* Amber 100 */
+            color: #92400E; /* Amber 800 */
+            border: 1px solid #FCD34D; /* Amber 300 */
+            border-radius: var(--border-radius-md);
+            padding: 1rem;
+            margin-top: 1rem;
+            text-align: left;
+            font-size: 0.9rem;
+            display: none; /* Hidden by default */
+        }
+
+        .message-box.error {
+            background-color: #FEE2E2; /* Red 100 */
+            color: #991B1B; /* Red 800 */
+            border-color: #FCA5A5; /* Red 300 */
+        }
+
+        .message-box.success {
+            background-color: #D1FAE5; /* Green 100 */
+            color: #065F46; /* Green 800 */
+            border-color: #A7F3D0; /* Green 300 */
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.9rem 1.8rem;
+            background-color: var(--secondary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: var(--border-radius-md);
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            margin-top: 1rem;
+            box-shadow: 0 4px 10px rgba(0, 112, 186, 0.4);
+            gap: 0.75rem;
+        }
+        .back-button:hover {
+            background-color: #005A9C; /* Slightly darker blue */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 112, 186, 0.5);
+        }
+        .back-button:active {
+            transform: translateY(0);
+            box-shadow: 0 4px 10px rgba(0, 112, 186, 0.4);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .checkout-card {
+                padding: 2rem 1.5rem;
+            }
+            h1 {
+                font-size: 1.8rem;
+            }
+            .back-button {
+                font-size: 1rem;
+                padding: 0.8rem 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .checkout-card {
+                padding: 1.5rem 1rem;
+            }
+            h1 {
+                font-size: 1.6rem;
+            }
+            .info-text, .message-box {
+                font-size: 0.9rem;
+            }
+            .card-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 1.8rem;
+                margin-top: -4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <div class="checkout-card">
+            <div class="card-icon">
+                <i class="fas fa-shopping-cart"></i>
+            </div>
+            <h1>Simple Checkout</h1>
+            <p class="info-text">
+                Моля, завършете плащането си чрез бутона на PayPal по-долу.
+            </p>
+
+            <div id="paypal-button-container"></div>
+            <div id="messageBox" class="message-box"></div>
+
+            <!-- Back Button -->
+            <a href="javascript:history.back()" class="back-button">
+                <i class="fas fa-arrow-left"></i> Назад
+            </a>
+        </div>
+    </div>
+
+    <script
+        src="https://www.paypal.com/sdk/js?client-id=ASxoozE8GYdL1otAfewYf3evZgo5r1DWsJ3NiIwoH_kjpdd_7-qX3uUsmy7mncp_I2-AbPBVePNkPMpd&buyer-country=US&currency=USD&disable-funding=credit"
+        data-sdk-integration-source="developer-studio"
+    ></script>
+
+    <script>
+        const messageBox = document.getElementById('messageBox');
+
+        function showMessage(message, type = 'info') {
+            messageBox.textContent = message;
+            messageBox.className = 'message-box ' + type;
+            messageBox.style.display = 'block';
+        }
+
+        // Render the PayPal button into #paypal-button-container
+        paypal.Buttons({
+            style: {
+                color: 'blue',
+                shape: 'rect',
+                label: 'pay',
+                height: 40
+            },
+
+            // Set up the transaction
+            createOrder: function (data, actions) {
+                return actions.order.create({
+                    purchase_units: [{
+                        amount: {
+                            value: '0.01' // Example value, replace with dynamic value if needed
+                        }
+                    }]
+                });
+            },
+
+            // Finalize the transaction
+            onApprove: function (data, actions) {
+                return actions.order.capture().then(function (details) {
+                    // Show a success message to the buyer
+                    showMessage('Транзакцията е завършена от ' + details.payer.name.given_name + '!', 'success');
+                    // You might want to redirect the user to a success page here
+                    // window.location.href = '/your-success-page/';
+                }).catch(function(error) {
+                    showMessage('Грешка при финализиране на транзакцията: ' + error.message, 'error');
+                    console.error('Error capturing PayPal order:', error);
+                });
+            },
+            onCancel: function (data) {
+                showMessage('Плащането беше отменено.', 'info');
+            },
+            onError: function (err) {
+                showMessage('Възникна грешка с PayPal: ' + err, 'error');
+                console.error('PayPal onError:', err);
+            }
+
+        }).render('#paypal-button-container');
+    </script>
 
 </body>
 </html>
-

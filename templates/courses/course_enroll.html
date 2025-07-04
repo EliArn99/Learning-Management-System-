@@ -1,6 +1,305 @@
-{% extends 'base.html' %}
+{#{% extends 'base.html' %}#}
 
 {% block content %}
+<style>
+    /* Import Google Font - Inter */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    :root {
+        --primary-color: #4F46E5; /* Indigo 600 */
+        --primary-dark-color: #4338CA; /* Indigo 700 */
+        --secondary-color: #10B981; /* Emerald 500 */
+        --text-color: #374151; /* Gray 700 */
+        --light-text-color: #6B7280; /* Gray 500 */
+        --bg-color: #F9FAFB; /* Gray 50 */
+        --card-bg-color: #FFFFFF;
+        --border-color: #E5E7EB; /* Gray 200 */
+        --shadow-light: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --border-radius-md: 0.75rem; /* 12px */
+        --border-radius-lg: 1rem; /* 16px */
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--bg-color);
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        color: var(--text-color);
+        line-height: 1.6;
+    }
+
+    .enrollment-page {
+        width: 100%;
+        max-width: 1200px; /* Max width for the entire page content */
+        padding: 1rem;
+        box-sizing: border-box;
+    }
+
+    .enrollment-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: calc(100vh - 2rem); /* Adjust for padding */
+    }
+
+    .enrollment-card {
+        background-color: var(--card-bg-color);
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 2rem;
+        max-width: 600px; /* Max width for the card itself */
+        width: 100%;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        border: 1px solid var(--border-color);
+    }
+
+    .course-header {
+        position: relative;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .course-badge {
+        background-color: var(--primary-color);
+        color: white;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1.8rem;
+        margin: -4rem auto 1rem auto; /* Pulls it up slightly */
+        box-shadow: var(--shadow-md);
+        border: 4px solid var(--card-bg-color); /* Creates a border effect */
+    }
+
+    .enroll-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .course-rating {
+        color: #FBBF24; /* Amber 400 */
+        font-size: 1rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .course-rating .fas {
+        font-size: 1.1rem;
+    }
+
+    .rating-text {
+        color: var(--light-text-color);
+        font-size: 0.9rem;
+        margin-left: 0.5rem;
+    }
+
+    .course-content {
+        text-align: left;
+    }
+
+    .course-name {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: var(--text-color);
+        margin-bottom: 0.75rem;
+    }
+
+    .course-description {
+        font-size: 1rem;
+        color: var(--light-text-color);
+        margin-bottom: 1.5rem;
+    }
+
+    .course-highlights {
+        display: flex;
+        flex-wrap: wrap; /* Allows items to wrap on smaller screens */
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .highlight-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background-color: var(--bg-color);
+        padding: 0.75rem 1.25rem;
+        border-radius: var(--border-radius-md);
+        color: var(--primary-color);
+        font-weight: 500;
+        font-size: 0.95rem;
+        box-shadow: var(--shadow-light);
+        border: 1px solid var(--border-color);
+    }
+
+    .highlight-item .fas {
+        color: var(--secondary-color);
+        font-size: 1.1rem;
+    }
+
+    .enroll-form {
+        margin-top: 2rem;
+    }
+
+    .enroll-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--secondary-color);
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: var(--border-radius-md);
+        font-size: 1.25rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); /* Shadow specific to button color */
+        border: none;
+        cursor: pointer;
+        width: 100%; /* Make button full width of its container */
+        max-width: 300px; /* Limit max width for aesthetics */
+        margin: 0 auto; /* Center the button */
+        gap: 0.75rem;
+    }
+
+    .enroll-button:hover {
+        background-color: var(--primary-color); /* Change to primary on hover */
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+    }
+
+    .enroll-button:active {
+        transform: translateY(0);
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+    }
+
+    .button-icon {
+        font-size: 1.5rem;
+    }
+
+    .enrollment-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border-color);
+        flex-wrap: wrap; /* Allow wrapping on small screens */
+        gap: 1rem; /* Space between items when wrapped */
+    }
+
+    .back-link {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: color 0.3s ease;
+    }
+
+    .back-link:hover {
+        color: var(--primary-dark-color);
+    }
+
+    .guarantee-badge {
+        background-color: #ECFDF5; /* Green 50 */
+        color: #059669; /* Green 700 */
+        padding: 0.5rem 1rem;
+        border-radius: var(--border-radius-md);
+        font-size: 0.9rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        border: 1px solid #D1FAE5; /* Green 200 */
+    }
+
+    /* Font Awesome CDN */
+    @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .enrollment-card {
+            padding: 1.5rem;
+            gap: 1rem;
+        }
+
+        .enroll-title {
+            font-size: 1.75rem;
+        }
+
+        .course-name {
+            font-size: 1.5rem;
+        }
+
+        .course-highlights {
+            flex-direction: column; /* Stack highlights vertically */
+            align-items: stretch; /* Stretch to full width */
+        }
+
+        .highlight-item {
+            justify-content: center; /* Center content in stacked items */
+        }
+
+        .enrollment-footer {
+            flex-direction: column; /* Stack footer items */
+            align-items: center;
+        }
+
+        .back-link, .guarantee-badge {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .enrollment-card {
+            padding: 1rem;
+        }
+
+        .enroll-title {
+            font-size: 1.5rem;
+        }
+
+        .course-name {
+            font-size: 1.3rem;
+        }
+
+        .course-description,
+        .rating-text,
+        .highlight-item,
+        .back-link,
+        .guarantee-badge {
+            font-size: 0.85rem;
+        }
+
+        .enroll-button {
+            font-size: 1.1rem;
+            padding: 0.8rem 1.5rem;
+        }
+    }
+</style>
+
 <div class="enrollment-page">
     <div class="enrollment-container">
         <div class="enrollment-card">
@@ -47,7 +346,6 @@
                 <a href="{% url 'courses:checkout' %}" class="enroll-button">
                     <span class="button-icon">✅</span>
                     <span class="button-text">Запиши се сега</span>
-                    <span class="button-price">Безплатно</span>
                 </a>
             </form>
 
@@ -64,296 +362,4 @@
         </div>
     </div>
 </div>
-
-<style>
-    :root {
-        --primary-color: #4a6fa5;
-        --primary-light: rgba(74, 111, 165, 0.1);
-        --accent-color: #ff7e5f;
-        --accent-light: rgba(255, 126, 95, 0.1);
-        --text-dark: #2d3748;
-        --text-medium: #4a5568;
-        --text-light: #718096;
-        --bg-light: #f7f9fc;
-        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
-        --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.1);
-        --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
-        --radius-sm: 8px;
-        --radius-md: 12px;
-        --radius-lg: 16px;
-        --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    }
-
-    .enrollment-page {
-        background-color: var(--bg-light);
-        min-height: 100vh;
-        padding: 2rem 1rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .enrollment-container {
-        width: 100%;
-        max-width: 640px;
-        margin: 0 auto;
-    }
-
-    .enrollment-card {
-        background: white;
-        border-radius: var(--radius-lg);
-        box-shadow: var(--shadow-md);
-        overflow: hidden;
-        transition: var(--transition);
-    }
-
-    .enrollment-card:hover {
-        box-shadow: var(--shadow-lg);
-        transform: translateY(-3px);
-    }
-
-    .course-header {
-        background: linear-gradient(135deg, var(--primary-color) 0%, #3a5a8a 100%);
-        color: white;
-        padding: 2.5rem 2rem 1.5rem;
-        text-align: center;
-        position: relative;
-    }
-
-    .course-badge {
-        width: 80px;
-        height: 80px;
-        background: white;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 1.5rem;
-        box-shadow: var(--shadow-sm);
-    }
-
-    .course-badge i {
-        font-size: 2.5rem;
-        color: var(--primary-color);
-    }
-
-    .enroll-title {
-        font-size: 1.8rem;
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-        position: relative;
-        display: inline-block;
-    }
-
-    .enroll-title::after {
-        content: '';
-        position: absolute;
-        bottom: -8px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 60px;
-        height: 3px;
-        background: rgba(255, 255, 255, 0.5);
-        border-radius: 3px;
-    }
-
-    .course-rating {
-        margin-top: 1rem;
-        font-size: 0.9rem;
-    }
-
-    .course-rating i {
-        color: #fbbf24;
-        margin: 0 1px;
-    }
-
-    .rating-text {
-        margin-left: 8px;
-        opacity: 0.9;
-    }
-
-    .course-content {
-        padding: 2rem;
-    }
-
-    .course-name {
-        font-size: 1.6rem;
-        color: var(--text-dark);
-        margin-bottom: 1rem;
-        font-weight: 700;
-        text-align: center;
-    }
-
-    .course-description {
-        color: var(--text-medium);
-        font-size: 1rem;
-        line-height: 1.7;
-        margin-bottom: 2rem;
-        text-align: center;
-    }
-
-    .course-highlights {
-        display: flex;
-        justify-content: center;
-        gap: 1.5rem;
-        margin-bottom: 2rem;
-        flex-wrap: wrap;
-    }
-
-    .highlight-item {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 0.9rem;
-        color: var(--text-medium);
-        background: var(--primary-light);
-        padding: 0.5rem 1rem;
-        border-radius: var(--radius-sm);
-    }
-
-    .highlight-item i {
-        color: var(--primary-color);
-    }
-
-    .enroll-form {
-        padding: 0 2rem 2rem;
-    }
-
-    .enroll-button {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        background: linear-gradient(to right, var(--accent-color), #ff6a45);
-        color: white;
-        border: none;
-        padding: 1rem 2rem;
-        font-size: 1.1rem;
-        font-weight: 600;
-        border-radius: var(--radius-sm);
-        cursor: pointer;
-        transition: var(--transition);
-        text-decoration: none;
-        box-shadow: 0 4px 15px rgba(255, 126, 95, 0.3);
-        width: 100%;
-    }
-
-    .enroll-button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(255, 126, 95, 0.4);
-    }
-
-    .button-icon {
-        font-size: 1.2rem;
-    }
-
-    .button-text {
-        flex-grow: 1;
-        text-align: center;
-    }
-
-    .button-price {
-        background: rgba(255, 255, 255, 0.2);
-        padding: 0.25rem 0.75rem;
-        border-radius: 50px;
-        font-size: 0.9rem;
-    }
-
-    .enrollment-footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0 2rem 2rem;
-    }
-
-    .back-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        color: var(--primary-color);
-        text-decoration: none;
-        font-size: 0.95rem;
-        transition: var(--transition);
-    }
-
-    .back-link:hover {
-        color: #3a5a8a;
-        text-decoration: underline;
-    }
-
-    .back-link i {
-        font-size: 0.8rem;
-    }
-
-    .guarantee-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 0.85rem;
-        color: var(--text-light);
-    }
-
-    .guarantee-badge i {
-        color: var(--accent-color);
-    }
-
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-        .enroll-title {
-            font-size: 1.6rem;
-        }
-
-        .course-name {
-            font-size: 1.4rem;
-        }
-
-        .course-content {
-            padding: 1.5rem;
-        }
-
-        .enroll-form, .enrollment-footer {
-            padding-left: 1.5rem;
-            padding-right: 1.5rem;
-        }
-    }
-
-    @media (max-width: 480px) {
-        .course-header {
-            padding: 2rem 1rem 1rem;
-        }
-
-        .course-badge {
-            width: 70px;
-            height: 70px;
-            margin-bottom: 1rem;
-        }
-
-        .course-badge i {
-            font-size: 2rem;
-        }
-
-        .enroll-button {
-            flex-direction: column;
-            gap: 0.5rem;
-            padding: 1rem;
-        }
-
-        .button-text {
-            order: 1;
-        }
-
-        .button-icon {
-            order: 2;
-        }
-
-        .button-price {
-            order: 3;
-        }
-
-        .enrollment-footer {
-            flex-direction: column;
-            gap: 1rem;
-            align-items: flex-start;
-        }
-    }
-</style>
-{% endblock %}
+{% endblock content %}

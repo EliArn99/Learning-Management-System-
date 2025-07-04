@@ -375,43 +375,55 @@
         <div class="col-lg-6">
             <div class="dashboard-card">
                 <div class="card-header">
-                    <h2 class="card-title">📝 Upcoming Assignments</h2>
+                    <h2 class="card-title">📝 Предстоящи задачи и тестове</h2> {# Променихме заглавието #}
                     <span class="status-badge" style="background-color: rgba(59, 21, 58, 0.1); color: var(--primary-dark);">
-                        {{ upcoming_assignments|length }} due
+                        {{ upcoming_assignments|length }} предстоящи
                     </span>
                 </div>
 
                 {% if upcoming_assignments %}
                     <ul class="assignment-list">
-                        {% for assignment in upcoming_assignments %}
+                        {% for item in upcoming_assignments %} {# Променихме името на променливата на item #}
                             <li class="assignment-item">
                                 <div class="d-flex align-items-center">
                                     <div class="assignment-icon">
-                                        <i class="fas fa-book-open"></i>
+                                        {# Различаваме иконата според типа #}
+                                        {% if item.type == 'assignment' %}
+                                            <i class="fas fa-book-open"></i> {# Икона за задача #}
+                                        {% elif item.type == 'quiz' %}
+                                            <i class="fas fa-question-circle"></i> {# Икона за тест #}
+                                        {% endif %}
                                     </div>
                                     <div class="flex-grow-1">
-                                        <h3 class="assignment-title">{{ assignment.title }}</h3>
+                                        <h3 class="assignment-title">{{ item.title }}</h3>
                                         <div class="d-flex align-items-center">
                                             <span class="assignment-due">
                                                 <i class="far fa-calendar-alt me-1"></i>
-                                                {{ assignment.due_date|date:"M d, Y H:i" }}
+                                                {{ item.due_date|date:"M d, Y H:i" }}
                                             </span>
-                                            {% if assignment.is_urgent %}
-                                                <span class="urgent-badge ms-2">Urgent</span>
+                                            {% if item.is_urgent %}
+                                                <span class="urgent-badge ms-2">Спешно</span>
                                             {% endif %}
                                         </div>
                                     </div>
-                                    <a href="{% url 'assignments:assignment_detail' assignment.pk %}" class="view-btn">
-                                        View
-                                    </a>
+                                    {# Различаваме бутона "View" според типа #}
+                                    {% if item.type == 'assignment' %}
+                                        <a href="{% url 'assignments:assignment_detail' item.pk %}" class="view-btn">
+                                            Виж задача
+                                        </a>
+                                    {% elif item.type == 'quiz' %}
+                                        <a href="{% url 'quizz:quiz_take' pk=item.pk %}" class="view-btn">
+                                            Направи тест
+                                        </a>
+                                    {% endif %}
                                 </div>
                             </li>
                         {% endfor %}
                     </ul>
                 {% else %}
                     <div class="empty-state">
-{#                        <img src="{% static 'images/no-assignments.svg' %}" alt="No assignments" class="empty-state-img">#}
-                        <p class="text-muted">No upcoming assignments. Enjoy your free time!</p>
+                        {# <img src="{% static 'images/no-assignments.svg' %}" alt="No assignments" class="empty-state-img"> #}
+                        <p class="text-muted">Няма предстоящи задачи или тестове. Насладете се на свободното си време!</p>
                     </div>
                 {% endif %}
             </div>

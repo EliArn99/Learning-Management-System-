@@ -1,15 +1,192 @@
-<h1>PAYPAL</h1>
 <!DOCTYPE html>
 <html>
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>PayPal JS SDK Standard Integration</title>
+        <title>PayPal Integration</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+        <style>
+            /* Import Google Font - Inter */
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+            :root {
+                --primary-color: #003060; /* PayPal Blue */
+                --secondary-color: #0070BA; /* Lighter PayPal Blue */
+                --accent-color: #FFC439; /* PayPal Yellow */
+                --text-color: #333;
+                --light-text-color: #666;
+                --bg-color: #F0F2F5;
+                --card-bg-color: #FFFFFF;
+                --border-color: #E0E0E0;
+                --shadow-light: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+                --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+                --border-radius-md: 0.75rem; /* 12px */
+                --border-radius-lg: 1rem; /* 16px */
+            }
+
+            body {
+                font-family: 'Inter', sans-serif;
+                background-color: var(--bg-color);
+                margin: 0;
+                padding: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                color: var(--text-color);
+                line-height: 1.6;
+            }
+
+            .page-container {
+                width: 100%;
+                max-width: 1200px;
+                padding: 1rem;
+                box-sizing: border-box;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: calc(100vh - 2rem);
+            }
+
+            .paypal-card {
+                background-color: var(--card-bg-color);
+                border-radius: var(--border-radius-lg);
+                box-shadow: var(--shadow-md);
+                padding: 2.5rem 2rem;
+                max-width: 500px;
+                width: 100%;
+                text-align: center;
+                display: flex;
+                flex-direction: column;
+                gap: 1.5rem;
+                border: 1px solid var(--border-color);
+            }
+
+            .card-icon {
+                background-color: var(--primary-color);
+                color: white;
+                width: 70px;
+                height: 70px;
+                border-radius: 50%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-size: 2.2rem;
+                margin: -5rem auto 1.5rem auto; /* Pulls it up significantly */
+                box-shadow: var(--shadow-md);
+                border: 5px solid var(--card-bg-color);
+            }
+
+            h1 {
+                font-size: 2.2rem;
+                font-weight: 700;
+                color: var(--primary-color);
+                margin-top: 0;
+                margin-bottom: 1rem;
+            }
+
+            .info-text {
+                font-size: 1rem;
+                color: var(--light-text-color);
+                margin-bottom: 1.5rem;
+            }
+
+            #paypal-button-container {
+                margin-bottom: 1.5rem;
+                min-height: 40px; /* Ensure space for the button */
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            #result-message {
+                color: var(--secondary-color);
+                font-weight: 600;
+                margin-top: 1rem;
+                font-size: 0.95rem;
+            }
+
+            .simple-checkout-button {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0.9rem 1.8rem;
+                background-color: var(--accent-color);
+                color: var(--primary-color); /* Dark text on yellow */
+                text-decoration: none;
+                border-radius: var(--border-radius-md);
+                font-size: 1.1rem;
+                font-weight: 600;
+                border: none;
+                cursor: pointer;
+                transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+                margin-top: 1rem;
+                box-shadow: 0 4px 10px rgba(255, 196, 57, 0.4);
+                gap: 0.75rem;
+            }
+            .simple-checkout-button:hover {
+                background-color: #e6b032; /* Slightly darker yellow */
+                transform: translateY(-2px);
+                box-shadow: 0 6px 15px rgba(255, 196, 57, 0.5);
+            }
+            .simple-checkout-button:active {
+                transform: translateY(0);
+                box-shadow: 0 4px 10px rgba(255, 196, 57, 0.4);
+            }
+
+            /* Responsive adjustments */
+            @media (max-width: 768px) {
+                .paypal-card {
+                    padding: 2rem 1.5rem;
+                }
+                h1 {
+                    font-size: 1.8rem;
+                }
+                .simple-checkout-button {
+                    font-size: 1rem;
+                    padding: 0.8rem 1.5rem;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .paypal-card {
+                    padding: 1.5rem 1rem;
+                }
+                h1 {
+                    font-size: 1.6rem;
+                }
+                .info-text, #result-message {
+                    font-size: 0.9rem;
+                }
+                .card-icon {
+                    width: 60px;
+                    height: 60px;
+                    font-size: 1.8rem;
+                    margin-top: -4rem;
+                }
+            }
+        </style>
     </head>
     <body>
-        <div id="paypal-button-container"></div>
-        <p id="result-message"></p>
+        <div class="page-container">
+            <div class="paypal-card">
+                <div class="card-icon">
+                    <i class="fab fa-paypal"></i>
+                </div>
+                <h1>PayPal Integration</h1>
+                <p class="info-text">
+                    Изберете опция за плащане по-долу или продължете към обикновената каса.
+                </p>
 
+                <div id="paypal-button-container"></div>
+                <p id="result-message"></p>
+
+                <!-- Button to simple_checkout.html -->
+                <a href="{% url 'courses:simple_checkout' %}" class="simple-checkout-button">
+                    <i class="fas fa-arrow-right"></i> Go to Checkout
+                </a>
+            </div>
+        </div>
 
         <!-- Initialize the JS-SDK -->
         <script
@@ -20,45 +197,3 @@
 
     </body>
 </html>
-
-
-{##}
-{#<!DOCTYPE html>#}
-{#<html>#}
-{#<head>#}
-{#	<title>Store</title>#}
-{#	<meta id="meta" name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">#}
-{##}
-{#	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">#}
-{##}
-{##}
-{#	<style type="text/css">#}
-{#		body{#}
-{#			background-color: #f0f0f0;#}
-{#			#}
-{#		}#}
-{##}
-{#	</style>#}
-{#</head>#}
-{#<body>#}
-{#	<div class="container">#}
-{#		<div class="row">#}
-{#			<div class="col-lg">#}
-{#				<br>#}
-{#				<img src="{{product.image_url}}">#}
-{#			</div>#}
-{#			<div class="col-lg">#}
-{#				<br>#}
-{#				<div class="card card-body">#}
-{#					<h3>{{product.name}}</h3>#}
-{#					<hr>#}
-{#					<h4>Total: ${{product.price}}</h4>#}
-{#					<hr>#}
-{#					<div id="paypal-button-container"></div>#}
-{#				</div>#}
-{#			</div>#}
-{#		</div>#}
-{#	</div>#}
-{##}
-{#</body>#}
-{#</html>#}

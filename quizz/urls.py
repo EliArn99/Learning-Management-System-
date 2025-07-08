@@ -1,8 +1,7 @@
-# quizz/urls.py
 from django.urls import path
 from .views import (
     QuizListView, QuizCreateView, QuizDetailView,
-    QuizTakeView, quiz_results, QuizQuestionsUpdateView, QuestionUpdateView # Обновено
+    QuizTakeView, quiz_results, QuizQuestionsUpdateView, QuestionUpdateView
 )
 from . import views
 
@@ -15,6 +14,6 @@ urlpatterns = [
     path('<int:pk>/', QuizDetailView.as_view(), name='quiz_detail'),
     path('<int:pk>/add_questions/', QuizQuestionsUpdateView.as_view(), name='quiz_add_questions'),
     path('question/<int:pk>/edit/', QuestionUpdateView.as_view(), name='question_edit'),
-    path('<int:pk>/take/', QuizTakeView.as_view(), name='quiz_take'), # Обновено
+    path('<int:pk>/take/', QuizTakeView.as_view(), name='quiz_take'),
     path('<int:pk>/results/', quiz_results, name='quiz_results'),
 ]

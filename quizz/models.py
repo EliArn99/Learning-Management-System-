@@ -1,10 +1,14 @@
+# quizz/models.py
+
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.utils import timezone  # Import timezone for is_active method
 
 from courses.models import Course
 from users.models import TeacherProfile
 
 User = get_user_model()
+
 
 class Quiz(models.Model):
     title = models.CharField(max_length=255)
@@ -15,17 +19,26 @@ class Quiz(models.Model):
     available_until = models.DateTimeField(null=True, blank=True)
 
     def is_active(self):
-        from django.utils import timezone
         now = timezone.now()
         return (self.available_from is None or self.available_from <= now) and \
-               (self.available_until is None or self.available_until >= now)
+            (self.available_until is None or self.available_until >= now)
+
+    def __str__(self):
+        return self.title
+
 
 class Question(models.Model):
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='questions')
     text = models.CharField(max_length=500)
+    # ADD THIS LINE:
+    points = models.IntegerField(
+        default=1,  # You can choose your default, 1 is common
+        help_text="Points awarded for a correct answer to this question."
+    )
 
     def __str__(self):
         return self.text
+
 
 class Answer(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='answers')
@@ -35,6 +48,7 @@ class Answer(models.Model):
     def __str__(self):
         return self.text
 
+
 class Submission(models.Model):
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='submissions')
     student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='submissions')
@@ -43,6 +57,7 @@ class Submission(models.Model):
 
     def __str__(self):
         return f"{self.student.username} - {self.quiz.title}"
+
 
 class StudentAnswer(models.Model):
     submission = models.ForeignKey(Submission, on_delete=models.CASCADE, related_name='student_answers')

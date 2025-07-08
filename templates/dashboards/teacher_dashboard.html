@@ -10,6 +10,7 @@
                 <p class="welcome-message">Welcome back, {{ request.user.username }}! Here's an overview of your courses
                     and activity.</p>
             </div>
+
             <div class="quick-actions">
                 {#                <a href="{% url 'courses:create_course' %}" class="action-btn primary">#}
                 {#                    <i class="bi bi-plus-circle"></i> New Course#}
@@ -49,10 +50,15 @@
                 <div class="stat-icon">
                     <i class="bi bi-clock-history"></i>
                 </div>
-                <div class="stat-content">
-                    <h3>Pending Grading</h3>
-                    <p class="stat-value">{{ pending_submissions|default:"0" }}</p>
-                </div>
+                {# TODO: Change to quizz creation #}
+                <a href="{% url 'quizz:quiz_create' %}" style="text-decoration: none; color: inherit;">
+                    <div class="stat-content">
+                        <h3>Създай нов тест</h3>
+                        <p class="stat-value">
+                            <i class="fas fa-plus"></i> {{ pending_submissions }}
+                        </p>
+                    </div>
+                </a>
             </div>
 
             <div class="stat-card info">

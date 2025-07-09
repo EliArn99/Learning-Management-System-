@@ -1,0 +1,257 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <style>
+        /* General Body and Container Styles */
+        body {
+            font-family: 'Inter', sans-serif; /* Ensure Inter font is used if available */
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .page-contaainer {
+            min-height: 100vh;
+            background: linear-gradient(to bottom right, #eff6ff, #e0e7ff); /* from-blue-50 to-indigo-100 */
+            padding: 3rem 1rem; /* py-12 px-4 */
+        }
+        @media (min-width: 640px) { /* sm:px-6 */
+            .page-container {
+                padding-left: 1.5rem;
+                padding-right: 1.5rem;
+            }
+        }
+        @media (min-width: 1024px) { /* lg:px-8 */
+            .page-container {
+                padding-left: 2rem;
+                padding-right: 2rem;
+            }
+        }
+
+        .main-content-wrapper {
+            max-width: 48rem; /* max-w-4xl */
+            margin-left: auto;
+            margin-right: auto;
+            background-color: #ffffff; /* bg-white */
+            padding: 2rem; /* p-8 */
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); /* shadow-2xl */
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem; /* space-y-6 */
+        }
+
+        /* Heading Styles */
+        h1 {
+            font-size: 2.25rem; /* text-4xl */
+            font-weight: 800; /* font-extrabold */
+            color: #1a202c; /* text-gray-900 */
+            text-align: center;
+            margin-bottom: 1.5rem; /* mb-6 */
+        }
+        h2 {
+            font-size: 2rem; /* text-3xl */
+            font-weight: 700; /* font-bold */
+            color: #1a202c; /* text-gray-900 */
+            margin-bottom: 1rem; /* mb-4 */
+        }
+        h3 {
+            font-size: 1.75rem; /* text-2xl */
+            font-weight: 600; /* font-semibold */
+            color: #2d3748; /* text-gray-800 */
+            margin-top: 2rem; /* mt-8 */
+            margin-bottom: 1rem; /* mb-4 */
+        }
+
+        p {
+            font-size: 1rem; /* text-base */
+            color: #4a5568; /* text-gray-700 */
+            line-height: 1.5; /* leading-relaxed */
+            margin-bottom: 0.5rem;
+        }
+        p strong {
+            font-weight: 600; /* font-semibold */
+            color: #1a202c; /* text-gray-900 */
+        }
+
+        /* Info Badges */
+        .badge-info {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.625rem; /* px-2.5 py-1 */
+            font-size: 0.75rem; /* text-xs */
+            font-weight: 600; /* font-medium */
+            border-radius: 0.375rem; /* rounded-full */
+            background-color: #bfdbfe; /* bg-blue-200 */
+            color: #1e40af; /* text-blue-800 */
+            margin-left: 0.5rem; /* ms-2 */
+            vertical-align: middle;
+        }
+
+        .badge-success {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.625rem; /* px-2.5 py-1 */
+            font-size: 0.75rem; /* text-xs */
+            font-weight: 600; /* font-medium */
+            border-radius: 0.375rem; /* rounded-full */
+            background-color: #d1fae5; /* bg-green-200 */
+            color: #065f46; /* text-green-800 */
+            margin-left: 0.5rem; /* ms-2 */
+            vertical-align: middle;
+        }
+
+
+        /* Action Buttons */
+        .action-button-group {
+            display: flex;
+            gap: 1rem; /* space-x-4 */
+            margin-top: 1.5rem; /* mt-6 */
+            margin-bottom: 2rem; /* mb-8 */
+        }
+
+        .btn-primary-custom, .btn-success-custom {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem; /* px-6 py-3 */
+            border: 1px solid transparent;
+            font-size: 1rem; /* text-base */
+            font-weight: 500; /* font-medium */
+            border-radius: 0.375rem; /* rounded-md */
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* shadow-sm */
+            transition: all 150ms ease-in-out; /* transition duration-150 ease-in-out */
+            transform: scale(1); /* transform */
+            text-decoration: none; /* Remove underline from links */
+        }
+
+        .btn-primary-custom {
+            color: #ffffff; /* text-white */
+            background-color: #4f46e5; /* bg-indigo-600 */
+        }
+        .btn-primary-custom:hover {
+            background-color: #4338ca; /* hover:bg-indigo-700 */
+            transform: scale(1.05); /* hover:scale-105 */
+        }
+        .btn-primary-custom:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.5), 0 0 0 2px rgba(255, 255, 255, 1); /* focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 */
+        }
+
+        .btn-success-custom {
+            color: #ffffff; /* text-white */
+            background-color: #10b981; /* bg-emerald-500 */
+        }
+        .btn-success-custom:hover {
+            background-color: #059669; /* hover:bg-emerald-600 */
+            transform: scale(1.05); /* hover:scale-105 */
+        }
+        .btn-success-custom:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.5), 0 0 0 2px rgba(255, 255, 255, 1); /* focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 */
+        }
+
+        /* Question Card Styles */
+        .question-card {
+            background-color: #f9fafb; /* bg-gray-50 */
+            padding: 1.5rem; /* p-6 */
+            border-radius: 0.5rem; /* rounded-lg */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md */
+            border: 1px solid #e5e7eb; /* border border-gray-200 */
+            transition: all 300ms ease-in-out; /* transition duration-300 ease-in-out */
+            margin-bottom: 1rem; /* mb-4 */
+        }
+        .question-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* hover:shadow-lg */
+        }
+
+        .question-card-body h4 {
+            font-size: 1.125rem; /* text-lg */
+            font-weight: 700; /* font-bold */
+            color: #1a202c; /* text-gray-900 */
+            margin-bottom: 0.5rem;
+        }
+
+        .question-card ul {
+            list-style: none; /* Remove default bullet points */
+            padding-left: 0;
+            margin-top: 0.75rem; /* mt-3 */
+        }
+
+        .question-card ul li {
+            margin-bottom: 0.25rem; /* mb-1 */
+            font-size: 0.9375rem; /* text-base */
+            color: #4a5568; /* text-gray-700 */
+        }
+
+        /* Empty State */
+        .empty-state-message {
+            font-style: italic;
+            color: #6b7280; /* text-gray-500 */
+            text-align: center;
+            padding: 2rem;
+            border: 1px dashed #d1d5db;
+            border-radius: 0.5rem;
+            margin-top: 1.5rem;
+        }
+    </style>
+
+    <div class="page-container">
+        <div class="main-content-wrapper">
+            <h2>{{ quiz.title }}</h2>
+            <p>{{ quiz.description }}</p>
+            <p>Курс: <strong>{{ quiz.course.name }}</strong></p>
+            <p>Създаден от: <strong>{{ quiz.created_by.user.username }}</strong></p>
+
+            {# Calculate total points for the quiz #}
+            {% with total_quiz_points=0 %}
+                {% for question in quiz.questions.all %}
+                    {# Sum points of all questions #}
+                    {% with total_quiz_points=total_quiz_points|add:question.points %}
+                    {% endwith %}
+                {% endfor %}
+                {% if quiz.questions.exists %}
+                    <p>Общ брой точки за теста: <strong>{{ total_quiz_points }}</strong></p>
+                {% endif %}
+            {% endwith %}
+
+            <div class="action-button-group">
+                {% if request.user.is_teacher and request.user.teacherprofile == quiz.created_by %}
+                    <a href="{% url 'quizz:quiz_add_questions' pk=quiz.pk %}" class="btn-primary-custom">
+                        <svg class="-ml-1 mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                        Добави/Редактирай въпроси
+                    </a>
+                {% elif request.user.is_student %}
+                    <a href="{% url 'quizz:quiz_take' pk=quiz.pk %}" class="btn-success-custom">
+                        <svg class="-ml-1 mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+                        Започни тест
+                    </a>
+                {% endif %}
+            </div>
+
+            <h3>Въпроси:</h3>
+            {% for question in quiz.questions.all %}
+                <div class="question-card">
+                    <div class="question-card-body">
+                        <p>
+                            <strong>{{ forloop.counter }}. {{ question.text }}</strong>
+                            {% if question.points %}
+                                <span class="badge-info">{{ question.points }} т.</span>
+                            {% endif %}
+                        </p>
+                        <ul>
+                            {% for answer in question.answers.all %}
+                                <li>
+                                    {{ answer.text }}
+                                    {% if answer.is_correct %}
+                                        <span class="badge-success">Верен</span>
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="empty-state-message">Все още няма добавени въпроси към този тест.</p>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

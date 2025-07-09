@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Редактиране на въпрос: {{ question.text }}</h1>
+    <h3>Към тест: {{ question.quiz.title }}</h3>
+    <hr>
+    <form method="post">
+        {% csrf_token %}
+        {# Render the main question form fields #}
+        {% for field in form %}
+            <div class="mb-3">
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.errors %}
+                    <div class="text-danger">
+                        {% for error in field.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <h2>Отговори</h2>
+        {{ answer_formset.management_form }}
+
+        {% for form in answer_formset %}
+            <div class="answer-form-container border p-3 mb-3">
+                <h4>Отговор #{{ forloop.counter }}</h4>
+                {% for hidden in form.hidden_fields %}
+                    {{ hidden }}
+                {% endfor %}
+                {% for field in form.visible_fields %}
+                    <div class="mb-3">
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {% if field.errors %}
+                            <div class="text-danger">
+                                {% for error in field.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                {% if answer_formset.can_delete %}
+                    <div class="form-check">
+                        {{ form.DELETE }}
+                        <label class="form-check-label" for="{{ form.DELETE.id_for_label }}">Изтрий отговор</label>
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <button type="submit" class="btn btn-primary">Запази въпрос и отговори</button>
+        <a href="{% url 'quizz:quiz_detail' pk=question.quiz.pk %}" class="btn btn-secondary">Отказ</a>
+    </form>
+{% endblock %}

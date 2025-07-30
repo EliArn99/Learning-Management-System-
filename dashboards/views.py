@@ -1,13 +1,12 @@
-from users.models import StudentProfile
+from users.models import StudentProfile, TeacherProfile # Make sure TeacherProfile is imported
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
-from assignments.models import Submission as AssignmentSubmission, Submission
+from assignments.models import Submission as AssignmentSubmission, Assignment
 from quizz.models import Quiz, Submission as QuizSubmission
 
 from courses.models import Course
-from assignments.models import Assignment
-
+from messaging.models import Message 
 
 def home(request):
     return render(request, 'dashboards/home.html')
@@ -27,15 +26,14 @@ def dashboard_home_view(request):
 
 @login_required
 def teacher_dashboard_view(request):
-    teacher = request.user.teacherprofile
-    courses = Course.objects.filter(teacher=teacher)
+    teacher_profile = request.user.teacherprofile # Renamed for clarity to avoid conflict with `teacher` in context
+    courses = Course.objects.filter(teacher=teacher_profile)
 
     total_students = StudentProfile.objects.filter(
         enrollment__course__in=courses
     ).distinct().count()
 
     assignments = Assignment.objects.filter(course__in=courses)
-    # Use AssignmentSubmission here
     assignment_submissions = AssignmentSubmission.objects.filter(assignment__in=assignments)
 
     total_submissions = assignment_submissions.count()
@@ -47,15 +45,30 @@ def teacher_dashboard_view(request):
     if selected_course_id:
         assignment_submissions = assignment_submissions.filter(assignment__course__id=selected_course_id)
 
+    # --- Messaging Integration ---
+    # Fetch unread messages for the current teacher
+    # Order by timestamp descending and get the latest 5
+    unread_messages = Message.objects.filter(
+        receiver=request.user,
+        is_read=False
+    ).select_related(
+        'sender'
+    ).prefetch_related(
+        'sender__studentprofile', # Prefetch student profile for sender
+        'sender__teacherprofile'  # Prefetch teacher profile for sender
+    ).order_by('-timestamp')[:5]
+    # --- End Messaging Integration ---
+
     return render(request, 'dashboards/teacher_dashboard.html', {
         'courses': courses,
         'assignments': assignments,
-        'submissions': assignment_submissions,  # Pass the correct submissions
+        'submissions': assignment_submissions,
         'recent_submissions': recent_submissions,
         'total_submissions': total_submissions,
         'graded_submissions': graded_submissions,
         'selected_course_id': selected_course_id,
         'total_students': total_students,
+        'unread_messages': unread_messages, # Add unread messages to the context
     })
 
 

@@ -1,5 +1,3 @@
-# users/views.py
-
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
@@ -16,10 +14,8 @@ def student_profile_view(request):
     # Retrieve the profile, or create it if somehow it doesn't exist (though it should after registration)
     profile = get_object_or_404(StudentProfile, user=request.user)
 
-    # --- CRITICAL ADDITION: Check for approval status ---
     if not profile.is_approved:
         return redirect('users:approval_pending')
-    # --- END CRITICAL ADDITION ---
 
     if request.method == 'POST':
         # Use StudentProfileForm for editing existing profiles, not StudentRegisterForm
@@ -33,7 +29,6 @@ def student_profile_view(request):
     else:
         form = StudentProfileForm(instance=profile)
 
-    # Get upcoming quizzes only if the user is approved and viewing their dashboard/profile
     upcoming_quizzes = []
     try:
         if profile.is_approved: # Only fetch if approved
@@ -53,10 +48,8 @@ def student_profile_view(request):
 def teacher_profile_view(request):
     profile = get_object_or_404(TeacherProfile, user=request.user)
 
-    # --- CRITICAL ADDITION: Check for approval status ---
     if not profile.is_approved:
         return redirect('users:approval_pending')
-    # --- END CRITICAL ADDITION ---
 
     if request.method == 'POST':
         # Use TeacherProfileForm for editing existing profiles, not TeacherRegisterForm
@@ -75,21 +68,14 @@ def teacher_profile_view(request):
 
 @login_required
 def approval_pending_view(request):
-    """
-    Renders the page indicating that the user's account is pending approval.
-    Includes logic to redirect approved users to their respective dashboards.
-    """
+
     user = request.user
     profile = None
 
-    # Determine user type and fetch the correct profile
     if user.is_student:
         try:
             profile = StudentProfile.objects.get(user=user)
         except StudentProfile.DoesNotExist:
-            # This case means a student user exists but no profile.
-            # Handle gracefully, maybe redirect to create profile or show error.
-            # For now, we'll let them see the pending page, though it's an inconsistent state.
             pass
     elif user.is_teacher:
         try:
@@ -98,36 +84,32 @@ def approval_pending_view(request):
             # Same for teacher
             pass
 
-    # If a profile exists and is approved, redirect to dashboard
     if profile and profile.is_approved:
         if user.is_student:
             return redirect('dashboards:student_dashboard')
         elif user.is_teacher:
             return redirect('dashboards:teacher_dashboard')
 
-    # If no profile or not approved, render the pending page
     return render(request, 'users/account_approval_pending.html')
 
 
-# --- START MODIFIED REGISTRATION VIEWS ---
 def register_student(request):
     if request.method == 'POST':
         form = StudentRegisterForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
             user.is_student = True
-            user.is_active = True # Allows user to log in and see the pending page
+            user.is_active = True 
             user.save()
 
-            # Create StudentProfile and set is_approved to False by default
             StudentProfile.objects.create(
                 user=user,
                 age=form.cleaned_data['age'],
-                is_approved=False # <--- THIS IS KEY! New students are NOT approved.
+                is_approved=False 
             )
-            login(request, user) # Log the user in immediately
+            login(request, user)
             messages.success(request, 'Успешна регистрация! Вашият акаунт очаква одобрение.')
-            return redirect('users:approval_pending') # <--- Redirect to the approval pending page
+            return redirect('users:approval_pending') 
         else:
             messages.error(request, 'Възникна грешка при регистрацията. Моля, проверете данните си.')
     else:
@@ -141,23 +123,21 @@ def register_teacher(request):
         if form.is_valid():
             user = form.save(commit=False)
             user.is_teacher = True
-            user.is_active = True # Allows user to log in and see the pending page
+            user.is_active = True 
             user.save()
 
-            # Create TeacherProfile and set is_approved to False by default
             TeacherProfile.objects.create(
                 user=user,
-                is_approved=False # <--- THIS IS KEY! New teachers are NOT approved.
+                is_approved=False 
             )
-            login(request, user) # Log the user in immediately
+            login(request, user) 
             messages.success(request, 'Успешна регистрация! Вашият акаунт очаква одобрение от администратор.')
-            return redirect('users:approval_pending') # <--- Redirect to the approval pending page
+            return redirect('users:approval_pending') 
         else:
             messages.error(request, 'Възникна грешка при регистрацията. Моля, проверете данните си.')
     else:
         form = TeacherRegisterForm()
     return render(request, 'users/register_teacher.html', {'form': form})
-# --- END MODIFIED REGISTRATION VIEWS ---
 
 
 def custom_login_view(request):
@@ -167,7 +147,6 @@ def custom_login_view(request):
             user = form.get_user()
             login(request, user)
 
-            # Check approval status immediately after login
             if user.is_student:
                 try:
                     profile = StudentProfile.objects.get(user=user)
@@ -176,7 +155,6 @@ def custom_login_view(request):
                         return redirect('users:approval_pending')
                     return redirect('dashboards:student_dashboard')
                 except StudentProfile.DoesNotExist:
-                    # Fallback if somehow a student user exists but no profile (shouldn't happen post-reg)
                     messages.error(request, 'Възникна грешка с профила ви. Моля, свържете се с администратор.')
                     return redirect('users:approval_pending') # Or home, or a dedicated error page
 
@@ -188,7 +166,6 @@ def custom_login_view(request):
                         return redirect('users:approval_pending')
                     return redirect('dashboards:teacher_dashboard')
                 except TeacherProfile.DoesNotExist:
-                    # Fallback if somehow a teacher user exists but no profile
                     messages.error(request, 'Възникна грешка с профила ви. Моля, свържете се с администратор.')
                     return redirect('users:approval_pending') # Or home, or error page
             else:
@@ -235,7 +212,6 @@ def profile_view(request):
             'teacher': profile
         })
 
-    # If user is neither student nor teacher, or no profile found (though it should exist by now if logged in)
     messages.error(request, 'Невалиден тип потребител или профил не е намерен.')
     return redirect('home')
 

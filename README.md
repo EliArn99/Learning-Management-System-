@@ -216,7 +216,7 @@ Distributed under the MIT License. See the `LICENSE` file for more information.
 
 ## Contact
 
-[Your Name/Organization Name] - [your_email@example.com]
+Eli Arnaytska - eli_arnaytska@abv.bg
 Project Link: [https://github.com/EliArn99/Learning-Management-System-](https://github.com/EliArn99/Learning-Management-System-)
 
 ---
@@ -227,8 +227,3 @@ Project Link: [https://github.com/EliArn99/Learning-Management-System-](https://
 * [PostgreSQL](https://www.postgresql.org/)
 * [Shields.io](https://shields.io/) (for badges)
 * [Font Awesome](https://fontawesome.com/) (for icons)
-* *(Any specific tutorials, open-source projects, or individuals that inspired or helped you)*
-
----
-
-This detailed README provides a clear, structured, and enticing overview of your LMS, leveraging the specific code details you provided. Remember to replace placeholder links (e.g., to screenshots, your email, social media) with your actual project's information!

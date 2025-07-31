@@ -1,4 +1,4 @@
-# AcademicFlow: A Comprehensive Django LMS 👋
+# Learning Managment System: A Comprehensive Django LMS 👋
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
@@ -6,7 +6,7 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 Elevating Education: Seamless Course Management for Modern Universities.
 
-AcademicFlow is a robust, Django-powered Learning Management System (LMS) designed to streamline the entire academic lifecycle within a university environment. It provides a secure, intuitive platform for students and teachers to manage course enrollment, assignments, grading, and communication, all while featuring an essential administrative verification process for user accounts before full access is granted. 🛡️📚
+LMS is a robust, Django-powered Learning Management System (LMS) designed to streamline the entire academic lifecycle within a university environment. It provides a secure, intuitive platform for students and teachers to manage course enrollment, assignments, grading, and communication, all while featuring an essential administrative verification process for user accounts before full access is granted. 🛡️📚
 ---
 
 ## Table of Contents
@@ -28,7 +28,7 @@ AcademicFlow is a robust, Django-powered Learning Management System (LMS) design
 
 ## About the project
 
-AcademicFlow was developed to simplify the complex administrative and pedagogical tasks inherent in university education. By offering distinct user roles and a critical pre-approval mechanism, it ensures a controlled and secure learning environment. The platform aims to enhance communication, centralize learning resources, and provide clear tracking of academic progress for all stakeholders. 📈💬
+LMS was developed to simplify the complex administrative and pedagogical tasks inherent in university education. By offering distinct user roles and a critical pre-approval mechanism, it ensures a controlled and secure learning environment. The platform aims to enhance communication, centralize learning resources, and provide clear tracking of academic progress for all stakeholders. 📈💬
 
 ### Built With
 
@@ -47,16 +47,16 @@ AcademicFlow provides a rich set of features tailored for university academic ma
 * **Custom User Roles & Profiles** 👥:
     * **Students**: Dedicated profiles including `age`, auto-generated `faculty_number` (e.g., F-00001), and `achievements` tracking.
     * **Teachers**: Profiles featuring `education` background and `years of experience`.
-    * **Dynamic Profile Management**: Users can view and update their personal profiles.
-* **Administrator Approval System**: All new student and teacher registrations are set to `is_approved=False` by default, requiring explicit administrator verification for full platform access. Users see a dedicated "Approval Pending" page until approved.
-* **Course Management**: (Elaborate: e.g., create, enroll, view course details, manage sections.)
-* **Content Delivery**: (Elaborate: e.g., upload and organize various learning materials like documents, videos, presentations.)
-* **Assignment & Grading**: (Elaborate: e.g., instructors can create and distribute assignments; students can submit work; a system for recording and viewing grades.)
-* **Quiz Integration**: Students can view and participate in upcoming quizzes assigned to their enrolled courses.
-* **Internal Messaging**: (Elaborate: e.g., secure communication channels between students, teachers, and admins.)
-* **Secure Authentication**: Robust user login and logout functionalities.
-* **Responsive Design**: (If applicable) Ensures optimal viewing experience across different devices.
-* **Dashboards**: Teacher Dashboard: Overview of courses, total students, assignment submissions (total, graded, pending), and recent submissions.
+    * **Dynamic Profile Management**: Users can view and update their personal profiles✏️.
+* **Administrator Approval System**✅: All new student and teacher registrations are set to `is_approved=False` by default, requiring explicit administrator verification for full platform access. Users see a dedicated "Approval Pending" page until approved.
+* **Content Managment** 📤: (Elaborate: e.g., upload and organize various learning materials like documents, videos, presentations within course modules.)
+* **Course Management** 📚: (Elaborate: e.g., create, enroll, view course details, manage sections.)
+* **Assignment & Grading**📝💯: (Elaborate: e.g., instructors can create and distribute assignments; students can submit work; a system for recording and viewing grades.)
+* **Quiz Integration** 🧠: Students can view and participate in upcoming quizzes assigned to their enrolled courses.
+* **Internal Messaging** 💬: (Elaborate: e.g., secure communication channels between students, teachers, and admins.)
+* **Secure Authentication** 🔒: Robust user login and logout functionalities.
+* **Responsive Design**📱💻: (If applicable) Ensures optimal viewing experience across different devices.
+* **Dashboards** 📊: Teacher Dashboard: Overview of courses, total students, assignment submissions (total, graded, pending), and recent submissions.
 Student Dashboard: Overview of enrolled courses, upcoming assignments and quizzes, and quiz completion progress.
 
 ---
@@ -144,7 +144,7 @@ Ensure you have the following software installed on your system:
 
 ## Usage
 
-AcademicFlow supports distinct workflows for different user roles:
+LMS supports distinct workflows for different user roles:
 
 * **Registration**: New users (students or teachers) can register via the `/register/student/` or `/register/teacher/` routes. Upon successful registration, they are automatically logged in but redirected to a dedicated "Approval Pending" page (`/approval-pending/`).
 * **Login**: Access the login page at `/login/`. If an account is pending approval, the user will be redirected to the "Approval Pending" page after login.

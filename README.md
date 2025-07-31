@@ -123,12 +123,17 @@ Ensure you have the following software installed on your system:
         EMAIL_USE_TLS=True
         EMAIL_HOST_USER='your_email@example.com'
         EMAIL_HOST_PASSWORD='your_email_password'
+      
         ```
+7.**Build and Run Docker Containers 🚀**
 7.  **Apply Database Migrations**
-    ```bash
-    python manage.py makemigrations
-    python manage.py migrate
+    ```docker-compose up --build -d
     ```
+    This command will:
+     Build the Docker images for your application and database.
+     Start the services defined in docker-compose.yml in detached mode (-d).
+
+It might take a few minutes the first time.
 8.  **Create an Administrator Superuser**
     ```bash
     python manage.py createsuperuser

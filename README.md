@@ -217,7 +217,7 @@ Distributed under the MIT License. See the `LICENSE` file for more information.
 
 ## Contact
 
-[Your Name/Organization Name] - [your_email@example.com]
+Eli Arnautska- [eli_arnaytska@abv.bg]
 Project Link: [https://github.com/EliArn99/Learning-Management-System-](https://github.com/EliArn99/Learning-Management-System-)
 
 ---

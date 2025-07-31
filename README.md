@@ -6,8 +6,7 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 Elevating Education: Seamless Course Management for Modern Universities.
 
-AcademicFlow is a robust, Django-powered Learning Management System (LMS) designed to streamline the entire academic lifecycle within a university environment. It provides a secure, intuitive platform for students and teachers to manage course enrollment, assignments, grading, and communication, all while featuring an essential administrative verification process for user accounts before full access is granted.
-
+AcademicFlow е мощна уеб платформа, базирана на Django, създадена да рационализира целия академичен цикъл в университетска среда. Тя предлага сигурна и интуитивна среда за студенти и преподаватели, където лесно да управляват записвания, задания, оценяване и комуникация, като същевременно осигурява жизненоважен процес на административно одобрение за всеки потребителски акаунт преди пълен достъп. 🛡️📚
 ---
 
 ## Table of Contents

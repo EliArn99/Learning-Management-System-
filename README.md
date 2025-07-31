@@ -40,11 +40,11 @@ AcademicFlow was developed to simplify the complex administrative and pedagogica
 
 ---
 
-## Features
+## Features 🌟
 
 AcademicFlow provides a rich set of features tailored for university academic management:
 
-* **Custom User Roles & Profiles**:
+* **Custom User Roles & Profiles** 👥:
     * **Students**: Dedicated profiles including `age`, auto-generated `faculty_number` (e.g., F-00001), and `achievements` tracking.
     * **Teachers**: Profiles featuring `education` background and `years of experience`.
     * **Dynamic Profile Management**: Users can view and update their personal profiles.

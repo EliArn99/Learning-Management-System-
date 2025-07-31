@@ -6,12 +6,12 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 Elevating Education: Seamless Course Management for Modern Universities.
 
-AcademicFlow е мощна уеб платформа, базирана на Django, създадена да рационализира целия академичен цикъл в университетска среда. Тя предлага сигурна и интуитивна среда за студенти и преподаватели, където лесно да управляват записвания, задания, оценяване и комуникация, като същевременно осигурява жизненоважен процес на административно одобрение за всеки потребителски акаунт преди пълен достъп. 🛡️📚
+AcademicFlow is a robust, Django-powered Learning Management System (LMS) designed to streamline the entire academic lifecycle within a university environment. It provides a secure, intuitive platform for students and teachers to manage course enrollment, assignments, grading, and communication, all while featuring an essential administrative verification process for user accounts before full access is granted. 🛡️📚
 ---
 
 ## Table of Contents
 
-* [За проекто](#about-the-project)
+* [About the project](#about-the-project)
 * [Features](#features)
 * [Getting Started](#getting-started)
     * [Prerequisites](#prerequisites)
@@ -26,9 +26,9 @@ AcademicFlow е мощна уеб платформа, базирана на Djan
 
 ---
 
-## За проекта
+## About the project
 
-AcademicFlow е разработен, за да опрости сложните административни и педагогически задачи в университетското образование. Чрез предлагането на ясни потребителски роли и критичен механизъм за предварително одобрение, той гарантира контролирана и сигурна учебна среда. Платформата има за цел да подобри комуникацията, да централизира учебните ресурси и да осигури ясно проследяване на академичния напредък за всички заинтересовани страни. 📈💬
+AcademicFlow was developed to simplify the complex administrative and pedagogical tasks inherent in university education. By offering distinct user roles and a critical pre-approval mechanism, it ensures a controlled and secure learning environment. The platform aims to enhance communication, centralize learning resources, and provide clear tracking of academic progress for all stakeholders. 📈💬
 
 ### Built With
 
@@ -56,6 +56,8 @@ AcademicFlow provides a rich set of features tailored for university academic ma
 * **Internal Messaging**: (Elaborate: e.g., secure communication channels between students, teachers, and admins.)
 * **Secure Authentication**: Robust user login and logout functionalities.
 * **Responsive Design**: (If applicable) Ensures optimal viewing experience across different devices.
+* **Dashboards**: Teacher Dashboard: Overview of courses, total students, assignment submissions (total, graded, pending), and recent submissions.
+Student Dashboard: Overview of enrolled courses, upcoming assignments and quizzes, and quiz completion progress.
 
 ---
 

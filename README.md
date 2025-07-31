@@ -224,12 +224,11 @@ Project Link: [https://github.com/EliArn99/Learning-Management-System-](https://
 
 ## Acknowledgments
 
-* [Django Project](https://www.djangoproject.com/)
-* [PostgreSQL](https://www.postgresql.org/)
-* [Shields.io](https://shields.io/) (for badges)
-* [Font Awesome](https://fontawesome.com/) (for icons)
-* *(Any specific tutorials, open-source projects, or individuals that inspired or helped you)*
+* [Django Project](https://www.djangoproject.com/)💚
+* [PostgreSQL](https://www.postgresql.org/) 🐘
+* [Shields.io](https://shields.io/) (for badges)🛡️
+* [Font Awesome](https://fontawesome.com/) (for icons)✨
+* [Docker](https://www.docker.com/)🐳
 
 ---
 
-This detailed README provides a clear, structured, and enticing overview of your LMS, leveraging the specific code details you provided. Remember to replace placeholder links (e.g., to screenshots, your email, social media) with your actual project's information!

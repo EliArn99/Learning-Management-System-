@@ -1,229 +1,260 @@
-# AcademicFlow: A Comprehensive Django LMS 👋
+AcademicFlow: Един Цялостен LMS на Django! 🚀
+Издигаме Образованието: Безпроблемно управление на курсове за съвременните университети! 🎓✨
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-[![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white)](https://www.djangoproject.com/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
-Elevating Education: Seamless Course Management for Modern Universities.
+AcademicFlow е мощна уеб платформа, базирана на Django, създадена да рационализира целия академичен цикъл в университетска среда. Тя предлага сигурна и интуитивна среда за студенти и преподаватели, където лесно да управляват записвания, задания, оценяване и комуникация, като същевременно осигурява жизненоважен процес на административно одобрение за всеки потребителски акаунт преди пълен достъп. 🛡️📚
 
-AcademicFlow is a robust, Django-powered Learning Management System (LMS) designed to streamline the entire academic lifecycle within a university environment. It provides a secure, intuitive platform for students and teachers to manage course enrollment, assignments, grading, and communication, all while featuring an essential administrative verification process for user accounts before full access is granted.
+Съдържание 📖
+За Проекта
 
----
+Функционалности
 
-## Table of Contents
+Първи Стъпки
 
-* [About The Project](#about-the-project)
-* [Features](#features)
-* [Getting Started](#getting-started)
-    * [Prerequisites](#prerequisites)
-    * [Installation](#installation)
-* [Usage](#usage)
-* [Administrative Approval Flow](#administrative-approval-flow)
-* [Roadmap](#roadmap)
-* [Contributing](#contributing)
-* [License](#license)
-* [Contact](#contact)
-* [Acknowledgments](#acknowledgments)
+Предварителни Изисквания
 
----
+Инсталация
 
-## About The Project
+Употреба
 
-AcademicFlow was developed to simplify the complex administrative and pedagogical tasks inherent in university education. By offering distinct user roles and a critical pre-approval mechanism, it ensures a controlled and secure learning environment. The platform aims to enhance communication, centralize learning resources, and provide clear tracking of academic progress for all stakeholders.
+Процес на Административно Одобрение
 
-### Built With
+Пътна Карта
 
-* [![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
-* [![Django](https://img.shields.io/badge/Django-092E20?style=flat-square&logo=django&logoColor=white)](https://www.djangoproject.com/)
-* [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=flat-square&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
-* HTML5, CSS3, JavaScript
-* Bootstrap (or other frontend framework if used)
+Приноси
 
----
+Лиценз
 
-## Features
+Контакти
 
-AcademicFlow provides a rich set of features tailored for university academic management:
+Благодарности
 
-* **Custom User Roles & Profiles**:
-    * **Students**: Dedicated profiles including `age`, auto-generated `faculty_number` (e.g., F-00001), and `achievements` tracking.
-    * **Teachers**: Profiles featuring `education` background and `years of experience`.
-    * **Dynamic Profile Management**: Users can view and update their personal profiles.
-* **Administrator Approval System**: All new student and teacher registrations are set to `is_approved=False` by default, requiring explicit administrator verification for full platform access. Users see a dedicated "Approval Pending" page until approved.
-* **Course Management**: (Elaborate: e.g., create, enroll, view course details, manage sections.)
-* **Content Delivery**: (Elaborate: e.g., upload and organize various learning materials like documents, videos, presentations.)
-* **Assignment & Grading**: (Elaborate: e.g., instructors can create and distribute assignments; students can submit work; a system for recording and viewing grades.)
-* **Quiz Integration**: Students can view and participate in upcoming quizzes assigned to their enrolled courses.
-* **Internal Messaging**: (Elaborate: e.g., secure communication channels between students, teachers, and admins.)
-* **Secure Authentication**: Robust user login and logout functionalities.
-* **Responsive Design**: (If applicable) Ensures optimal viewing experience across different devices.
+За Проекта 💡
+AcademicFlow е разработен, за да опрости сложните административни и педагогически задачи в университетското образование. Чрез предлагането на ясни потребителски роли и критичен механизъм за предварително одобрение, той гарантира контролирана и сигурна учебна среда. Платформата има за цел да подобри комуникацията, да централизира учебните ресурси и да осигури ясно проследяване на академичния напредък за всички заинтересовани страни. 📈💬
 
----
+Изграден с 🏗️
+HTML5, CSS3, JavaScript 🎨
 
-## Getting Started
+Bootstrap (или друга frontend рамка, ако се използва) 🌐
 
-To get a local copy of AcademicFlow up and running for development or testing, follow these steps.
+Функционалности 🌟
+AcademicFlow предлага богат набор от функционалности, съобразени с управлението на академичните процеси в университета:
 
-### Prerequisites
+Персонализирани Потребителски Роли & Профили 👥:
 
-Ensure you have the following software installed on your system:
+Студенти: Специализирани профили, включващи възраст, автоматично генериран факултетен номер (напр. F-00001) и проследяване на постижения.
 
-* **Python 3.9+** (or your specific Python version)
-* **pip** (Python package installer, usually comes with Python)
-* **PostgreSQL** (or your chosen database system)
-* **Git**
+Преподаватели: Профили, включващи образователен ценз и години опит.
 
-### Installation
+Динамично Управление на Профили: Потребителите могат да преглеждат и актуализират своите лични профили. ✏️
 
-1.  **Clone the Repository**
-    ```bash
-    git clone [https://github.com/EliArn99/Learning-Management-System-.git](https://github.com/EliArn99/Learning-Management-System-.git)
-    ```
-2.  **Navigate to the Project Directory**
-    ```bash
-    cd Learning-Management-System-
-    ```
-3.  **Create a Python Virtual Environment (Highly Recommended)**
-    ```bash
-    python -m venv venv
-    ```
-4.  **Activate the Virtual Environment**
-    * **Windows**:
-        ```bash
-        .\venv\Scripts\activate
-        ```
-    * **macOS/Linux**:
-        ```bash
-        source venv/bin/activate
-        ```
-5.  **Install Python Dependencies**
-    ```bash
-    pip install -r requirements.txt
-    ```
-    *Make sure you have a `requirements.txt` file generated via `pip freeze > requirements.txt`.*
-6.  **Configure Database (PostgreSQL Example)**
-    * Create a new PostgreSQL database (e.g., `academicflow_db`).
-    * **Create a `.env` file** in the root of your project directory based on a provided `.env.example` (or configure your `settings.py` directly). This file should contain sensitive credentials:
-        ```
-        # .env (Example content)
-        SECRET_KEY='your_super_secret_django_key'
-        DEBUG=True
+Система за Административно Одобрение ✅: Всички нови регистрации на студенти и преподаватели са по подразбиране is_approved=False, изискващи изрично административно потвърждение за пълен достъп до платформата. Потребителите виждат специална страница "Очаква Одобрение", докато не бъдат одобрени.
 
-        # Database Configuration
-        DB_NAME='academicflow_db'
-        DB_USER='your_db_username'
-        DB_PASSWORD='your_db_password'
-        DB_HOST='localhost'
-        DB_PORT='5432'
+Управление на Курсове 📚: (Допълни: напр. създаване, записване, преглед на детайли за курсове, управление на секции.)
 
-        # Email Settings (for internal messaging, etc.)
-        EMAIL_HOST='smtp.yourprovider.com'
-        EMAIL_PORT='587'
-        EMAIL_USE_TLS=True
-        EMAIL_HOST_USER='your_email@example.com'
-        EMAIL_HOST_PASSWORD='your_email_password'
-        ```
-7.  **Apply Database Migrations**
-    ```bash
-    python manage.py makemigrations
-    python manage.py migrate
-    ```
-8.  **Create an Administrator Superuser**
-    ```bash
-    python manage.py createsuperuser
-    ```
-    Follow the prompts to create an admin username, email, and password. This account will be able to approve new users.
-9.  **Run the Development Server**
-    ```bash
-    python manage.py runserver
-    ```
-    The application should now be accessible in your web browser at `http://127.0.0.1:8000/`.
+Доставка на Съдържание 📤: (Допълни: напр. качване и организиране на различни учебни материали като документи, видеоклипове, презентации.)
 
----
+Система за Задания и Оценяване 📝💯: (Допълни: напр. преподавателите могат да създават и раздават задания; студентите могат да подават работа; система за записване и преглед на оценки.)
 
-## Usage
+Интеграция на Тестове/Викторини 🧠: Студентите могат да преглеждат и участват в предстоящи тестове, зададени за техните записани курсове.
 
-AcademicFlow supports distinct workflows for different user roles:
+Вътрешна Комуникация 💬: (Допълни: напр. сигурни комуникационни канали между студенти, преподаватели и администратори.)
 
-* **Registration**: New users (students or teachers) can register via the `/register/student/` or `/register/teacher/` routes. Upon successful registration, they are automatically logged in but redirected to a dedicated "Approval Pending" page (`/approval-pending/`).
-* **Login**: Access the login page at `/login/`. If an account is pending approval, the user will be redirected to the "Approval Pending" page after login.
-* **As an Administrator**:
-    * Log in with your superuser credentials.
-    * Access the Django admin panel (typically at `http://127.0.0.1:8000/admin/`).
-    * From the admin panel, you can manage `CustomUser` accounts, and approve `StudentProfile` and `TeacherProfile` instances by setting their `is_approved` field to `True`.
-    * Manage courses, assignments, and other core LMS entities.
-* **As a Teacher (Approved)**:
-    * Once approved by an administrator, teachers can log in and access their dashboard (e.g., `/dashboards/teacher/`).
-    * Create new courses, upload educational content, design assignments and quizzes, and grade student submissions.
-    * Manage their own `TeacherProfile`.
-* **As a Student (Approved)**:
-    * After approval, students can log in and view their dashboard (e.g., `/dashboards/student/`).
-    * Enroll in available courses, access lecture materials, submit assignments, take quizzes, and track their academic progress.
-    * View upcoming quizzes.
-    * Manage their `StudentProfile`.
-* **Profile Management**: All approved users can view and edit their respective profiles (e.g., `/profile/` and `/profile/edit/`).
+Сигурно Удостоверяване 🔒: Стабилни функционалности за вход и изход на потребители.
 
----
+Адаптивен Дизайн 📱💻: (Ако е приложимо) Осигурява оптимално преживяване при преглед на различни устройства.
 
-## Administrative Approval Flow
+Първи Стъпки 🚀
+За да стартирате локално копие на AcademicFlow за разработка или тестване, следвайте тези прости стъпки.
 
-A core feature of AcademicFlow is the mandatory administrative approval for all new user accounts.
+Предварителни Изисквания ✅
+Уверете се, че имате инсталиран следния софтуер на вашата система:
 
-1.  **User Registration**: A new Student or Teacher signs up. Their `CustomUser` account is created, and a corresponding `StudentProfile` or `TeacherProfile` is linked, with `is_approved` set to `False`.
-2.  **Pending Status**: The newly registered user can log in but is immediately redirected to an `approval_pending_view` page, indicating that their account is awaiting administrator review. They cannot access main dashboard functionalities until approved.
-3.  **Administrator Action**: An administrator must log into the Django admin interface, navigate to the `Student Profiles` or `Teacher Profiles` section, find the pending user's profile, and manually set `is_approved` to `True`.
-4.  **Full Access**: Once approved, the next time the user logs in, they will be redirected to their respective dashboard (e.g., `student_dashboard` or `teacher_dashboard`) and gain full access to the platform's features.
+Python 3.9+ (или вашата конкретна версия на Python) 🐍
 
----
+pip (инсталатор на Python пакети, обикновено върви с Python)
 
-## Roadmap
+PostgreSQL (или избраната от вас система за база данни) 🐘
 
-This project is under active development. Here are some planned features and improvements:
+Git 🌲
 
-* [ ] Implement a comprehensive **course catalog** with search and filtering capabilities.
-* [ ] Develop an **in-platform messaging system** for direct communication between students and teachers.
-* [ ] Enhance the **quiz module** with various question types, time limits, and automatic grading.
-* [ ] Introduce **course discussion forums** for collaborative learning.
-* [ ] Create a dedicated **admin dashboard** for easier user approval, statistics, and system management.
-* [ ] Implement **email notifications** for new assignments, grades, and course announcements.
-* [ ] Integrate **analytics and reporting tools** for instructors to track student performance.
-* [ ] Containerize the application using **Docker** for simplified deployment.
+Инсталация 🛠️
+Клонирайте хранилището ⬇️
 
-See the [open issues](https://github.com/EliArn99/Learning-Management-System-/issues) for a full list of proposed features and known issues.
+Bash
 
----
+git clone https://github.com/EliArn99/Learning-Management-System-.git
+Отидете в директорията на проекта 📁
 
-## Contributing
+Bash
 
-We welcome contributions to AcademicFlow! If you have suggestions or want to contribute code, please follow these steps:
+cd Learning-Management-System-
+Създайте виртуална среда на Python (Силно препоръчително!) 🌐
 
-1.  **Fork** the repository.
-2.  **Create a new branch** for your feature or bug fix (`git checkout -b feature/your-feature-name`).
-3.  **Commit your changes** (`git commit -m 'feat: Add a new amazing feature'`).
-4.  **Push your branch** (`git push origin feature/your-feature-name`).
-5.  **Open a Pull Request** against the `main` branch.
-    * Please ensure your code adheres to a clean, readable style and includes relevant tests if applicable.
+Bash
 
-For reporting bugs or suggesting enhancements, please open an issue in the [Issues section](https://github.com/EliArn99/Learning-Management-System-/issues).
+python -m venv venv
+Активирайте виртуалната среда ✨
 
----
+Windows:
 
-## License
+Bash
 
-Distributed under the MIT License. See the `LICENSE` file for more information.
+.\venv\Scripts\activate
+macOS/Linux:
 
----
+Bash
 
-## Contact
+source venv/bin/activate
+Инсталирайте Python зависимостите 📦
 
-Eli Arnaytska - eli_arnaytska@abv.bg
-Project Link: [https://github.com/EliArn99/Learning-Management-System-](https://github.com/EliArn99/Learning-Management-System-)
+Bash
 
----
+pip install -r requirements.txt
+Уверете се, че имате файл requirements.txt, генериран чрез pip freeze > requirements.txt.
 
-## Acknowledgments
+Конфигурирайте Базата Данни (Пример с PostgreSQL) 🗄️
 
-* [Django Project](https://www.djangoproject.com/)
-* [PostgreSQL](https://www.postgresql.org/)
-* [Shields.io](https://shields.io/) (for badges)
-* [Font Awesome](https://fontawesome.com/) (for icons)
+Създайте нова PostgreSQL база данни (напр. academicflow_db).
+
+Създайте .env файл в основната директория на проекта въз основа на предоставения .env.example (или конфигурирайте директно settings.py). Този файл трябва да съдържа чувствителни данни:
+
+# .env (Примерно съдържание)
+SECRET_KEY='your_super_secret_django_key'
+DEBUG=True
+
+# Конфигурация на Базата Данни
+DB_NAME='academicflow_db'
+DB_USER='your_db_username'
+DB_PASSWORD='your_db_password'
+DB_HOST='localhost'
+DB_PORT='5432'
+
+# Настройки за Имейл (за вътрешна комуникация и др.)
+EMAIL_HOST='smtp.yourprovider.com'
+EMAIL_PORT='587'
+EMAIL_USE_TLS=True
+EMAIL_HOST_USER='your_email@example.com'
+EMAIL_HOST_PASSWORD='your_email_password'
+Приложете миграциите на базата данни 🔄
+
+Bash
+
+python manage.py makemigrations
+python manage.py migrate
+Създайте Суперпотребител (Администраторски акаунт) 👑
+
+Bash
+
+python manage.py createsuperuser
+Следвайте подканите, за да създадете администраторско потребителско име, имейл и парола. Този акаунт ще може да одобрява нови потребители.
+
+Стартирайте сървъра за разработка 🏃‍♂️
+
+Bash
+
+python manage.py runserver
+Приложението вече трябва да е достъпно във вашия уеб браузър на http://127.0.0.1:8000/.
+
+Употреба 👨‍💻
+AcademicFlow поддържа различни работни потоци за различните потребителски роли:
+
+Регистрация ✍️: Нови потребители (студенти или преподаватели) могат да се регистрират чрез маршрутите /register/student/ или /register/teacher/. При успешна регистрация те автоматично влизат в системата, но биват пренасочени към специална страница "Очаква Одобрение" (/approval-pending/).
+
+Вход 🔑: Достъп до страницата за вход на /login/. Ако акаунтът очаква одобрение, потребителят ще бъде пренасочен към страницата "Очаква Одобрение" след вход.
+
+Като Администратор (Админ) 👑:
+
+Влезте с вашите суперпотребителски данни.
+
+Достъп до административния панел на Django (обикновено на http://127.0.0.1:8000/admin/).
+
+От административния панел можете да управлявате CustomUser акаунти и да одобрявате StudentProfile и TeacherProfile инстанции, като зададете тяхното поле is_approved на True.
+
+Управлявайте курсове, задания и други основни елементи на LMS.
+
+Като Преподавател (Одобрен) 🧑‍🏫:
+
+След като бъдат одобрени от администратор, преподавателите могат да влизат в системата и да имат достъп до своето табло (напр. /dashboards/teacher/).
+
+Създавайте нови курсове, качвайте образователно съдържание, проектирайте задания и тестове и оценявайте студентски разработки.
+
+Управлявайте своя TeacherProfile.
+
+Като Студент (Одобрен) 🧑‍🎓:
+
+След одобрение студентите могат да влизат в системата и да преглеждат своето табло (напр. /dashboards/student/).
+
+Записвайте се в налични курсове, достъпвайте учебни материали, подавайте задания, правете тестове и проследявайте своя академичен напредък.
+
+Преглеждайте предстоящи тестове.
+
+Управлявайте своя StudentProfile.
+
+Управление на Профили 👤: Всички одобрени потребители могат да преглеждат и редактират съответните си профили (напр. /profile/ и /profile/edit/).
+
+Процес на Административно Одобрение 🔐
+Основна функционалност на AcademicFlow е задължителното административно одобрение за всички нови потребителски акаунти.
+
+Регистрация на Потребител ➡️: Нов студент или преподавател се регистрира. Създава се техният CustomUser акаунт и се свързва съответен StudentProfile или TeacherProfile, като is_approved е зададено на False.
+
+Статус "Очаква Одобрение" ⏳: Новорегистрираният потребител може да влезе в системата, но веднага бива пренасочен към страница approval_pending_view, показваща, че акаунтът му очаква преглед от администратор. Той няма достъп до основните функции на таблото, докато не бъде одобрен.
+
+Действие на Администратор ✅: Администраторът трябва да влезе в административния интерфейс на Django, да отиде в секцията Student Profiles или Teacher Profiles, да намери профила на чакащия потребител и ръчно да зададе is_approved на True.
+
+Пълен Достъп 🚀: След одобрение, при следващия вход в системата, потребителят ще бъде пренасочен към съответното си табло (напр. student_dashboard или teacher_dashboard) и ще получи пълен достъп до функциите на платформата.
+
+Пътна Карта 🗺️
+Този проект е в активно развитие. Ето някои планирани функционалности и подобрения:
+
+[ ] Внедряване на изчерпателен каталог с курсове с възможности за търсене и филтриране. 🔎
+
+[ ] Разработване на система за вътрешни съобщения в платформата за директна комуникация между студенти и преподаватели. 📩
+
+[ ] Подобряване на модула за тестове с различни типове въпроси, времеви ограничения и автоматично оценяване. ⏱️
+
+[ ] Въвеждане на форуми за дискусии по курсове за съвместно обучение. 💬
+
+[ ] Създаване на специализирано администраторско табло за по-лесно одобрение на потребители, статистика и управление на системата. 📊
+
+[ ] Внедряване на известия по имейл за нови задания, оценки и съобщения за курсове. 📧
+
+[ ] Интегриране на инструменти за анализи и отчети за преподаватели, за да проследяват напредъка на студентите. 📈
+
+[ ] Контейнеризиране на приложението с Docker за опростено внедряване. 🐳
+
+Вижте отворените задачи за пълен списък на предложените функционалности и известни проблеми.
+
+Приноси 🤝
+Приветстваме приносите към AcademicFlow! Ако имате предложения или искате да допринесете с код, моля, следвайте тези стъпки:
+
+Форкнете хранилището. 🍴
+
+Създайте нов клон за вашата функция или корекция на грешка (git checkout -b feature/your-feature-name). 🌿
+
+Коментирайте промените си (git commit -m 'feat: Добавяне на нова невероятна функция'). 💾
+
+Изпратете своя клон (git push origin feature/your-feature-name). ⬆️
+
+Отворете заявка за сливане (Pull Request) към клона main. ➡️
+
+Моля, уверете се, че кодът ви е чист, лесен за четене и включва съответни тестове, ако е приложимо. ✔️
+
+За докладване на грешки или предлагане на подобрения, моля, отворете задача в секцията "Задачи".
+
+Лиценз ⚖️
+Разпространява се под MIT лиценз. Вижте файла LICENSE за повече информация. 📜
+
+Контакти 📧
+Ели Арнайтска - eli_arnaytska@abv.bg 👩‍💻
+Линк към Проекта: https://github.com/EliArn99/Learning-Management-System- 🔗
+
+Благодарности 🙏
+Django Project 💚
+
+PostgreSQL 🐘
+
+Shields.io (за баджовете) 🛡️
+
+Font Awesome (за иконите) ✨
+
+(Всички други полезни ресурси, отворени проекти или хора, които са ви вдъхновили или помогнали) 💖

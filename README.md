@@ -126,10 +126,15 @@ Ensure you have the following software installed on your system:
       
         ```
 7.**Build and Run Docker Containers 🚀**
-
-8.  **Apply Database Migrations**
-    ```docker-compose up --build -d
     ```
+    docker-compose up --build -d
+    ```
+    
+8.  **Apply Database Migrations**
+   ```
+docker-compose exec web python manage.py makemigrations
+docker-compose exec web python manage.py migrate
+```
     This command will:
      Build the Docker images for your application and database.
      Start the services defined in docker-compose.yml in detached mode (-d).

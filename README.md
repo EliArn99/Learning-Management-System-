@@ -126,7 +126,8 @@ Ensure you have the following software installed on your system:
       
         ```
 7.**Build and Run Docker Containers 🚀**
-7.  **Apply Database Migrations**
+
+8.  **Apply Database Migrations**
     ```docker-compose up --build -d
     ```
     This command will:
@@ -134,12 +135,12 @@ Ensure you have the following software installed on your system:
      Start the services defined in docker-compose.yml in detached mode (-d).
 
 It might take a few minutes the first time.
-8.  **Create an Administrator Superuser**
+9.  **Create an Administrator Superuser**
     ```bash
     python manage.py createsuperuser
     ```
     Follow the prompts to create an admin username, email, and password. This account will be able to approve new users.
-9.  **Run the Development Server**
+10.  **Run the Development Server**
     ```bash
     python manage.py runserver
     ```

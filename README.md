@@ -42,7 +42,7 @@ LMS was developed to simplify the complex administrative and pedagogical tasks i
 
 ## Features 🌟
 
-AcademicFlow provides a rich set of features tailored for university academic management:
+Learning-Management-System provides a rich set of features tailored for university academic management:
 
 * **Custom User Roles & Profiles** 👥:
     * **Students**: Dedicated profiles including `age`, auto-generated `faculty_number` (e.g., F-00001), and `achievements` tracking.

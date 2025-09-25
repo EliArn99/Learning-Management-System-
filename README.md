@@ -179,7 +179,7 @@ LMS supports distinct workflows for different user roles:
 
 ## Administrative Approval Flow
 
-A core feature of AcademicFlow is the mandatory administrative approval for all new user accounts.
+A core feature of Learning Management System is the mandatory administrative approval for all new user accounts.
 
 1.  **User Registration**: A new Student or Teacher signs up. Their `CustomUser` account is created, and a corresponding `StudentProfile` or `TeacherProfile` is linked, with `is_approved` set to `False`.
 2.  **Pending Status**: The newly registered user can log in but is immediately redirected to an `approval_pending_view` page, indicating that their account is awaiting administrator review. They cannot access main dashboard functionalities until approved.
@@ -207,7 +207,7 @@ See the [open issues](https://github.com/EliArn99/Learning-Management-System-/is
 
 ## Contributing
 
-We welcome contributions to AcademicFlow! If you have suggestions or want to contribute code, please follow these steps:
+We welcome contributions to Learning Management System! If you have suggestions or want to contribute code, please follow these steps:
 
 1.  **Fork** the repository.
 2.  **Create a new branch** for your feature or bug fix (`git checkout -b feature/your-feature-name`).

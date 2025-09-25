@@ -66,7 +66,7 @@ Student Dashboard: Overview of enrolled courses, upcoming assignments and quizze
 
 ## Getting Started
 
-To get a local copy of  Learning Managment System up and running for development or testing, follow these steps.
+To get a local copy of Learning Managment System up and running for development or testing, follow these steps.
 
 ### Prerequisites
 
@@ -114,7 +114,7 @@ Ensure you have the following software installed on your system:
         DEBUG=True
 
         # Database Configuration
-        DB_NAME='academicflow_db'
+        DB_NAME='lms_db'
         DB_USER='your_db_username'
         DB_PASSWORD='your_db_password'
         DB_HOST='localhost'
@@ -147,7 +147,7 @@ It might take a few minutes the first time.
     ```bash
     python manage.py createsuperuser
     ```
-    Follow the prompts to create an admin username, email, and password. This account will be able to approve new users.
+    Follow the prompts to create an admin username and password. This account will be able to approve new users.
 10.  **Run the Development Server**
     ```bash
     python manage.py runserver

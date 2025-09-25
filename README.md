@@ -1,179 +1,248 @@
-# Learning Management System (LMS) 📚
+README 
 
-A comprehensive Django-powered Learning Management System for universities. It streamlines course enrollment, assignments, grading, and communication. All new accounts require **administrator approval** before gaining full access.
+
+# Learning Managment System: A Comprehensive Django Project 👋
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white)](https://www.djangoproject.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+Elevating Education: Seamless Course Management for Modern Universities.
+
+LMS is a robust, Django-powered Learning Management System (LMS) designed to streamline the entire academic lifecycle within a university environment. It provides a secure, intuitive platform for students and teachers to manage course enrollment, assignments, grading, and communication, all while featuring an essential administrative verification process for user accounts before full access is granted. 🛡️📚
+---
+
+## Table of Contents
+
+* [About the project](#about-the-project)
+* [Features](#features)
+* [Getting Started](#getting-started)
+    * [Prerequisites](#prerequisites)
+    * [Installation](#installation)
+* [Usage](#usage)
+* [Administrative Approval Flow](#administrative-approval-flow)
+* [Roadmap](#roadmap)
+* [Contributing](#contributing)
+* [License](#license)
+* [Contact](#contact)
+* [Acknowledgments](#acknowledgments)
 
 ---
 
-## 🚀 Features
+## About the project
 
-* **Custom User Roles**: Students, Teachers, Admins
-* **Admin Approval Flow**: Accounts pending until approved
-* **Course Management**: Create, enroll, and organize courses
-* **Assignments & Grading**
-* **Quizzes**: Participate in upcoming quizzes
-* **Messaging**: Internal communication system
-* **Dashboards**: Personalized views for students and teachers
-* **Responsive Design**
+LMS was developed to simplify the complex administrative and pedagogical tasks inherent in university education. By offering distinct user roles and a critical pre-approval mechanism, it ensures a controlled and secure learning environment. The platform aims to enhance communication, centralize learning resources, and provide clear tracking of academic progress for all stakeholders. 📈💬
 
----
+### Built With
 
-## 🛠️ Built With
-
-* Python 3.9+
-* Django
-* PostgreSQL
-* HTML5, CSS3, JavaScript, Bootstrap
-* Docker (optional)
+* [![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
+* [![Django](https://img.shields.io/badge/Django-092E20?style=flat-square&logo=django&logoColor=white)](https://www.djangoproject.com/)
+* [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=flat-square&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+* HTML5, CSS3, JavaScript
+* Bootstrap (or other frontend framework if used)
 
 ---
 
-## 📦 Installation
+## Features 🌟
 
-### 1. Clone the repository
+Learning-Management-System provides a rich set of features tailored for university academic management:
 
-```bash
-git clone https://github.com/EliArn99/Learning-Management-System-.git
-cd Learning-Management-System-
-```
-
-### 2. Create a virtual environment
-
-```bash
-python -m venv venv
-```
-
-Activate it:
-
-* **Windows**: `venv\Scripts\activate`
-* **Linux/Mac**: `source venv/bin/activate`
-
-### 3. Install dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### 4. Configure database
-
-Create a PostgreSQL database, then add credentials in a `.env` file:
-
-```env
-SECRET_KEY=your_secret_key
-DEBUG=True
-DB_NAME=academicflow_db
-DB_USER=your_db_user
-DB_PASSWORD=your_db_password
-DB_HOST=localhost
-DB_PORT=5432
-```
-
-### 5. Apply migrations
-
-```bash
-python manage.py migrate
-```
-
-### 6. Create a superuser
-
-```bash
-python manage.py createsuperuser
-```
-
-### 7. Run the server
-
-```bash
-python manage.py runserver
-```
-
-Access the app at: [http://127.0.0.1:8000](http://127.0.0.1:8000)
+* **Custom User Roles & Profiles** 👥:
+    * **Students**: Dedicated profiles including `age`, auto-generated `faculty_number` (e.g., F-00001), and `achievements` tracking.
+    * **Teachers**: Profiles featuring `education` background and `years of experience`.
+    * **Dynamic Profile Management**: Users can view and update their personal profiles✏️.
+* **Administrator Approval System**✅: All new student and teacher registrations are set to `is_approved=False` by default, requiring explicit administrator verification for full platform access. Users see a dedicated "Approval Pending" page until approved.
+* **Content Managment** 📤: (Elaborate: e.g., upload and organize various learning materials like documents, videos, presentations within course modules.)
+* **Course Management** 📚: (Elaborate: e.g., create, enroll, view course details, manage sections.)
+* **Assignment & Grading**📝💯: (Elaborate: e.g., instructors can create and distribute assignments; students can submit work; a system for recording and viewing grades.)
+* **Quiz Integration** 🧠: Students can view and participate in upcoming quizzes assigned to their enrolled courses.
+* **Internal Messaging** 💬: (Elaborate: e.g., secure communication channels between students, teachers, and admins.)
+* **Secure Authentication** 🔒: Robust user login and logout functionalities.
+* **Responsive Design**📱💻: (If applicable) Ensures optimal viewing experience across different devices.
+* **Dashboards** 📊: Teacher Dashboard: Overview of courses, total students, assignment submissions (total, graded, pending), and recent submissions.
+Student Dashboard: Overview of enrolled courses, upcoming assignments and quizzes, and quiz completion progress.
 
 ---
 
-## 🐳 Run with Docker (optional)
+## Getting Started
 
-```bash
-docker-compose up --build -d
+To get a local copy of AcademicFlow up and running for development or testing, follow these steps.
+
+### Prerequisites
+
+Ensure you have the following software installed on your system:
+
+* **Python 3.9+** (or your specific Python version)
+* **pip** (Python package installer, usually comes with Python)
+* **PostgreSQL** (or your chosen database system)
+* **Git**
+
+### Installation
+
+1.  **Clone the Repository**
+    ```bash
+    git clone [https://github.com/EliArn99/Learning-Management-System-.git](https://github.com/EliArn99/Learning-Management-System-.git)
+    ```
+2.  **Navigate to the Project Directory**
+    ```bash
+    cd Learning-Management-System-
+    ```
+3.  **Create a Python Virtual Environment (Highly Recommended)**
+    ```bash
+    python -m venv venv
+    ```
+4.  **Activate the Virtual Environment**
+    * **Windows**:
+        ```bash
+        .\venv\Scripts\activate
+        ```
+    * **macOS/Linux**:
+        ```bash
+        source venv/bin/activate
+        ```
+5.  **Install Python Dependencies**
+    ```bash
+    pip install -r requirements.txt
+    ```
+    *Make sure you have a `requirements.txt` file generated via `pip freeze > requirements.txt`.*
+6.  **Configure Database (PostgreSQL Example)**
+    * Create a new PostgreSQL database (e.g., `academicflow_db`).
+    * **Create a `.env` file** in the root of your project directory based on a provided `.env.example` (or configure your `settings.py` directly). This file should contain sensitive credentials:
+        ```
+        # .env (Example content)
+        SECRET_KEY='your_super_secret_django_key'
+        DEBUG=True
+
+        # Database Configuration
+        DB_NAME='academicflow_db'
+        DB_USER='your_db_username'
+        DB_PASSWORD='your_db_password'
+        DB_HOST='localhost'
+        DB_PORT='5432'
+
+        # Email Settings (for internal messaging, etc.)
+        EMAIL_HOST='smtp.yourprovider.com'
+        EMAIL_PORT='587'
+        EMAIL_USE_TLS=True
+        EMAIL_HOST_USER='your_email@example.com'
+        EMAIL_HOST_PASSWORD='your_email_password'
+      
+        ```
+7.**Build and Run Docker Containers 🚀**
+    ```
+    docker-compose up --build -d
+    ```
+    
+8.  **Apply Database Migrations**
+   ```
+docker-compose exec web python manage.py makemigrations
 docker-compose exec web python manage.py migrate
-docker-compose exec web python manage.py createsuperuser
 ```
+    This command will:
+     Build the Docker images for your application and database.
+     Start the services defined in docker-compose.yml in detached mode (-d).
+
+It might take a few minutes the first time.
+9.  **Create an Administrator Superuser**
+    ```bash
+    python manage.py createsuperuser
+    ```
+    Follow the prompts to create an admin username, email, and password. This account will be able to approve new users.
+10.  **Run the Development Server**
+    ```bash
+    python manage.py runserver
+    ```
+    The application should now be accessible in your web browser at `http://127.0.0.1:8000/`.
 
 ---
 
-## 👥 User Roles
+## Usage
 
-### Students
+LMS supports distinct workflows for different user roles:
 
-* Register at `/register/student/`
-* View dashboard, enroll in courses, submit assignments & quizzes
-
-### Teachers
-
-* Register at `/register/teacher/`
-* Create/manage courses, assignments, and quizzes
-
-### Admins
-
-* Approve user accounts
-* Manage all courses, users, and content from the Django admin panel
-
----
-
-## 🔒 Approval Flow
-
-1. User registers (Student/Teacher)
-2. Status: **Pending Approval**
-3. Admin sets `is_approved=True` in Django admin
-4. User gains full access
+* **Registration**: New users (students or teachers) can register via the `/register/student/` or `/register/teacher/` routes. Upon successful registration, they are automatically logged in but redirected to a dedicated "Approval Pending" page (`/approval-pending/`).
+* **Login**: Access the login page at `/login/`. If an account is pending approval, the user will be redirected to the "Approval Pending" page after login.
+* **As an Administrator**:
+    * Log in with your superuser credentials.
+    * Access the Django admin panel (typically at `http://127.0.0.1:8000/admin/`).
+    * From the admin panel, you can manage `CustomUser` accounts, and approve `StudentProfile` and `TeacherProfile` instances by setting their `is_approved` field to `True`.
+    * Manage courses, assignments, and other core LMS entities.
+* **As a Teacher (Approved)**:
+    * Once approved by an administrator, teachers can log in and access their dashboard (e.g., `/dashboards/teacher/`).
+    * Create new courses, upload educational content, design assignments and quizzes, and grade student submissions.
+    * Manage their own `TeacherProfile`.
+* **As a Student (Approved)**:
+    * After approval, students can log in and view their dashboard (e.g., `/dashboards/student/`).
+    * Enroll in available courses, access lecture materials, submit assignments, take quizzes, and track their academic progress.
+    * View upcoming quizzes.
+    * Manage their `StudentProfile`.
+* **Profile Management**: All approved users can view and edit their respective profiles (e.g., `/profile/` and `/profile/edit/`).
 
 ---
 
-## 📸 Screenshots (to add)
+## Administrative Approval Flow
 
-* Login Page
-* Student Dashboard
-* Teacher Dashboard
-* Admin Panel
+A core feature of Learning Management System is the mandatory administrative approval for all new user accounts.
 
----
-
-## 📌 Roadmap
-
-* Course catalog with search
-* Enhanced quiz module
-* Discussion forums
-* Email notifications
-* Analytics for teachers
+1.  **User Registration**: A new Student or Teacher signs up. Their `CustomUser` account is created, and a corresponding `StudentProfile` or `TeacherProfile` is linked, with `is_approved` set to `False`.
+2.  **Pending Status**: The newly registered user can log in but is immediately redirected to an `approval_pending_view` page, indicating that their account is awaiting administrator review. They cannot access main dashboard functionalities until approved.
+3.  **Administrator Action**: An administrator must log into the Django admin interface, navigate to the `Student Profiles` or `Teacher Profiles` section, find the pending user's profile, and manually set `is_approved` to `True`.
+4.  **Full Access**: Once approved, the next time the user logs in, they will be redirected to their respective dashboard (e.g., `student_dashboard` or `teacher_dashboard`) and gain full access to the platform's features.
 
 ---
 
-## 🤝 Contributing
+## Roadmap
 
-1. Fork the repo
-2. Create a feature branch (`git checkout -b feature/xyz`)
-3. Commit changes (`git commit -m 'feat: add xyz'`)
-4. Push branch (`git push origin feature/xyz`)
-5. Open a Pull Request
+This project is under active development. Here are some planned features and improvements:
 
----
+* [ ] Implement a comprehensive **course catalog** with search and filtering capabilities.
+* [ ] Develop an **in-platform messaging system** for direct communication between students and teachers.
+* [ ] Enhance the **quiz module** with various question types, time limits, and automatic grading.
+* [ ] Introduce **course discussion forums** for collaborative learning.
+* [ ] Create a dedicated **admin dashboard** for easier user approval, statistics, and system management.
+* [ ] Implement **email notifications** for new assignments, grades, and course announcements.
+* [ ] Integrate **analytics and reporting tools** for instructors to track student performance.
+* [ ] Containerize the application using **Docker** for simplified deployment.
 
-## 📜 License
-
-Distributed under the MIT License.
-
----
-
-## 📬 Contact
-
-**Author:** Eli Arnautska
-📧 Email: [eli_arnaytska@abv.bg](mailto:eli_arnaytska@abv.bg)
-🔗 Project: [Learning-Management-System](https://github.com/EliArn99/Learning-Management-System-)
+See the [open issues](https://github.com/EliArn99/Learning-Management-System-/issues) for a full list of proposed features and known issues.
 
 ---
 
-## 🙏 Acknowledgments
+## Contributing
 
-* Django 💚
-* PostgreSQL 🐘
-* Docker 🐳
-* Shields.io 🛡️
-* Font Awesome ✨
+We welcome contributions to Learning Management System! If you have suggestions or want to contribute code, please follow these steps:
+
+1.  **Fork** the repository.
+2.  **Create a new branch** for your feature or bug fix (`git checkout -b feature/your-feature-name`).
+3.  **Commit your changes** (`git commit -m 'feat: Add a new amazing feature'`).
+4.  **Push your branch** (`git push origin feature/your-feature-name`).
+5.  **Open a Pull Request** against the `main` branch.
+    * Please ensure your code adheres to a clean, readable style and includes relevant tests if applicable.
+
+For reporting bugs or suggesting enhancements, please open an issue in the [Issues section](https://github.com/EliArn99/Learning-Management-System-/issues).
+
+---
+
+## License
+
+Distributed under the MIT License. See the `LICENSE` file for more information.
+
+---
+
+## Contact
+
+Eli Arnautska- [eli_arnaytska@abv.bg]
+Project Link: [https://github.com/EliArn99/Learning-Management-System-](https://github.com/EliArn99/Learning-Management-System-)
+
+---
+
+## Acknowledgments
+
+* [Django Project](https://www.djangoproject.com/)💚
+* [PostgreSQL](https://www.postgresql.org/) 🐘
+* [Shields.io](https://shields.io/) (for badges)🛡️
+* [Font Awesome](https://fontawesome.com/) (for icons)✨
+* [Docker](https://www.docker.com/)🐳
+
+---
+

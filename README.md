@@ -66,7 +66,7 @@ Student Dashboard: Overview of enrolled courses, upcoming assignments and quizze
 
 ## Getting Started
 
-To get a local copy of AcademicFlow up and running for development or testing, follow these steps.
+To get a local copy of  Learning Managment System up and running for development or testing, follow these steps.
 
 ### Prerequisites
 

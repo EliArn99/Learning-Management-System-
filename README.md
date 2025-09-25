@@ -106,7 +106,7 @@ Ensure you have the following software installed on your system:
     ```
     *Make sure you have a `requirements.txt` file generated via `pip freeze > requirements.txt`.*
 6.  **Configure Database (PostgreSQL Example)**
-    * Create a new PostgreSQL database (e.g., `academicflow_db`).
+    * Create a new PostgreSQL database (e.g., `mini_lms`).
     * **Create a `.env` file** in the root of your project directory based on a provided `.env.example` (or configure your `settings.py` directly). This file should contain sensitive credentials:
         ```
         # .env (Example content)

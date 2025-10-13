@@ -1,40 +1,53 @@
+
 {% extends 'base.html' %}
-{% block content %}
+{% load widget_tweaks %}
 
 {% block extra_css %}
 <style>
-    /* Modern Color Scheme */
+    /* Modern Color Scheme with more thoughtful usage */
     :root {
-        --primary-color: #4f46e5;
+        --primary-color: #4f46e5; /* Indigo */
         --primary-dark: #4338ca;
-        --primary-light: #818cf8;
-        --secondary-color: #f59e0b;
-        --secondary-light: #fbbf24;
-        --accent-color: #ec4899;
+        --primary-light: #818cf8; /* Lighter for accents/backgrounds */
+        --secondary-color: #f59e0b; /* Amber for highlights */
+        --accent-color: #ec4899; /* Pink for strong accents */
         --success-color: #10b981;
-        --light-color: #f8fafc;
-        --dark-color: #1e293b;
-        --text-color: #334155;
-        --text-light: #64748b;
-        --border-color: #e2e8f0;
-        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
-        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-        --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+        --error-color: #ef4444; /* Standard red for errors */
+        --light-bg: #f8fafc; /* Very light background */
+        --dark-text: #1e293b; /* Dark text for headings */
+        --body-text: #334155; /* General body text */
+        --light-text: #64748b; /* Lighter text for descriptions/helpers */
+        --border-color: #e2e8f0; /* Subtle borders */
+        --input-bg: #ffffff; /* White input background */
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+        --shadow-md: 0 6px 15px rgba(0, 0, 0, 0.1); /* Slightly softer shadow */
+        --shadow-lg: 0 15px 30px rgba(0, 0, 0, 0.12); /* More prominent but still soft */
         --radius-sm: 0.375rem;
-        --radius-md: 0.5rem;
-        --radius-lg: 0.75rem;
-        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        --radius-md: 0.625rem; /* Slightly larger for input/button */
+        --radius-lg: 1rem; /* More rounded card */
+        --transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); /* Smoother transition */
+        --font-family: 'Inter', sans-serif; /* Modern, clean font */
     }
 
+    /* Import Google Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
     /* Base Styles */
+    body {
+        font-family: var(--font-family);
+        line-height: 1.6;
+        color: var(--body-text);
+    }
+
     .teacher-registration {
         min-height: 100vh;
         display: flex;
         align-items: center;
-        background-color: #f5f7ff;
+        justify-content: center; /* Center horizontally */
+        background-color: var(--light-bg);
         background-image: radial-gradient(var(--primary-light) 1px, transparent 1px);
-        background-size: 20px 20px;
-        padding: 2rem 0;
+        background-size: 25px 25px; /* Slightly larger dots */
+        padding: 3rem 1.5rem; /* More vertical padding, horizontal consistency */
     }
 
     .registration-card {
@@ -42,12 +55,13 @@
         border-radius: var(--radius-lg);
         overflow: hidden;
         transition: var(--transition);
-        background: white;
+        background: var(--input-bg);
+        box-shadow: var(--shadow-md); /* Initial subtle shadow */
     }
 
     .registration-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 20px 25px rgba(0, 0, 0, 0.1);
+        transform: translateY(-8px); /* More pronounced lift */
+        box-shadow: var(--shadow-lg); /* More pronounced shadow */
     }
 
     /* Card Header */
@@ -56,150 +70,160 @@
         background: transparent;
         border-bottom: none;
         padding: 0;
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); /* Solid primary gradient */
+        color: white;
     }
 
     .wave-shape {
         position: absolute;
-        top: 0;
+        bottom: -1px; /* Adjust to prevent gap */
         left: 0;
         width: 100%;
-        height: 100%;
+        height: 100px; /* Keep height for wave */
         overflow: hidden;
+        z-index: 1; /* Ensure wave is below text content */
     }
 
     .wave-shape svg {
         position: absolute;
-        top: 0;
+        bottom: 0;
         left: 0;
         width: 100%;
         height: 100%;
     }
 
     .wave-shape path {
-        fill: rgba(79, 70, 229, 0.08);
+        fill: white; /* Wave should cut into the card body */
     }
 
-    .text-center {
+    .header-content { /* New class for alignment */
         position: relative;
         z-index: 2;
-        padding: 2.5rem 1rem;
+        padding: 2.5rem 1.5rem; /* Consistent padding */
+        text-align: center;
     }
 
     .registration-icon-container {
-        width: 80px;
-        height: 80px;
+        width: 90px; /* Slightly larger icon container */
+        height: 90px;
         margin: 0 auto 1.5rem;
         display: flex;
         align-items: center;
         justify-content: center;
-        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        background: var(--light-bg); /* Lighter background for icon */
         border-radius: 50%;
-        box-shadow: 0 10px 20px rgba(79, 70, 229, 0.2);
+        box-shadow: var(--shadow-sm); /* Subtle shadow for icon */
     }
 
     .registration-icon {
-        font-size: 2.5rem;
-        color: white;
+        font-size: 3rem; /* Larger icon */
+        color: var(--primary-color);
     }
 
     .registration-title {
-        font-size: 1.8rem;
+        font-size: 2rem; /* More prominent title */
         font-weight: 700;
-        color: var(--dark-color);
-        margin-bottom: 0.5rem;
+        color: white; /* Title color for header */
+        margin-bottom: 0.75rem; /* More space below title */
     }
 
     .registration-subtitle {
-        color: var(--text-light);
-        font-size: 1rem;
+        color: rgba(255, 255, 255, 0.9); /* Slightly more opaque */
+        font-size: 1.05rem; /* Slightly larger subtitle */
         margin-bottom: 0;
     }
 
     /* Form Styles */
     .card-body {
-        padding: 2.5rem;
+        padding: 2.5rem; /* Consistent padding */
+        background-color: var(--input-bg);
     }
 
     .form-group {
-        margin-bottom: 1.5rem;
+        margin-bottom: 1.75rem; /* More spacing between form groups */
     }
 
     .form-label {
         display: block;
-        margin-bottom: 0.5rem;
-        font-weight: 500;
-        color: var(--dark-color);
+        margin-bottom: 0.6rem; /* More space below label */
+        font-weight: 600; /* Bolder label */
+        color: var(--dark-text);
         font-size: 0.95rem;
     }
 
-    input[type="text"],
-    input[type="email"],
-    input[type="password"],
-    select,
-    textarea {
+    .form-control { /* Unified class for all inputs */
         width: 100%;
-        padding: 0.75rem 1rem;
-        border: 1px solid var(--border-color);
+        padding: 0.85rem 1.1rem; /* More comfortable padding */
+        border: 2px solid var(--border-color); /* Thicker border */
         border-radius: var(--radius-md);
         font-size: 1rem;
         transition: var(--transition);
-        background-color: white;
+        background-color: var(--input-bg);
+        color: var(--body-text);
     }
 
-    input[type="text"]:focus,
-    input[type="email"]:focus,
-    input[type="password"]:focus,
-    select:focus,
-    textarea:focus {
+    .form-control::placeholder {
+        color: var(--light-text);
+        opacity: 0.7; /* Make placeholder slightly more visible */
+    }
+
+    .form-control:focus {
         outline: none;
         border-color: var(--primary-color);
-        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15); /* Slightly larger, softer focus shadow */
     }
 
     .form-text {
-        font-size: 0.85rem;
-        margin-top: 0.25rem;
-        color: var(--text-light);
+        font-size: 0.875rem; /* Slightly larger helper text */
+        margin-top: 0.4rem; /* More space above helper text */
+        color: var(--light-text);
     }
 
     .invalid-feedback {
-        color: #ef4444;
-        font-size: 0.85rem;
-        margin-top: 0.25rem;
+        color: var(--error-color);
+        font-size: 0.875rem; /* Consistent error text size */
+        margin-top: 0.4rem;
         display: block;
+        font-weight: 500;
     }
 
     /* Button Styles */
     .registration-button {
         background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white; /* Ensure text is white */
         border: none;
-        padding: 0.75rem;
-        font-size: 1rem;
+        padding: 0.9rem 1.5rem; /* Larger padding */
+        font-size: 1.05rem; /* Slightly larger font */
         font-weight: 600;
         border-radius: var(--radius-md);
         transition: var(--transition);
-        box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2);
+        box-shadow: 0 6px 15px rgba(79, 70, 229, 0.25); /* More prominent button shadow */
         display: flex;
         align-items: center;
         justify-content: center;
+        width: 100%; /* Full width button */
+        cursor: pointer;
     }
 
     .registration-button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 15px rgba(79, 70, 229, 0.3);
+        background: linear-gradient(135deg, var(--primary-dark), #3730a3); /* Darker on hover */
+        transform: translateY(-3px); /* More noticeable lift */
+        box-shadow: 0 10px 20px rgba(79, 70, 229, 0.35); /* More pronounced shadow on hover */
     }
 
     .registration-button i {
-        margin-right: 0.5rem;
+        margin-right: 0.6rem; /* More space for icon */
+        font-size: 1.1rem; /* Slightly larger icon */
     }
 
     /* Login Link */
     .login-link {
         color: var(--primary-color);
-        font-weight: 500;
+        font-weight: 600; /* Bolder link */
         text-decoration: none;
         transition: var(--transition);
         position: relative;
+        padding-bottom: 2px; /* Space for underline effect */
     }
 
     .login-link:hover {
@@ -209,30 +233,43 @@
     .login-link:after {
         content: '';
         position: absolute;
-        bottom: -2px;
+        bottom: 0; /* Align with bottom of text */
         left: 0;
-        width: 0;
+        width: 100%;
         height: 2px;
         background: var(--primary-color);
-        transition: var(--transition);
+        transform: scaleX(0);
+        transform-origin: bottom right; /* Animate from right to left */
+        transition: transform 0.3s ease-out;
     }
 
     .login-link:hover:after {
-        width: 100%;
+        transform: scaleX(1);
+        transform-origin: bottom left; /* Animate to full width from left */
     }
 
     /* Responsive Design */
+    @media (max-width: 992px) {
+        .col-xl-6 {
+            max-width: 75%; /* Widen card slightly on smaller desktops */
+        }
+    }
+
     @media (max-width: 768px) {
         .teacher-registration {
-            padding: 1.5rem 0;
+            padding: 2rem 1rem;
         }
-
+        .col-lg-7, .col-md-9, .col-xl-6 {
+            max-width: 100%; /* Full width on smaller screens */
+        }
         .card-body {
             padding: 2rem;
         }
-
         .registration-title {
-            font-size: 1.6rem;
+            font-size: 1.8rem;
+        }
+        .registration-subtitle {
+            font-size: 0.95rem;
         }
     }
 
@@ -240,26 +277,30 @@
         .registration-card {
             border-radius: var(--radius-md);
         }
-
         .card-body {
             padding: 1.5rem;
         }
-
         .registration-icon-container {
             width: 70px;
             height: 70px;
+            margin-bottom: 1rem;
         }
-
         .registration-icon {
-            font-size: 2rem;
+            font-size: 2.2rem;
         }
-
         .registration-title {
-            font-size: 1.4rem;
+            font-size: 1.6rem;
+        }
+        .form-control {
+            padding: 0.75rem 1rem;
+        }
+        .registration-button {
+            padding: 0.8rem 1.2rem;
+            font-size: 0.95rem;
         }
     }
 
-    /* Animation */
+    /* Animations */
     @keyframes fadeInUp {
         from {
             opacity: 0;
@@ -272,39 +313,64 @@
     }
 
     .registration-card {
-        animation: fadeInUp 0.6s ease-out forwards;
+        animation: fadeInUp 0.7s ease-out forwards; /* Slightly longer, smoother */
+        animation-delay: 0.1s; /* Slight delay for overall page load */
     }
+
+    .form-group {
+        animation: fadeIn 0.5s ease-out forwards; /* Smoother form animation */
+        opacity: 0;
+    }
+
+    .form-group:nth-child(1) { animation-delay: 0.2s; }
+    .form-group:nth-child(2) { animation-delay: 0.3s; }
+    .form-group:nth-child(3) { animation-delay: 0.4s; }
+    .form-group:nth-child(4) { animation-delay: 0.5s; }
+    .form-group:nth-child(5) { animation-delay: 0.6s; }
+    .form-group:nth-child(6) { animation-delay: 0.7s; }
+
+    /* Keyframe for button pulse on hover (if desired) */
+    @keyframes pulse-btn {
+        0% { transform: scale(1); box-shadow: 0 6px 15px rgba(79, 70, 229, 0.25); }
+        50% { transform: scale(1.01); box-shadow: 0 10px 20px rgba(79, 70, 229, 0.35); }
+        100% { transform: scale(1); box-shadow: 0 6px 15px rgba(79, 70, 229, 0.25); }
+    }
+    .registration-button:active { /* Example: Add a slight pulse on click */
+        animation: pulse-btn 0.3s ease-out;
+    }
+
 </style>
 {% endblock %}
 
+{% block content %}
 <div class="teacher-registration">
-    <div class="container py-5">
+    <div class="container"> {# Removed py-5 from container, handled by .teacher-registration padding #}
         <div class="row justify-content-center">
             <div class="col-xl-6 col-lg-7 col-md-9">
-                <div class="card shadow-lg border-0 rounded-lg registration-card overflow-hidden">
-                    <!-- Decorative header with wave shape -->
-                    <div class="card-header position-relative p-0">
+                <div class="card registration-card"> {# Simplified classes #}
+                    <div class="card-header"> {# Simplified classes #}
                         <div class="wave-shape">
                             <svg viewBox="0 0 500 150" preserveAspectRatio="none">
                                 <path d="M0.00,49.98 C149.99,150.00 349.20,-49.98 500.00,49.98 L500.00,150.00 L0.00,150.00 Z"></path>
                             </svg>
                         </div>
-                        <div class="text-center py-4 position-relative z-index-1">
+                        <div class="header-content"> {# New wrapper for header content #}
                             <div class="registration-icon-container">
                                 <i class="fas fa-chalkboard-teacher registration-icon"></i>
                             </div>
-                            <h2 class="card-title registration-title">Регистрация като преподавател</h2>
+                            <h2 class="registration-title">Регистрация като преподавател</h2>
                             <p class="registration-subtitle">Присъединете се към нашата образователна общност</p>
                         </div>
                     </div>
 
-                    <div class="card-body p-4 p-md-5">
-                        <form method="post" class="registration-form">
+                    <div class="card-body"> {# Simplified classes #}
+                        <form method="post" class="registration-form" novalidate> {# Added novalidate for Bootstrap JS validation #}
                             {% csrf_token %}
                             {% for field in form %}
                                 <div class="mb-3 form-group">
-                                    <label class="form-label">{{ field.label }}</label>
-                                    {{ field }}
+                                    <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                                    {# Apply Bootstrap form-control class to all inputs #}
+                                    {{ field|add_class:"form-control" }}
                                     {% if field.help_text %}
                                         <small class="form-text">{{ field.help_text }}</small>
                                     {% endif %}
@@ -315,7 +381,7 @@
                             {% endfor %}
 
                             <div class="d-grid mt-4">
-                                <button type="submit" class="btn btn-primary btn-lg registration-button">
+                                <button type="submit" class="registration-button">
                                     <i class="fas fa-user-plus me-2"></i>Регистрация
                                 </button>
                             </div>
@@ -332,195 +398,22 @@
 </div>
 {% endblock %}
 
-<style>
-    .teacher-registration {
-        background: linear-gradient(135deg, #f8f9fc 0%, #e0e6f8 100%);
-        min-height: 100vh;
-        padding: 2rem 0;
-    }
-
-    .registration-card {
-        border: none;
-        background: white;
-        border-radius: 12px;
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
-        overflow: visible;
-    }
-
-    .registration-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
-    }
-
-    .card-header {
-        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
-        color: white;
-        border-radius: 12px 12px 0 0 !important;
-        position: relative;
-        overflow: hidden;
-        border-bottom: none !important;
-    }
-
-    .wave-shape {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: 100px;
-    }
-
-    .wave-shape svg {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-    }
-
-    .registration-icon-container {
-        background: white;
-        width: 80px;
-        height: 80px;
-        margin: 0 auto 1rem;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    }
-
-    .registration-icon {
-        font-size: 2.5rem;
-        color: #4e73df;
-    }
-
-    .registration-title {
-        color: white;
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-        font-size: 1.8rem;
-    }
-
-    .registration-subtitle {
-        color: rgba(255, 255, 255, 0.9);
-        font-size: 1rem;
-    }
-
-    .registration-form .form-control {
-        border-radius: 8px;
-        padding: 14px 16px;
-        border: 2px solid #e9ecef;
-        transition: all 0.3s;
-        font-size: 0.95rem;
-    }
-
-    .registration-form .form-control:focus {
-        border-color: #4e73df;
-        box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
-    }
-
-    .registration-form .form-label {
-        font-weight: 600;
-        color: #495057;
-        margin-bottom: 0.5rem;
-    }
-
-    .registration-button {
-        background: linear-gradient(to right, #4e73df, #224abe);
-        border: none;
-        border-radius: 8px;
-        padding: 14px;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
-        transition: all 0.3s;
-        box-shadow: 0 4px 15px rgba(78, 115, 223, 0.3);
-    }
-
-    .registration-button:hover {
-        background: linear-gradient(to right, #3a56b6, #1a3ab0);
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(78, 115, 223, 0.4);
-    }
-
-    .login-link {
-        color: #4e73df;
-        font-weight: 600;
-        transition: all 0.2s;
-        position: relative;
-        text-decoration: none;
-    }
-
-    .login-link:hover {
-        color: #224abe;
-    }
-
-    .login-link::after {
-        content: '';
-        position: absolute;
-        width: 100%;
-        height: 2px;
-        bottom: -2px;
-        left: 0;
-        background-color: #4e73df;
-        transform: scaleX(0);
-        transition: transform 0.3s ease;
-    }
-
-    .login-link:hover::after {
-        transform: scaleX(1);
-    }
-
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-        .registration-card {
-            margin: 0.5rem;
-        }
-
-        .registration-title {
-            font-size: 1.5rem;
-        }
-
-        .card-body {
-            padding: 1.5rem;
-        }
-    }
-
-    @media (max-width: 576px) {
-        .registration-icon-container {
-            width: 70px;
-            height: 70px;
-        }
-
-        .registration-icon {
-            font-size: 2rem;
-        }
-
-        .registration-form .form-control {
-            padding: 12px 14px;
-        }
-
-        .registration-button {
-            padding: 12px;
-            font-size: 0.9rem;
-        }
-    }
-
-    /* Animation for form elements */
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    .form-group {
-        animation: fadeIn 0.4s ease forwards;
-        opacity: 0;
-    }
-
-    .form-group:nth-child(1) { animation-delay: 0.1s; }
-    .form-group:nth-child(2) { animation-delay: 0.2s; }
-    .form-group:nth-child(3) { animation-delay: 0.3s; }
-    .form-group:nth-child(4) { animation-delay: 0.4s; }
-    .form-group:nth-child(5) { animation-delay: 0.5s; }
-    .form-group:nth-child(6) { animation-delay: 0.6s; }
-</style>
+{% block extra_js %}
+<script>
+    // Bootstrap client-side validation script
+    (function () {
+        'use strict';
+        var forms = document.querySelectorAll('.needs-validation');
+        Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+    })();
+</script>
+{% endblock %}

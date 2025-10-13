@@ -1,3 +1,4 @@
+# TODO: Да оправя имейлите между студент и преподавател и да подобря изледа така че да показва че има съобщение при студента и да могат до отговарят
 from users.models import StudentProfile, TeacherProfile # Make sure TeacherProfile is imported
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
@@ -6,7 +7,7 @@ from assignments.models import Submission as AssignmentSubmission, Assignment
 from quizz.models import Quiz, Submission as QuizSubmission
 
 from courses.models import Course
-from messaging.models import Message 
+from messaging.models import Message
 
 def home(request):
     return render(request, 'dashboards/home.html')
@@ -39,7 +40,11 @@ def teacher_dashboard_view(request):
     total_submissions = assignment_submissions.count()
     graded_submissions = assignment_submissions.filter(grade__isnull=False).count()
 
-    recent_submissions = assignment_submissions.order_by('-submitted_at')[:5]
+    # recent_submissions = assignment_submissions.order_by('-submitted_at')[:5]
+    recent_submissions = assignment_submissions.order_by('-submitted_at')[:5].select_related(
+        'student__user',
+        'assignment',
+    )
 
     selected_course_id = request.GET.get("course")
     if selected_course_id:

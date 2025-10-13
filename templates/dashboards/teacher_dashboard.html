@@ -3,7 +3,6 @@
 
 {% block content %}
     <div class="teacher-dashboard">
-        <!-- Dashboard Header -->
         <div class="dashboard-header">
             <div class="header-content">
                 <h1><i class="bi bi-person-badge"></i> Teacher Dashboard</h1>
@@ -12,23 +11,28 @@
             </div>
 
             <div class="quick-actions">
-                {#                <a href="{% url 'courses:create_course' %}" class="action-btn primary">#}
-                {#                    <i class="bi bi-plus-circle"></i> New Course#}
-                {#                </a>#}
+                {# Преместваме бутона за създаване на курс тук, ако е необходимо #}
+                {% if request.user.is_authenticated and request.user.is_teacher %}
+                    <a href="{% url 'messaging:send_message' %}" class="action-btn primary">
+                        <i class="bi bi-envelope"></i> Изпрати съобщение на студент
+                    </a>
+                {% endif %}
                 <a href="{% url 'assignments:create_assignment' %}" class="action-btn secondary">
-                    <i class="bi bi-file-earmark-plus"></i> New Assignment
+                    <i class="bi bi-file-earmark-plus"></i> Ново задание
                 </a>
+{#                <a href="{% url 'quizz:quiz_create' %}" class="action-btn secondary">#}
+{#                    <i class="bi bi-patch-plus"></i> Създай нов тест#}
+{#                </a>#}
             </div>
         </div>
 
-        <!-- Stats Cards -->
         <div class="stats-grid">
             <div class="stat-card primary">
                 <div class="stat-icon">
                     <i class="bi bi-file-earmark-text"></i>
                 </div>
                 <div class="stat-content">
-                    <h3>Total Submissions</h3>
+                    <h3>Общо предадени</h3>
                     <p class="stat-value">{{ total_submissions }}</p>
                     <a href="{% url 'assignments:assignment_list' %}" class="view-submissions-button">
                         Виж всички задания
@@ -41,7 +45,7 @@
                     <i class="bi bi-check-circle"></i>
                 </div>
                 <div class="stat-content">
-                    <h3>Graded Submissions</h3>
+                    <h3>Оценени предавания</h3>
                     <p class="stat-value">{{ graded_submissions }}</p>
                 </div>
             </div>
@@ -50,7 +54,6 @@
                 <div class="stat-icon">
                     <i class="bi bi-clock-history"></i>
                 </div>
-                {# TODO: Change to quizz creation #}
                 <a href="{% url 'quizz:quiz_create' %}" style="text-decoration: none; color: inherit;">
                     <div class="stat-content">
                         <h3>Създай нов тест</h3>
@@ -66,20 +69,19 @@
                     <i class="bi bi-people"></i>
                 </div>
                 <div class="stat-content">
-                    <h3>Total Students</h3>
+                    <h3>Общо студенти</h3>
                     <p class="stat-value">{{ total_students|default:"0" }}</p>
                 </div>
             </div>
         </div>
 
-        <!-- Courses Section -->
         <section class="dashboard-section">
             <div class="section-header">
-                <h2><i class="bi bi-book"></i> Your Courses</h2>
+                <h2><i class="bi bi-book"></i> Вашите курсове</h2>
                 <div class="filter-controls">
                     <form method="get" class="course-filter">
                         <select name="course" id="course" class="filter-select" onchange="this.form.submit()">
-                            <option value="">-- All Courses --</option>
+                            <option value="">-- Всички курсове --</option>
                             {% for course in courses %}
                                 <option value="{{ course.id }}"
                                         {% if course.id|stringformat:"s" == selected_course_id %}selected{% endif %}>
@@ -97,16 +99,16 @@
                         <div class="course-card">
                             <div class="course-header">
                                 <h3>{{ course.name }}</h3>
-                                <span class="enrollment-count">{{ course.enrollments.count }} students</span>
+                                <span class="enrollment-count">{{ course.enrollments.count }} студенти</span>
                             </div>
                             <p class="course-description">{{ course.description|truncatewords:20 }}</p>
                             <div class="course-footer">
                                 <a href="{% url 'courses:course_detail' course.id %}" class="action-btn small primary">
-                                    <i class="bi bi-eye"></i> View
+                                    <i class="bi bi-eye"></i> Преглед
                                 </a>
                                 <div class="progress-container">
                                     <div class="progress-bar" style="width: {{ course.completion_rate }}%"></div>
-                                    <span>{{ course.completion_rate }}% completed</span>
+                                    <span>{{ course.completion_rate }}% завършени</span>
                                 </div>
                             </div>
                         </div>
@@ -115,54 +117,66 @@
             {% else %}
                 <div class="empty-state">
                     <i class="bi bi-book"></i>
-                    <p>You haven't created any courses yet.</p>
+                    <p>Все още не сте създали курсове.</p>
                     <a href="{% url 'courses:create_course' %}" class="action-btn primary">
-                        <i class="bi bi-plus-circle"></i> Create Your First Course
+                        <i class="bi bi-plus-circle"></i> Създайте първия си курс
                     </a>
                 </div>
             {% endif %}
         </section>
 
-        <!-- Recent Activity Section -->
         <div class="activity-columns">
-            <!-- Active Students -->
             <div class="activity-column">
                 <div class="section-header">
-                    <h2><i class="bi bi-lightning-charge"></i> Most Active Students</h2>
+                    <h2><i class="bi bi-chat-dots"></i> Вашите съобщения</h2>
+                    <a href="{% url 'messaging:inbox' %}" class="action-btn small secondary">
+                        <i class="bi bi-arrow-right"></i> Виж всички
+                    </a>
                 </div>
 
-                {% if active_students %}
-                    <div class="student-list">
-                        {% for student in active_students %}
-                            <div class="student-item">
-                                <div class="student-avatar">
-                                    {% if student.user.profile_picture %}
-                                        <img src="{{ student.user.profile_picture.url }}"
-                                             alt="{{ student.user.username }}">
-                                    {% else %}
-                                        <i class="bi bi-person-circle"></i>
-                                    {% endif %}
+                {% if unread_messages %} {# Ще трябва да подадете тази променлива от view-то #}
+                    <div class="messages-list">
+                        {% for message in unread_messages %}
+                            <div class="message-item {% if not message.is_read %}unread{% endif %}">
+                                <div class="message-sender">
+                                    <div class="sender-avatar">
+                                        {# Предполагаме, че sender е CustomUser с profile_picture #}
+                                        {% if message.sender.studentprofile.profile_picture %}
+                                            <img src="{{ message.sender.studentprofile.profile_picture.url }}" alt="{{ message.sender.username }}">
+                                        {% else %}
+                                            <i class="bi bi-person-circle"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div class="sender-info">
+                                        <h4>{{ message.sender.username }}
+                                            {% if not message.is_read %}<span class="new-badge">Ново</span>{% endif %}
+                                        </h4>
+                                        <p class="message-time">{{ message.timestamp|date:"d.m.Y H:i" }}</p>
+                                    </div>
                                 </div>
-                                <div class="student-info">
-                                    <h4>{{ student.user.username }}</h4>
-                                    <p>Last activity: {{ student.latest_submission_time|date:"d.m.Y H:i" }}</p>
+                                <div class="message-subject">
+                                    <h5>{{ message.subject|truncatechars:50 }}</h5>
                                 </div>
-                                <span class="submission-count">{{ student.submission_count }} submissions</span>
+                                <a href="{% url 'messaging:message_detail' message.pk %}" class="action-btn small primary">
+                                    <i class="bi bi-eye"></i> Прочети
+                                </a>
                             </div>
                         {% endfor %}
                     </div>
                 {% else %}
                     <div class="empty-state small">
-                        <i class="bi bi-people"></i>
-                        <p>No recent student activity.</p>
+                        <i class="bi bi-chat-dots"></i>
+                        <p>Нямате нови съобщения.</p>
+                        <a href="{% url 'messaging:send_message' %}" class="action-btn primary">
+                            <i class="bi bi-envelope"></i> Изпрати съобщение
+                        </a>
                     </div>
                 {% endif %}
             </div>
 
-            <!-- Recent Submissions -->
             <div class="activity-column">
                 <div class="section-header">
-                    <h2><i class="bi bi-clock-history"></i> Recent Submissions</h2>
+                    <h2><i class="bi bi-clock-history"></i> Последни предавания</h2>
                 </div>
 
                 {% if recent_submissions %}
@@ -186,10 +200,10 @@
                                 {#                                <a href="{% url 'submissions:grade_submission' submission_id=sub.id %}">#}
                                 {% if sub.grade %}
                                     <span class="status-badge success"><i
-                                            class="bi bi-check-circle"></i> Graded</span>
+                                            class="bi bi-check-circle"></i> Оценено</span>
                                 {% else %}
                                     <span class="status-badge warning"><i
-                                            class="bi bi-clock"></i> Pending</span>
+                                            class="bi bi-clock"></i> В очакване</span>
                                 {% endif %}
                                 {#                                </a>#}
                             </div>
@@ -198,24 +212,23 @@
                 {% else %}
                     <div class="empty-state small">
                         <i class="bi bi-file-earmark-text"></i>
-                        <p>No recent submissions.</p>
+                        <p>Няма последни предавания.</p>
                     </div>
                 {% endif %}
             </div>
         </div>
 
-        <!-- Students by Course -->
         <section class="dashboard-section">
             <div class="section-header">
-                <h2><i class="bi bi-people-fill"></i> Students by Course</h2>
+                <h2><i class="bi bi-people-fill"></i> Студенти по курс</h2>
             </div>
 
             <div class="enrollments-table">
                 <div class="table-header">
-                    <div class="header-cell">Course</div>
-                    <div class="header-cell">Enrolled Students</div>
-                    <div class="header-cell">Last Activity</div>
-                    <div class="header-cell">Actions</div>
+                    <div class="header-cell">Курс</div>
+                    <div class="header-cell">Записани студенти</div>
+                    <div class="header-cell">Последна активност</div>
+                    <div class="header-cell">Действия</div>
                 </div>
 
                 {% for course in courses %}
@@ -240,25 +253,25 @@
                                     <div class="more-students">+{{ course.enrollments.count|add:-5 }}</div>
                                 {% endif %}
                             </div>
-                            <span>{{ course.enrollments.count }} students</span>
+                            <span>{{ course.enrollments.count }} студенти</span>
                         </div>
                         <div class="table-cell">
                             {% if course.last_activity %}
                                 {{ course.last_activity|date:"d.m.Y H:i" }}
                             {% else %}
-                                No activity
+                                Няма активност
                             {% endif %}
                         </div>
                         <div class="table-cell">
                             <a href="{% url 'courses:course_detail' course.id %}" class="action-btn small primary">
-                                <i class="bi bi-eye"></i> View
+                                <i class="bi bi-eye"></i> Преглед
                             </a>
                         </div>
                     </div>
                 {% empty %}
                     <div class="empty-row">
                         <i class="bi bi-book"></i>
-                        <p>No courses with enrolled students.</p>
+                        <p>Няма курсове със записани студенти.</p>
                     </div>
                 {% endfor %}
             </div>
@@ -587,12 +600,89 @@
             border: 1px solid rgba(0, 33, 71, 0.1);
         }
 
-        .student-list, .submissions-list {
+        .student-list, .submissions-list, .messages-list { /* Добавен .messages-list */
             display: flex;
             flex-direction: column;
             gap: 1rem;
         }
 
+        /* Message List Specific Styles */
+        .message-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid #d2b48c; /* Индикатор за съобщение */
+            transition: all 0.3s ease;
+        }
+
+        .message-item.unread {
+            background-color: rgba(210, 180, 140, 0.1); /* Леко оцветяване за непрочетени */
+            font-weight: 500;
+        }
+
+        .message-item:hover {
+            background: rgba(210, 180, 140, 0.2);
+            transform: translateX(5px);
+        }
+
+        .sender-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(0, 33, 71, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #002147;
+            overflow: hidden;
+            flex-shrink: 0; /* Предотвратява свиването на аватара */
+        }
+
+        .sender-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .sender-info {
+            flex-grow: 1;
+        }
+
+        .sender-info h4 {
+            margin: 0;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #002147;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .message-time {
+            margin: 0;
+            font-size: 0.8rem;
+            color: #5d6d7e;
+        }
+
+        .new-badge {
+            background-color: #2e7d32;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7em;
+            font-weight: 600;
+        }
+
+        .message-subject h5 {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #5d6d7e;
+            font-weight: normal;
+        }
+
+        /* Student List (existing styles, make sure they align) */
         .student-item {
             display: flex;
             align-items: center;

@@ -1,4 +1,3 @@
-
 from django.db import models
 from users.models import TeacherProfile, StudentProfile
 
@@ -12,7 +11,6 @@ class Course(models.Model):
     teacher = models.ForeignKey(TeacherProfile, on_delete=models.SET_NULL, null=True, blank=True,
                                 related_name='taught_courses')
     slug = models.SlugField(unique=True, blank=True)
-    # Added price field for PayPal integration
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
 
     def save(self, *args, **kwargs):
@@ -35,6 +33,9 @@ class Enrollment(models.Model):
     student = models.ForeignKey(StudentProfile, on_delete=models.CASCADE)
     enrolled_at = models.DateTimeField(auto_now_add=True)
     slug = models.SlugField(unique=True, blank=True)
+    is_paid = models.BooleanField(default=False)
+    is_approved = models.BooleanField(default=False)
+    transaction_id = models.CharField(max_length=255, blank=True, null=True)
 
     def save(self, *args, **kwargs):
         if not self.slug:

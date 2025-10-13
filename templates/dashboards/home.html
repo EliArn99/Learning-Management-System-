@@ -1,458 +1,299 @@
 {% extends 'base.html' %}
-{% load static %}
 
-{% block content %}
-<style>
-    /* Main Color Scheme */
-    :root {
-        --primary-dark: #3B153A;
-        --primary-light: #F0C987;
-        --primary-dark-transparent: rgba(59, 21, 58, 0.9);
-        --primary-light-transparent: rgba(240, 201, 135, 0.2);
-    }
+{% block title %}Добре дошли в UniLink{% endblock %}
 
-    /* Base Styles */
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background-color: #f8f9fa;
-        color: #333;
-        line-height: 1.6;
-    }
-
-    .dashboard-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 20px;
-    }
-
-    /* Header Styles */
-    .dashboard-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 30px;
-        padding: 20px;
-        background-color: white;
-        border-radius: 10px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    }
-
-    .dashboard-title {
-        color: var(--primary-dark);
-        font-size: 2.2rem;
-        font-weight: 700;
-        margin-bottom: 5px;
-    }
-
-    .dashboard-subtitle {
-        color: #6c757d;
-        font-size: 1rem;
-        margin: 0;
-    }
-
-    .student-avatar {
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 3px solid var(--primary-light);
-    }
-
-    /* Card Styles */
-    .dashboard-card {
-        background-color: white;
-        border-radius: 10px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-        margin-bottom: 30px;
-        overflow: hidden;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .dashboard-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    }
-
-    .card-header {
-        padding: 20px;
-        border-bottom: 1px solid #eee;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .card-title {
-        color: var(--primary-dark);
-        font-size: 1.5rem;
-        font-weight: 600;
-        margin: 0;
-    }
-
-    /* Progress Bar Styles */
-    .progress-container {
-        padding: 20px;
-    }
-
-    .progress-bar-custom {
-        height: 10px;
-        background-color: #e9ecef;
-        border-radius: 5px;
-        overflow: hidden;
-    }
-
-    .progress-fill {
-        height: 100%;
-        background-color: var(--primary-dark);
-        border-radius: 5px;
-        transition: width 0.6s ease;
-    }
-
-    /* Badge Styles */
-    .status-badge {
-        padding: 5px 12px;
-        border-radius: 20px;
-        font-size: 0.85rem;
-        font-weight: 600;
-    }
-
-    .urgent-badge {
-        background-color: #ff6b6b;
-        color: white;
-        padding: 2px 8px;
-        border-radius: 4px;
-        font-size: 0.75rem;
-    }
-
-    /* Assignment List Styles */
-    .assignment-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-
-    .assignment-item {
-        padding: 15px 20px;
-        border-bottom: 1px solid #eee;
-        transition: background-color 0.2s ease;
-    }
-
-    .assignment-item:hover {
-        background-color: #f9f9f9;
-    }
-
-    .assignment-item:last-child {
-        border-bottom: none;
-    }
-
-    .assignment-icon {
-        width: 40px;
-        height: 40px;
-        background-color: var(--primary-light-transparent);
-        color: var(--primary-dark);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-right: 15px;
-    }
-
-    .assignment-title {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: var(--primary-dark);
-        margin-bottom: 5px;
-    }
-
-    .assignment-due {
-        font-size: 0.85rem;
-        color: #6c757d;
-    }
-
-    /* Button Styles */
-    .view-btn {
-        padding: 6px 15px;
-        background-color: var(--primary-dark);
-        color: white;
-        border-radius: 5px;
-        text-decoration: none;
-        font-size: 0.85rem;
-        font-weight: 500;
-        transition: background-color 0.2s ease;
-    }
-
-    .view-btn:hover {
-        background-color: #2a0f29;
-        color: white;
-    }
-
-    /* Courses Grid Styles */
-    .courses-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 20px;
-        padding: 20px;
-    }
-
-    .course-card {
-        background-color: white;
-        border-radius: 8px;
-        border: 1px solid #eee;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .course-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-    }
-
-    .course-icon {
-        width: 50px;
-        height: 50px;
-        background-color: var(--primary-light-transparent);
-        color: var(--primary-dark);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 15px;
-        font-size: 1.2rem;
-    }
-
-    .course-name {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: var(--primary-dark);
-        margin-bottom: 10px;
-    }
-
-    .course-description {
-        font-size: 0.9rem;
-        color: #6c757d;
-        margin-bottom: 15px;
-    }
-
-    .continue-btn {
-        display: inline-block;
-        padding: 8px 15px;
-        background-color: var(--primary-light);
-        color: var(--primary-dark);
-        border-radius: 5px;
-        text-decoration: none;
-        font-size: 0.85rem;
-        font-weight: 500;
-        transition: background-color 0.2s ease;
-    }
-
-    .continue-btn:hover {
-        background-color: #e8b974;
-        color: var(--primary-dark);
-    }
-
-    /* Empty State Styles */
-    .empty-state {
-        text-align: center;
-        padding: 40px 20px;
-    }
-
-    .empty-state-img {
-        width: 150px;
-        height: auto;
-        margin-bottom: 20px;
-        opacity: 0.7;
-    }
-
-    .browse-btn {
-        display: inline-block;
-        padding: 8px 20px;
-        background-color: var(--primary-dark);
-        color: white;
-        border-radius: 5px;
-        text-decoration: none;
-        font-size: 0.9rem;
-        margin-top: 15px;
-        transition: background-color 0.2s ease;
-    }
-
-    .browse-btn:hover {
-        background-color: #2a0f29;
-        color: white;
-    }
-
-    /* Responsive Styles */
-    @media (max-width: 768px) {
-        .dashboard-header {
-            flex-direction: column;
+{% block extra_css %}
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, rgba(0, 33, 71, 0.9) 0%, rgba(0, 33, 71, 0.8) 100%),
+            url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 120px 0;
             text-align: center;
+            position: relative;
         }
 
-        .student-avatar {
-            margin-top: 15px;
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
         }
 
-        .dashboard-title {
-            font-size: 1.8rem;
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--white);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        .card-title {
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .hero-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 80px 0;
+            background-color: var(--white);
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .section-title h2 {
+            font-size: 2.2rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title h2:after {
+            content: '';
+            position: absolute;
+            width: 50%;
+            height: 3px;
+            background-color: var(--secondary-color);
+            bottom: -10px;
+            left: 25%;
+        }
+
+        .section-title p {
+            color: var(--text-light);
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: var(--white);
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+            text-align: center;
+            border: 1px solid rgba(0, 33, 71, 0.1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            background-color: rgba(210, 180, 140, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: var(--secondary-color);
+            font-size: 2rem;
+        }
+
+        .feature-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
             font-size: 1.3rem;
         }
 
-        .courses-grid {
-            grid-template-columns: 1fr;
+        .feature-card p {
+            color: var(--text-light);
+            margin-bottom: 20px;
         }
 
-        .assignment-item {
-            flex-direction: column;
-        }
-
-        .assignment-icon {
-            margin-right: 0;
-            margin-bottom: 10px;
-        }
-
-        .view-btn {
+        .feature-card .btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
             margin-top: 10px;
-            align-self: flex-end;
-        }
-    }
-
-    @media (max-width: 576px) {
-        .dashboard-container {
-            padding: 10px;
         }
 
-        .dashboard-header {
-            padding: 15px;
+        .feature-card .btn i {
+            margin-right: 8px;
         }
 
-        .dashboard-title {
-            font-size: 1.5rem;
+        .feature-card .btn:hover {
+            background-color: var(--secondary-color);
         }
 
-        .card-header {
-            flex-direction: column;
-            align-items: flex-start;
+        /* CTA Section */
+        .cta {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 80px 0;
+            text-align: center;
         }
 
-        .status-badge {
-            margin-top: 10px;
-            align-self: flex-start;
+        .cta h2 {
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            color: var(--white);
         }
-    }
-</style>
 
-<div class="dashboard-container">
-    <!-- Header Section -->
-    <div class="dashboard-header">
-        <div>
-            <h1 class="dashboard-title">Student Dashboard</h1>
-            <p class="dashboard-subtitle">Welcome back! Here's what's happening today.</p>
-        </div>
-        <img src="{% static 'images/avatar.svg' %}" alt="Student Avatar" class="student-avatar">
-    </div>
+        .cta p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 30px;
+            color: rgba(255, 255, 255, 0.9);
+        }
 
-    <!-- Progress Card -->
-    <div class="dashboard-card">
-        <div class="progress-container">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h2 class="card-title">Your Learning Progress</h2>
-                <span class="status-badge" style="background-color: rgba(59, 21, 58, 0.1); color: var(--primary-dark);">
-                    {{ progress }}% Complete
-                </span>
-            </div>
-            <div class="progress-bar-custom">
-                <div class="progress-fill" style="width: {{ progress }}%;"></div>
-            </div>
-            <div class="d-flex justify-content-between mt-2">
-                <small class="text-muted">Started</small>
-                <small class="text-muted">Goal: 100%</small>
-            </div>
-        </div>
-    </div>
+        .cta .btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 12px 30px;
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(210, 180, 140, 0.3);
+        }
 
-    <div class="row">
-        <!-- Upcoming Assignments Column -->
-        <div class="col-lg-6">
-            <div class="dashboard-card">
-                <div class="card-header">
-                    <h2 class="card-title">📝 Upcoming Assignments</h2>
-                    <span class="status-badge" style="background-color: rgba(59, 21, 58, 0.1); color: var(--primary-dark);">
-                        {{ upcoming_assignments|length }} due
-                    </span>
-                </div>
+        .cta .btn i {
+            margin-right: 10px;
+        }
 
-                {% if upcoming_assignments %}
-                    <ul class="assignment-list">
-                        {% for assignment in upcoming_assignments %}
-                            <li class="assignment-item">
-                                <div class="d-flex align-items-center">
-                                    <div class="assignment-icon">
-                                        <i class="fas fa-book-open"></i>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <h3 class="assignment-title">{{ assignment.title }}</h3>
-                                        <div class="d-flex align-items-center">
-                                            <span class="assignment-due">
-                                                <i class="far fa-calendar-alt me-1"></i>
-                                                {{ assignment.due_date|date:"M d, Y H:i" }}
-                                            </span>
-                                            {% if assignment.is_urgent %}
-                                                <span class="urgent-badge ms-2">Urgent</span>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                    <a href="{% url 'assignments:assignment_detail' assignment.pk %}" class="view-btn">
-                                        View
-                                    </a>
-                                </div>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <div class="empty-state">
-{#                        <img src="{% static 'images/no-assignments.svg' %}" alt="No assignments" class="empty-state-img">#}
-                        <p class="text-muted">No upcoming assignments. Enjoy your free time!</p>
-                    </div>
-                {% endif %}
-            </div>
-        </div>
+        .cta .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(210, 180, 140, 0.4);
+        }
 
-        <!-- Your Courses Column -->
-        <div class="col-lg-6">
-            <div class="dashboard-card">
-                <div class="card-header">
-                    <h2 class="card-title">🎓 Your Courses</h2>
-                    <span class="status-badge" style="background-color: rgba(240, 201, 135, 0.2); color: var(--primary-dark);">
-                        {{ courses|length }} enrolled
-                    </span>
-                </div>
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .hero {
+                padding: 80px 0;
+            }
 
-                {% if courses %}
-                    <div class="courses-grid">
-                        {% for course in courses %}
-                            <div class="course-card">
-                                <div class="card-body" style="padding: 1.5rem;">
-                                    <div class="course-icon">
-                                        <i class="fas fa-graduation-cap"></i>
-                                    </div>
-                                    <h3 class="course-name">{{ course.name }}</h3>
-                                    <p class="course-description">{{ course.description|truncatewords:12 }}</p>
-                                    <a href="{% url 'courses:course_detail' course.pk %}" class="continue-btn">
-                                        Continue Learning
-                                    </a>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    <div class="empty-state">
-                        <img src="{% static 'images/no-courses.svg' %}" alt="No courses" class="empty-state-img">
-                        <p class="text-muted">You're not enrolled in any courses yet.</p>
-                        <a href="#" class="browse-btn">Browse Courses</a>
-                    </div>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-</div>
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .section-title h2 {
+                font-size: 1.8rem;
+            }
+
+            .features {
+                padding: 50px 0;
+            }
+
+            .cta {
+                padding: 60px 0;
+            }
+
+            .cta h2 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
 {% endblock %}
+
+{% block content %}
+    <section class="hero">
+        <div class="container hero-content">
+            <h1>Добре дошли в UniLink!</h1>
+            <p>Иновативна платформа за онлайн обучение, която ви помага да постигнете вашите образователни цели.</p>
+            <div class="hero-buttons">
+                <a href="#" class="btn btn-primary"><i class="fas fa-rocket"></i> Започнете сега</a>
+                <a href="#" class="btn btn-outline"><i class="fas fa-info-circle"></i> Научете повече</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>Нашите предимства</h2>
+                <p>Открийте защо хиляди обучаващи се избраха нашата платформа</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-laptop-code"></i></div>
+                    <h3>Интерактивни курсове</h3>
+                    <p>Достъп до разнообразни курсове с интерактивни материали и практически задания.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+                    <h3>Опитни преподаватели</h3>
+                    <p>Учете се от най-добрите експерти в съответната област.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-certificate"></i></div>
+                    <h3>Сертификати</h3>
+                    <p>Получавайте признати сертификати при успешно завършване на курсовете.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-clock"></i></div>
+                    <h3>Гъвкаво обучение</h3>
+                    <p>Учете се по свое време и в свое темпо, без ограничения.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-users"></i></div>
+                    <h3>Работа</h3>
+                    <p>Включете се в нашия екип от преподаватели и ментори.</p>
+                    <a href="{% url 'users:register_teacher' %}" class="btn"><i class="fas fa-arrow-right"></i>
+                        Кандидатствай</a>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-mobile-alt"></i></div>
+                    <h3>Достъпност</h3>
+                    <p>Достъп до платформата от всяко устройство, навсякъде и по всяко време.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta">
+        <div class="container">
+            <h2>Готови ли сте да започнете?</h2>
+            <p>Присъединете се към нашата общност от обучаващи се и отключете своя път към знанието днес.</p>
+        </div>
+    </section>
+{% endblock %}
+
+

@@ -1,33 +1,810 @@
+{#{% extends 'base.html' %}#}
+{##}
+{#{% block content %}#}
+{#<div class="container mt-4">#}
+{#    <h1>✉️ Изпрати съобщение</h1>#}
+{##}
+{#    <form method="post">#}
+{#        {% csrf_token %}#}
+{#        <div class="mb-3">#}
+{#            <label for="receiver" class="form-label">До:</label>#}
+{#            <select class="form-select" id="receiver" name="receiver" required>#}
+{#                {% for user in users %}#}
+{#                    {% if user != request.user %}#}
+{#                        <option value="{{ user.id }}">{{ user.username }}</option>#}
+{#                    {% endif %}#}
+{#                {% endfor %}#}
+{#            </select>#}
+{#        </div>#}
+{##}
+{#        <div class="mb-3">#}
+{#            <label for="subject" class="form-label">Тема:</label>#}
+{#            <input type="text" class="form-control" id="subject" name="subject">#}
+{#        </div>#}
+{##}
+{#        <div class="mb-3">#}
+{#            <label for="content" class="form-label">Съобщение:</label>#}
+{#            <textarea class="form-control" id="content" name="content" rows="4" required></textarea>#}
+{#        </div>#}
+{##}
+{#        <button type="submit" class="btn btn-primary">Изпрати</button>#}
+{#    </form>#}
+{#</div>#}
+{#{% endblock %}#}
+
+
+
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-4">
-    <h1>✉️ Изпрати съобщение</h1>
+<div class="message-container">
+    <div class="message-header">
+        <div class="header-content">
+            <i class="fas fa-paper-plane"></i>
+            <h1>Изпрати съобщение</h1>
+            <p>Свържете се с други потребители в системата</p>
+        </div>
+    </div>
 
-    <form method="post">
-        {% csrf_token %}
-        <div class="mb-3">
-            <label for="receiver" class="form-label">До:</label>
-            <select class="form-select" id="receiver" name="receiver" required>
-                {% for user in users %}
-                    {% if user != request.user %}
-                        <option value="{{ user.id }}">{{ user.username }}</option>
-                    {% endif %}
-                {% endfor %}
-            </select>
+    <div class="message-content">
+        <div class="message-form-container">
+            <form method="post" class="message-form" id="messageForm">
+                {% csrf_token %}
+
+                <div class="form-section">
+                    <div class="section-header">
+                        <i class="fas fa-user"></i>
+                        <h3>Получател</h3>
+                    </div>
+                    <div class="form-group">
+                        <label for="receiver" class="form-label">
+                            <i class="fas fa-search"></i>
+                            Изберете получател:
+                        </label>
+                        <div class="select-wrapper">
+                            <select class="form-select" id="receiver" name="receiver" required>
+                                <option value="" disabled selected>Изберете потребител...</option>
+                                {% for user in users %}
+                                    {% if user != request.user %}
+                                        <option value="{{ user.id }}" data-email="{{ user.email }}">
+                                            {% if user.get_full_name %}
+                                                {{ user.get_full_name }} ({{ user.username }})
+                                            {% else %}
+                                                {{ user.username }}
+                                            {% endif %}
+                                        </option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="user-info" id="userInfo">
+                            <div class="info-content">
+                                <div class="avatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="details">
+                                    <p class="name">Изберете потребител за детайли</p>
+                                    <p class="email">-</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="section-header">
+                        <i class="fas fa-edit"></i>
+                        <h3>Съдържание на съобщението</h3>
+                    </div>
+                    <div class="form-group">
+                        <label for="subject" class="form-label">
+                            <i class="fas fa-tag"></i>
+                            Тема на съобщението:
+                        </label>
+                        <input type="text" class="form-control" id="subject" name="subject" placeholder="Въведете тема на съобщението...">
+                        <div class="char-counter">
+                            <span id="subjectChars">0</span>/60 знака
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="content" class="form-label">
+                            <i class="fas fa-comment"></i>
+                            Съобщение:
+                        </label>
+                        <div class="textarea-wrapper">
+                            <textarea class="form-control" id="content" name="content" rows="6" placeholder="Напишете вашето съобщение тук..." required></textarea>
+                            <div class="textarea-actions">
+                                <button type="button" class="action-btn" id="formatBold" title="Удебелен текст">
+                                    <i class="fas fa-bold"></i>
+                                </button>
+                                <button type="button" class="action-btn" id="formatItalic" title="Курсив">
+                                    <i class="fas fa-italic"></i>
+                                </button>
+                                <button type="button" class="action-btn" id="formatList" title="Списък">
+                                    <i class="fas fa-list"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="char-counter">
+                            <span id="contentChars">0</span>/1000 знака
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="saveDraft">
+                        <i class="fas fa-save"></i>
+                        Запази чернова
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="sendMessage">
+                        <i class="fas fa-paper-plane"></i>
+                        Изпрати съобщение
+                    </button>
+                </div>
+            </form>
         </div>
 
-        <div class="mb-3">
-            <label for="subject" class="form-label">Тема:</label>
-            <input type="text" class="form-control" id="subject" name="subject">
+        <div class="message-tips">
+            <div class="tips-header">
+                <i class="fas fa-lightbulb"></i>
+                <h3>Съвети за ефективно съобщение</h3>
+            </div>
+            <div class="tips-content">
+                <div class="tip">
+                    <i class="fas fa-check-circle"></i>
+                    <p>Бъдете ясни и конкретни в темата на съобщението</p>
+                </div>
+                <div class="tip">
+                    <i class="fas fa-check-circle"></i>
+                    <p>Формулирайте съобщението си уважително и професионално</p>
+                </div>
+                <div class="tip">
+                    <i class="fas fa-check-circle"></i>
+                    <p>Проверете правописа преди изпращане</p>
+                </div>
+                <div class="tip">
+                    <i class="fas fa-check-circle"></i>
+                    <p>Ако е необходимо, прикачете файлове към следващо съобщение</p>
+                </div>
+            </div>
         </div>
-
-        <div class="mb-3">
-            <label for="content" class="form-label">Съобщение:</label>
-            <textarea class="form-control" id="content" name="content" rows="4" required></textarea>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Изпрати</button>
-    </form>
+    </div>
 </div>
+
+<!-- Success Modal -->
+<div class="modal" id="successModal">
+    <div class="modal-content">
+        <div class="modal-icon success">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <h3>Съобщението е изпратено успешно!</h3>
+        <p>Вашето съобщение беше изпратено до получателя.</p>
+        <div class="modal-actions">
+            <button class="btn btn-primary" id="closeModal">OK</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    :root {
+        --primary-color: #6366f1;
+        --primary-light: #a5b4fc;
+        --primary-dark: #4f46e5;
+        --secondary-color: #8b5cf6;
+        --accent-color: #ec4899;
+        --success-color: #10b981;
+        --warning-color: #f59e0b;
+        --danger-color: #ef4444;
+        --dark-color: #1e293b;
+        --darker-color: #0f172a;
+        --light-color: #f8fafc;
+        --lighter-color: #ffffff;
+        --gray-color: #94a3b8;
+        --border-radius: 12px;
+        --box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .message-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .message-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        border-radius: var(--border-radius);
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: var(--box-shadow);
+    }
+
+    .header-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .header-content i {
+        font-size: 48px;
+        margin-bottom: 15px;
+        opacity: 0.9;
+    }
+
+    .header-content h1 {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .header-content p {
+        font-size: 16px;
+        opacity: 0.9;
+        max-width: 500px;
+    }
+
+    .message-content {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 30px;
+    }
+
+    @media (max-width: 968px) {
+        .message-content {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .message-form-container {
+        background: var(--lighter-color);
+        border-radius: var(--border-radius);
+        padding: 30px;
+        box-shadow: var(--box-shadow);
+    }
+
+    .form-section {
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .section-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .section-header i {
+        color: var(--primary-color);
+        font-size: 20px;
+        margin-right: 10px;
+    }
+
+    .section-header h3 {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--dark-color);
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        display: flex;
+        align-items: center;
+        font-weight: 500;
+        margin-bottom: 8px;
+        color: var(--dark-color);
+    }
+
+    .form-label i {
+        margin-right: 8px;
+        color: var(--primary-color);
+        font-size: 14px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        font-family: 'Poppins', sans-serif;
+        font-size: 15px;
+        transition: var(--transition);
+        background-color: var(--lighter-color);
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+
+    .select-wrapper {
+        position: relative;
+    }
+
+    .select-wrapper i {
+        position: absolute;
+        right: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--gray-color);
+        pointer-events: none;
+    }
+
+    .user-info {
+        margin-top: 15px;
+        background-color: #f1f5f9;
+        border-radius: 8px;
+        padding: 15px;
+        display: none;
+    }
+
+    .user-info.active {
+        display: block;
+        animation: fadeIn 0.3s ease-out;
+    }
+
+    .info-content {
+        display: flex;
+        align-items: center;
+    }
+
+    .avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+        color: white;
+        font-size: 20px;
+    }
+
+    .details .name {
+        font-weight: 600;
+        margin-bottom: 5px;
+        color: var(--dark-color);
+    }
+
+    .details .email {
+        color: var(--gray-color);
+        font-size: 14px;
+    }
+
+    .textarea-wrapper {
+        position: relative;
+    }
+
+    .textarea-actions {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        display: flex;
+        gap: 5px;
+    }
+
+    .action-btn {
+        background: rgba(255, 255, 255, 0.8);
+        border: 1px solid #cbd5e1;
+        border-radius: 4px;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .action-btn:hover {
+        background: var(--primary-light);
+        color: white;
+    }
+
+    .char-counter {
+        text-align: right;
+        font-size: 12px;
+        color: var(--gray-color);
+        margin-top: 5px;
+    }
+
+    .char-counter.warning {
+        color: var(--warning-color);
+    }
+
+    .char-counter.error {
+        color: var(--danger-color);
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 15px;
+        margin-top: 30px;
+    }
+
+    .btn {
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 15px;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-primary {
+        background-color: var(--primary-color);
+        color: white;
+        box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2);
+    }
+
+    .btn-primary:hover {
+        background-color: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px rgba(79, 70, 229, 0.3);
+    }
+
+    .btn-secondary {
+        background-color: #f1f5f9;
+        color: var(--dark-color);
+        border: 1px solid #cbd5e1;
+    }
+
+    .btn-secondary:hover {
+        background-color: #e2e8f0;
+        transform: translateY(-2px);
+    }
+
+    .message-tips {
+        background: var(--lighter-color);
+        border-radius: var(--border-radius);
+        padding: 25px;
+        box-shadow: var(--box-shadow);
+        height: fit-content;
+    }
+
+    .tips-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .tips-header i {
+        color: var(--warning-color);
+        font-size: 20px;
+        margin-right: 10px;
+    }
+
+    .tips-header h3 {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--dark-color);
+    }
+
+    .tip {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 15px;
+    }
+
+    .tip i {
+        color: var(--success-color);
+        margin-right: 10px;
+        margin-top: 2px;
+        flex-shrink: 0;
+    }
+
+    .tip p {
+        font-size: 14px;
+        line-height: 1.5;
+        color: var(--dark-color);
+    }
+
+    /* Modal Styles */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal.active {
+        display: flex;
+        animation: fadeIn 0.3s ease-out;
+    }
+
+    .modal-content {
+        background: white;
+        border-radius: var(--border-radius);
+        padding: 30px;
+        max-width: 400px;
+        width: 90%;
+        text-align: center;
+        box-shadow: var(--box-shadow);
+        animation: slideUp 0.3s ease-out;
+    }
+
+    .modal-icon {
+        font-size: 48px;
+        margin-bottom: 20px;
+    }
+
+    .modal-icon.success {
+        color: var(--success-color);
+    }
+
+    .modal-content h3 {
+        font-size: 24px;
+        margin-bottom: 10px;
+        color: var(--dark-color);
+    }
+
+    .modal-content p {
+        color: var(--gray-color);
+        margin-bottom: 25px;
+    }
+
+    .modal-actions {
+        display: flex;
+        justify-content: center;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .message-container {
+            padding: 15px;
+        }
+
+        .message-header {
+            padding: 20px;
+        }
+
+        .header-content h1 {
+            font-size: 24px;
+        }
+
+        .message-form-container {
+            padding: 20px;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Elements
+        const receiverSelect = document.getElementById('receiver');
+        const userInfo = document.getElementById('userInfo');
+        const subjectInput = document.getElementById('subject');
+        const contentTextarea = document.getElementById('content');
+        const subjectChars = document.getElementById('subjectChars');
+        const contentChars = document.getElementById('contentChars');
+        const messageForm = document.getElementById('messageForm');
+        const saveDraftBtn = document.getElementById('saveDraft');
+        const sendMessageBtn = document.getElementById('sendMessage');
+        const successModal = document.getElementById('successModal');
+        const closeModalBtn = document.getElementById('closeModal');
+
+        // Format buttons
+        const formatBold = document.getElementById('formatBold');
+        const formatItalic = document.getElementById('formatItalic');
+        const formatList = document.getElementById('formatList');
+
+        // Character counters
+        function updateCharCounters() {
+            const subjectLength = subjectInput.value.length;
+            const contentLength = contentTextarea.value.length;
+
+            subjectChars.textContent = subjectLength;
+            contentChars.textContent = contentLength;
+
+            // Update styling based on character limits
+            if (subjectLength > 50) {
+                subjectChars.parentElement.classList.add('warning');
+            } else {
+                subjectChars.parentElement.classList.remove('warning');
+            }
+
+            if (subjectLength > 60) {
+                subjectChars.parentElement.classList.add('error');
+            } else {
+                subjectChars.parentElement.classList.remove('error');
+            }
+
+            if (contentLength > 800) {
+                contentChars.parentElement.classList.add('warning');
+            } else {
+                contentChars.parentElement.classList.remove('warning');
+            }
+
+            if (contentLength > 1000) {
+                contentChars.parentElement.classList.add('error');
+            } else {
+                contentChars.parentElement.classList.remove('error');
+            }
+        }
+
+        // User info display
+        function updateUserInfo() {
+            const selectedOption = receiverSelect.options[receiverSelect.selectedIndex];
+
+            if (selectedOption.value) {
+                userInfo.classList.add('active');
+                const nameElement = userInfo.querySelector('.name');
+                const emailElement = userInfo.querySelector('.email');
+
+                nameElement.textContent = selectedOption.text;
+                emailElement.textContent = selectedOption.dataset.email || 'Няма имейл';
+            } else {
+                userInfo.classList.remove('active');
+            }
+        }
+
+        // Text formatting functions
+        function formatText(format) {
+            const start = contentTextarea.selectionStart;
+            const end = contentTextarea.selectionEnd;
+            const selectedText = contentTextarea.value.substring(start, end);
+            let newText = '';
+
+            switch(format) {
+                case 'bold':
+                    newText = `**${selectedText}**`;
+                    break;
+                case 'italic':
+                    newText = `*${selectedText}*`;
+                    break;
+                case 'list':
+                    newText = selectedText.split('\n').map(line => `- ${line}`).join('\n');
+                    break;
+            }
+
+            contentTextarea.setRangeText(newText, start, end, 'select');
+            contentTextarea.focus();
+            updateCharCounters();
+        }
+
+        // Save draft functionality
+        function saveDraft() {
+            const draft = {
+                receiver: receiverSelect.value,
+                subject: subjectInput.value,
+                content: contentTextarea.value,
+                timestamp: new Date().toISOString()
+            };
+
+            localStorage.setItem('messageDraft', JSON.stringify(draft));
+
+            // Show temporary feedback
+            const originalText = saveDraftBtn.innerHTML;
+            saveDraftBtn.innerHTML = '<i class="fas fa-check"></i> Черновата е запазена';
+            saveDraftBtn.disabled = true;
+
+            setTimeout(() => {
+                saveDraftBtn.innerHTML = originalText;
+                saveDraftBtn.disabled = false;
+            }, 2000);
+        }
+
+        // Load draft if exists
+        function loadDraft() {
+            const draft = localStorage.getItem('messageDraft');
+            if (draft) {
+                const draftData = JSON.parse(draft);
+                receiverSelect.value = draftData.receiver;
+                subjectInput.value = draftData.subject;
+                contentTextarea.value = draftData.content;
+
+                updateUserInfo();
+                updateCharCounters();
+            }
+        }
+
+        // Form submission
+        function handleFormSubmit(e) {
+            e.preventDefault();
+
+            // Basic validation
+            if (!receiverSelect.value) {
+                alert('Моля, изберете получател на съобщението.');
+                receiverSelect.focus();
+                return;
+            }
+
+            if (!contentTextarea.value.trim()) {
+                alert('Моля, въведете съдържание на съобщението.');
+                contentTextarea.focus();
+                return;
+            }
+
+            // Show loading state
+            sendMessageBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Изпращане...';
+            sendMessageBtn.disabled = true;
+
+            // Simulate API call
+            setTimeout(() => {
+                // Clear draft
+                localStorage.removeItem('messageDraft');
+
+                // Show success modal
+                successModal.classList.add('active');
+
+                // Reset form
+                messageForm.reset();
+                updateCharCounters();
+                userInfo.classList.remove('active');
+
+                // Reset button
+                sendMessageBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Изпрати съобщение';
+                sendMessageBtn.disabled = false;
+            }, 1500);
+        }
+
+        // Event listeners
+        receiverSelect.addEventListener('change', updateUserInfo);
+        subjectInput.addEventListener('input', updateCharCounters);
+        contentTextarea.addEventListener('input', updateCharCounters);
+
+        formatBold.addEventListener('click', () => formatText('bold'));
+        formatItalic.addEventListener('click', () => formatText('italic'));
+        formatList.addEventListener('click', () => formatText('list'));
+
+        saveDraftBtn.addEventListener('click', saveDraft);
+        messageForm.addEventListener('submit', handleFormSubmit);
+
+        closeModalBtn.addEventListener('click', () => {
+            successModal.classList.remove('active');
+        });
+
+        // Close modal when clicking outside
+        successModal.addEventListener('click', (e) => {
+            if (e.target === successModal) {
+                successModal.classList.remove('active');
+            }
+        });
+
+        // Initialize
+        updateCharCounters();
+        loadDraft();
+    });
+</script>
 {% endblock %}

@@ -4,26 +4,24 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect, get_object_or_404
 
 from quizz.models import Quiz
-from .forms import StudentRegisterForm, TeacherRegisterForm, StudentProfileForm, TeacherProfileForm, SubmissionGradeForm
-from .models import StudentProfile, TeacherProfile, CustomUser # Ensure CustomUser is imported if you're using it here
+from .forms import StudentRegisterForm, TeacherRegisterForm, StudentProfileForm, TeacherProfileForm
+from .models import StudentProfile, TeacherProfile, CustomUser
 from django.contrib.auth.decorators import login_required
 
 
 @login_required
 def student_profile_view(request):
-    # Retrieve the profile, or create it if somehow it doesn't exist (though it should after registration)
     profile = get_object_or_404(StudentProfile, user=request.user)
 
     if not profile.is_approved:
         return redirect('users:approval_pending')
 
     if request.method == 'POST':
-        # Use StudentProfileForm for editing existing profiles, not StudentRegisterForm
         form = StudentProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
             form.save()
             messages.success(request, 'Профилът е успешно обновен!')
-            return redirect('users:profile') # Redirect to generic profile view or specific student_profile
+            return redirect('users:profile')
         else:
             messages.error(request, 'Възникна грешка при обновяване на профила. Моля, проверете данните.')
     else:
@@ -31,7 +29,7 @@ def student_profile_view(request):
 
     upcoming_quizzes = []
     try:
-        if profile.is_approved: # Only fetch if approved
+        if profile.is_approved:
             upcoming_quizzes = Quiz.objects.filter(course__students=request.user, is_active=True)
     except Exception as e:
         print("❗️Грешка при извличане на тестове:", e)
@@ -52,12 +50,11 @@ def teacher_profile_view(request):
         return redirect('users:approval_pending')
 
     if request.method == 'POST':
-        # Use TeacherProfileForm for editing existing profiles, not TeacherRegisterForm
         form = TeacherProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
             form.save()
             messages.success(request, 'Профилът е успешно обновен!')
-            return redirect('users:profile') # Redirect to generic profile view or specific teacher_profile
+            return redirect('users:profile')
         else:
             messages.error(request, 'Възникна грешка при обновяване на профила. Моля, проверете данните.')
     else:
@@ -76,12 +73,12 @@ def approval_pending_view(request):
         try:
             profile = StudentProfile.objects.get(user=user)
         except StudentProfile.DoesNotExist:
+
             pass
     elif user.is_teacher:
         try:
             profile = TeacherProfile.objects.get(user=user)
         except TeacherProfile.DoesNotExist:
-            # Same for teacher
             pass
 
     if profile and profile.is_approved:
@@ -99,17 +96,17 @@ def register_student(request):
         if form.is_valid():
             user = form.save(commit=False)
             user.is_student = True
-            user.is_active = True 
+            user.is_active = True
             user.save()
 
             StudentProfile.objects.create(
                 user=user,
                 age=form.cleaned_data['age'],
-                is_approved=False 
+                is_approved=False # <--- THIS IS KEY! New students are NOT approved.
             )
-            login(request, user)
+            login(request, user) # Log the user in immediately
             messages.success(request, 'Успешна регистрация! Вашият акаунт очаква одобрение.')
-            return redirect('users:approval_pending') 
+            return redirect('users:approval_pending') # <--- Redirect to the approval pending page
         else:
             messages.error(request, 'Възникна грешка при регистрацията. Моля, проверете данните си.')
     else:
@@ -123,16 +120,16 @@ def register_teacher(request):
         if form.is_valid():
             user = form.save(commit=False)
             user.is_teacher = True
-            user.is_active = True 
+            user.is_active = True # Allows user to log in and see the pending page
             user.save()
 
             TeacherProfile.objects.create(
                 user=user,
-                is_approved=False 
+                is_approved=False # <--- THIS IS KEY! New teachers are NOT approved.
             )
-            login(request, user) 
+            login(request, user)
             messages.success(request, 'Успешна регистрация! Вашият акаунт очаква одобрение от администратор.')
-            return redirect('users:approval_pending') 
+            return redirect('users:approval_pending')
         else:
             messages.error(request, 'Възникна грешка при регистрацията. Моля, проверете данните си.')
     else:
@@ -156,7 +153,7 @@ def custom_login_view(request):
                     return redirect('dashboards:student_dashboard')
                 except StudentProfile.DoesNotExist:
                     messages.error(request, 'Възникна грешка с профила ви. Моля, свържете се с администратор.')
-                    return redirect('users:approval_pending') # Or home, or a dedicated error page
+                    return redirect('users:approval_pending')
 
             elif user.is_teacher:
                 try:
@@ -167,10 +164,11 @@ def custom_login_view(request):
                     return redirect('dashboards:teacher_dashboard')
                 except TeacherProfile.DoesNotExist:
                     messages.error(request, 'Възникна грешка с профила ви. Моля, свържете се с администратор.')
-                    return redirect('users:approval_pending') # Or home, or error page
+                    return redirect('users:approval_pending')
             else:
                 messages.info(request, 'Добре дошли!')
-                return redirect('home') # For generic users or unknown types
+                return redirect('home')
+
     else:
         form = AuthenticationForm()
     return render(request, 'users/login.html', {'form': form})
@@ -179,14 +177,13 @@ def custom_login_view(request):
 def custom_logout_view(request):
     logout(request)
     messages.info(request, 'Успешно излязохте от профила си.')
-    return render(request, 'users/logout.html') # Or redirect to a public page like 'home' or 'login'
+    return render(request, 'users/logout.html')
 
 
 @login_required
 def profile_view(request):
     user = request.user
 
-    # Initial check for approval for general profile view
     profile = None
     if user.is_student:
         profile = get_object_or_404(StudentProfile, user=user)
@@ -207,7 +204,6 @@ def profile_view(request):
         profile = get_object_or_404(TeacherProfile, user=user)
         if not profile.is_approved:
             return redirect('users:approval_pending')
-        # If approved, proceed to render teacher profile
         return render(request, 'users/teacher_profile.html', {
             'teacher': profile
         })

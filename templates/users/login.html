@@ -1,243 +1,483 @@
-<!DOCTYPE html>
-<html lang="bg">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Вход | LMS</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --primary-color: #002147;
-            --secondary-color: #D2B48C;
-            --light-color: #f8f9fa;
-            --dark-color: #212529;
-            --text-color: #333;
-            --text-light: #6c757d;
-            --white: #ffffff;
-            --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            --transition: all 0.3s ease;
-        }
+{% extends 'base.html' %}
+{% load widget_tweaks %} {# Make sure you have django-widget-tweaks installed #}
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+{% block extra_css %}
+<style>
+    /* Modern Color Scheme (consistent with registration) */
+    :root {
+        --primary-color: #4f46e5; /* Indigo */
+        --primary-dark: #4338ca;
+        --primary-light-bg: #e0e7ff; /* Very light indigo for subtle backgrounds */
+        --secondary-color: #f59e0b; /* Amber for highlights */
+        --accent-color: #ec4899; /* Pink for strong accents */
+        --success-color: #10b981;
+        --error-color: #ef4444; /* Standard red for errors */
+        --light-bg: #f8fafc; /* Very light background */
+        --dark-text: #1e293b; /* Dark text for headings */
+        --body-text: #334155; /* General body text */
+        --light-text: #64748b; /* Lighter text for descriptions/helpers */
+        --border-color: #e2e8f0; /* Subtle borders */
+        --input-bg: #ffffff; /* White input background */
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+        --shadow-md: 0 6px 15px rgba(0, 0, 0, 0.1); /* Softer shadow */
+        --shadow-lg: 0 15px 30px rgba(0, 0, 0, 0.12); /* More prominent but still soft */
+        --radius-sm: 0.375rem;
+        --radius-md: 0.625rem; /* Slightly larger for input/button */
+        --radius-lg: 1rem; /* More rounded card */
+        --transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); /* Smoother transition */
+        --font-family: 'Inter', sans-serif; /* Modern, clean font */
+    }
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--light-color);
-            color: var(--text-color);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-            background: linear-gradient(135deg, rgba(0, 33, 71, 0.05) 0%, rgba(210, 180, 140, 0.05) 100%);
-        }
+    /* Import Google Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-        .login-container {
-            width: 100%;
-            max-width: 450px;
-            background-color: var(--white);
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-            overflow: hidden;
-            transition: var(--transition);
-            position: relative;
-            z-index: 1;
-        }
+    /* Base Styles */
+    body {
+        font-family: var(--font-family);
+        line-height: 1.6;
+        color: var(--body-text);
+        background-color: var(--light-bg);
+        min-height: 100vh; /* Гарантира, че body заема цялата височина на viewport-а */
+        display: flex; /* Прави body flex контейнер */
+        flex-direction: column; /* Подрежда децата вертикално (header, main-content-wrapper, footer) */
+        /* Премахнати align-items и justify-content от body, тъй като те центрираха всичко */
+    }
 
-        .login-container:hover {
-            box-shadow: 0 10px 30px rgba(0, 33, 71, 0.15);
-        }
+    /* Нов контейнер за основното съдържание, който ще избутва футъра надолу */
+    .main-content-wrapper {
+        flex-grow: 1; /* Това кара wrapper-а да заема цялото налично пространство */
+        display: flex; /* Прави wrapper-а flex контейнер */
+        align-items: center; /* Вертикално центрира login-card вътре в wrapper-а */
+        justify-content: center; /* Хоризонтално центрира login-card вътре в wrapper-а */
+        padding: 2rem 1rem; /* Добавя padding за по-малки екрани */
+        width: 100%; /* Гарантира, че заема цялата ширина */
+    }
 
-        .login-header {
-            background-color: var(--primary-color);
-            color: var(--white);
-            padding: 30px;
-            text-align: center;
-            position: relative;
-        }
+    /* Login Card Styling (остава почти същият, но сега е центриран от .main-content-wrapper) */
+    .login-card {
+        max-width: 450px;
+        width: 100%;
+        background-color: var(--input-bg);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 2.5rem;
+        transition: var(--transition);
+        border: 1px solid var(--border-color);
+        animation: fadeInUp 0.7s ease-out forwards;
+    }
 
-        .login-header h2 {
-            font-size: 1.8rem;
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
+    .login-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+    }
 
-        .login-header p {
-            font-size: 0.9rem;
-            opacity: 0.8;
-        }
+    /* Title Styling */
+    .login-title {
+        text-align: center;
+        margin-bottom: 2rem;
+        font-size: 2.2em;
+        color: var(--dark-text);
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+    }
 
-        .login-header:after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 0;
-            width: 100%;
-            height: 20px;
-            background-color: var(--white);
-            clip-path: polygon(0 0, 100% 0, 50% 100%);
-        }
+    .login-title i {
+        color: var(--primary-color);
+        font-size: 1.8rem;
+    }
 
-        .login-body {
-            padding: 30px;
-        }
+    /* Form Input Styling */
+    .login-form p {
+        margin-bottom: 1.5rem;
+    }
 
-        .form-group {
-            margin-bottom: 25px;
-            position: relative;
-        }
+    .login-form label {
+        display: block;
+        margin-bottom: 0.6rem;
+        font-weight: 600;
+        color: var(--dark-text);
+        font-size: 0.95rem;
+    }
 
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: var(--primary-color);
-        }
+    .login-form input[type="text"],
+    .login-form input[type="password"] {
+        width: 100%;
+        padding: 0.85rem 1.1rem;
+        border: 2px solid var(--border-color);
+        border-radius: var(--radius-md);
+        font-size: 1rem;
+        transition: var(--transition);
+        background-color: var(--light-bg);
+        color: var(--body-text);
+    }
 
-        .form-group input {
-            width: 100%;
-            padding: 14px 20px 14px 45px;
-            border: 2px solid #e9ecef;
-            border-radius: 6px;
-            font-size: 1rem;
-            transition: var(--transition);
-        }
+    .login-form input[type="text"]:focus,
+    .login-form input[type="password"]:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15);
+    }
 
-        .form-group input:focus {
-            outline: none;
-            border-color: var(--secondary-color);
-            box-shadow: 0 0 0 3px rgba(210, 180, 140, 0.2);
-        }
+    /* Error messages for fields */
+    .login-form .errorlist {
+        list-style: none;
+        padding: 0;
+        margin-top: 0.5rem;
+        color: var(--error-color);
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
 
-        .form-group i {
-            position: absolute;
-            left: 15px;
-            top: 42px;
-            color: var(--secondary-color);
-            font-size: 1.1rem;
-        }
+    /* Primary Login Button */
+    .login-button {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: white;
+        border: none;
+        padding: 0.95rem 1.5rem;
+        font-size: 1.05rem;
+        font-weight: 600;
+        border-radius: var(--radius-md);
+        transition: var(--transition);
+        box-shadow: 0 6px 15px rgba(79, 70, 229, 0.25);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        cursor: pointer;
+        margin-top: 1.5rem;
+    }
 
-        .errorlist {
-            list-style: none;
-            color: #dc3545;
-            font-size: 0.85rem;
-            margin-top: 5px;
-        }
+    .login-button:hover {
+        background: linear-gradient(135deg, var(--primary-dark), #3730a3);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(79, 70, 229, 0.35);
+    }
 
-        .non-field-errors {
-            background-color: #f8d7da;
-            color: #721c24;
-            padding: 10px 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-        }
+    .login-button i {
+        margin-right: 0.6rem;
+        font-size: 1.1rem;
+    }
 
-        .btn-login {
-            width: 100%;
-            padding: 14px;
-            background-color: var(--secondary-color);
-            color: var(--primary-color);
-            border: none;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: var(--transition);
-            margin-top: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
+    /* Divider Styling */
+    .divider {
+        text-align: center;
+        margin: 2.5rem 0;
+        font-weight: 600;
+        color: var(--light-text);
+        position: relative;
+        font-size: 0.95rem;
+    }
 
-        .btn-login:hover {
-            background-color: var(--primary-color);
-            color: var(--white);
-            transform: translateY(-2px);
-        }
+    .divider::before,
+    .divider::after {
+        content: '';
+        height: 1px;
+        background-color: var(--border-color);
+        position: absolute;
+        top: 50%;
+        width: 35%;
+    }
 
-        .login-footer {
-            text-align: center;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
-        }
+    .divider::before { left: 0; }
+    .divider::after { right: 0; }
 
-        .login-footer a {
-            color: var(--primary-color);
-            text-decoration: none;
-            font-weight: 500;
-            transition: var(--transition);
-        }
+    /* Registration Section */
+    .register-section-title {
+        text-align: center;
+        margin-bottom: 1.5rem;
+        font-size: 1.1em;
+        color: var(--body-text);
+        font-weight: 500;
+    }
 
-        .login-footer a:hover {
-            color: var(--secondary-color);
-            text-decoration: underline;
-        }
+    .register-buttons-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+    }
 
-        /* Responsive adjustments */
-        @media (max-width: 480px) {
-            .login-header {
-                padding: 20px;
-            }
-            
-            .login-body {
-                padding: 20px;
-            }
-            
-            .login-header h2 {
-                font-size: 1.5rem;
-            }
+    .register-btn-outline {
+        text-align: center;
+        padding: 0.85rem 1rem;
+        font-size: 1rem;
+        border-radius: var(--radius-md);
+        transition: var(--transition);
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .register-btn-outline.student {
+        border: 2px solid var(--success-color);
+        color: var(--success-color);
+        background-color: var(--input-bg);
+    }
+
+    .register-btn-outline.student:hover {
+        background-color: var(--success-color);
+        color: white;
+        box-shadow: 0 4px 10px rgba(16, 185, 129, 0.25);
+        transform: translateY(-2px);
+    }
+
+    .register-btn-outline.teacher {
+        border: 2px solid var(--secondary-color);
+        color: var(--secondary-color);
+        background-color: var(--input-bg);
+    }
+
+    .register-btn-outline.teacher:hover {
+        background-color: var(--secondary-color);
+        color: white;
+        box-shadow: 0 4px 10px rgba(245, 158, 11, 0.25);
+        transform: translateY(-2px);
+    }
+
+    .register-btn-outline i {
+        margin-right: 0.6rem;
+        font-size: 1.1rem;
+    }
+
+    /* Return Home Button */
+    .return-home-btn {
+        margin-top: 2.5rem;
+        padding: 0.85rem 1.5rem;
+        font-size: 1rem;
+        font-weight: 500;
+        border-radius: var(--radius-md);
+        transition: var(--transition);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+
+        background-color: transparent;
+        color: var(--light-text);
+        border: 2px solid var(--border-color);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .return-home-btn:hover {
+        background-color: var(--primary-light-bg);
+        color: var(--primary-color);
+        border-color: var(--primary-color);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+
+    /* Animations */
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Messages styling (Django messages) */
+    .messages {
+        list-style: none;
+        padding: 0;
+        margin-bottom: 1.5rem;
+    }
+
+    .messages li {
+        padding: 0.75rem 1rem;
+        margin-bottom: 0.75rem;
+        border-radius: var(--radius-sm);
+        font-weight: 500;
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    .messages li.success { background-color: #d1fae5; color: #065f46; border: 1px solid #34d399; }
+    .messages li.info { background-color: #dbeafe; color: #1e40af; border: 1px solid #60a5fa; }
+    .messages li.warning { background-color: #fef3c7; color: #b45309; border: 1px solid #fcd34d; }
+    .messages li.error { background-color: #fee2e2; color: #991b1b; border: 1px solid #f87171; }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    /* Input Group and Password Toggle */
+    .input-group {
+        position: relative;
+        display: flex;
+        width: 100%;
+        align-items: stretch;
+    }
+
+    .password-input {
+        border-right: none;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+    .password-toggle {
+        background-color: var(--light-bg);
+        border: 2px solid var(--border-color);
+        border-left: none;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        color: var(--light-text);
+        padding: 0.85rem 1.1rem;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .password-toggle:hover {
+        background-color: var(--border-color);
+        color: var(--body-text);
+    }
+
+    .password-toggle:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15);
+        z-index: 3;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 576px) {
+        .login-card {
+            padding: 1.5rem;
+            border-radius: var(--radius-md);
         }
-    </style>
-</head>
-<body>
-    <div class="login-container">
-        <div class="login-header">
-            <h2><i class="fas fa-sign-in-alt"></i> Вход в системата</h2>
-            <p>Моля, въведете вашите данни за вход</p>
+        .login-title {
+            font-size: 1.8em;
+            gap: 0.5rem;
+        }
+        .login-title i {
+            font-size: 1.5rem;
+        }
+        .login-form input, .password-toggle {
+            padding: 0.75rem 1rem;
+        }
+        .login-button {
+            padding: 0.8rem 1.2rem;
+            font-size: 0.95rem;
+        }
+        .register-btn-outline {
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+        }
+        .return-home-btn {
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+        }
+    }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-content-wrapper"> {# НОВ КОНТЕЙНЕР #}
+    <div class="login-card">
+        <h2 class="login-title">
+            <i class="fas fa-sign-in-alt"></i>Вход
+        </h2>
+
+        {# Display Django messages (e.g., success, error, warning) #}
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <form method="post" class="login-form">
+            {% csrf_token %}
+            {# Use widget_tweaks to apply form-control class to username and password fields #}
+            {% for field in form %}
+                <p class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {# Added password field handling for password toggle #}
+                    {% if field.name == 'password' %}
+                        <div class="input-group">
+                            {{ field|add_class:"form-control password-input" }}
+                            <button class="btn btn-outline-secondary password-toggle" type="button" id="togglePassword{{ field.id_for_label }}">
+                                <i class="fas fa-eye-slash"></i>
+                            </button>
+                        </div>
+                    {% else %}
+                        {{ field|add_class:"form-control" }}
+                    {% endif %}
+                    {% if field.errors %}
+                        <ul class="errorlist">
+                            {% for error in field.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </p>
+            {% endfor %}
+            <button type="submit" class="login-button">
+                <i class="fas fa-arrow-right-to-bracket"></i> Вход
+            </button>
+        </form>
+
+        <div class="divider">или</div>
+
+        <p class="register-section-title">Нямаш акаунт?</p>
+        <div class="register-buttons-group">
+            <a href="{% url 'users:register_student' %}" class="register-btn-outline student">
+                <i class="fas fa-user-graduate"></i>Регистрация като студент
+            </a>
+{#            <a href="{% url 'users:register_teacher' %}" class="register-btn-outline teacher">#}
+{#                <i class="fas fa-chalkboard-teacher"></i>Регистрация като преподавател#}
+{#            </a>#}
         </div>
-        
-        <div class="login-body">
-            {% if form.non_field_errors %}
-                <div class="non-field-errors">
-                    {{ form.non_field_errors }}
-                </div>
-            {% endif %}
-            
-            <form method="POST">
-                {% csrf_token %}
-                
-                <div class="form-group">
-                    <label for="{{ form.username.id_for_label }}">Потребителско име</label>
-                    <i class="fas fa-user"></i>
-                    {{ form.username }}
-                    {{ form.username.errors }}
-                </div>
-                
-                <div class="form-group">
-                    <label for="{{ form.password.id_for_label }}">Парола</label>
-                    <i class="fas fa-lock"></i>
-                    {{ form.password }}
-                    {{ form.password.errors }}
-                </div>
-                
-                <button type="submit" class="btn-login">
-                    <i class="fas fa-sign-in-alt"></i> Влез
-                </button>
-            </form>
-            
-            <div class="login-footer">
-                <p>Нямате акаунт? <a href="{% url 'users:register' %}">Регистрирайте се</a></p>
-                <p><a href="#">Забравена парола?</a></p>
-            </div>
-        </div>
+
+        {# --- Бутон за връщане към начална страница --- #}
+        <a href="{% url 'home' %}" class="return-home-btn">
+            <i class="fas fa-home"></i> Към начална страница
+        </a>
+        {# ------------------------------------------- #}
+
     </div>
-</body>
-</html>
+</div> {# КРАЙ НА НОВИЯ КОНТЕЙНЕР #}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Password Visibility Toggle
+        const passwordToggles = document.querySelectorAll('.password-toggle');
+
+        passwordToggles.forEach(function(toggleButton) {
+            toggleButton.addEventListener('click', function() {
+                const passwordInput = this.previousElementSibling;
+                const icon = this.querySelector('i');
+
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+
+                icon.classList.toggle('fa-eye');
+                icon.classList.toggle('fa-eye-slash');
+            });
+        });
+
+        // Optional: Bootstrap client-side validation (add 'needs-validation' to your form tag)
+        (function () {
+            'use strict';
+            var forms = document.querySelectorAll('.needs-validation');
+            Array.prototype.slice.call(forms)
+                .forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+        })();
+    });
+</script>
+{% endblock %}

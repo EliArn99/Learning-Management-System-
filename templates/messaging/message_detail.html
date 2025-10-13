@@ -1,0 +1,278 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    /* Main Color Scheme (consistent with other pages) */
+    :root {
+        --primary-color: #4f46e5; /* Indigo */
+        --primary-dark: #4338ca;
+        --primary-light-bg: #e0e7ff; /* Very light indigo for subtle backgrounds */
+        --secondary-color: #f59e0b; /* Amber for highlights */
+        --accent-color: #ec4899; /* Pink for strong accents */
+        --success-color: #10b981;
+        --error-color: #ef4444; /* Standard red for errors */
+        --light-bg: #f8fafc; /* Very light background */
+        --dark-text: #1e293b; /* Dark text for headings */
+        --body-text: #334155; /* General body text */
+        --light-text: #64748b; /* Lighter text for descriptions/helpers */
+        --border-color: #e2e8f0; /* Subtle borders */
+        --input-bg: #ffffff; /* White input background */
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+        --shadow-md: 0 6px 15px rgba(0, 0, 0, 0.1); /* Softer shadow */
+        --shadow-lg: 0 15px 30px rgba(0, 0, 0, 0.12); /* More prominent but still soft */
+        --radius-sm: 0.375rem;
+        --radius-md: 0.625rem; /* Slightly larger for input/button */
+        --radius-lg: 1rem; /* More rounded card */
+        --transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); /* Smoother transition */
+        --font-family: 'Inter', sans-serif; /* Modern, clean font */
+    }
+
+    /* Import Google Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    /* Base Styles (consistent with dashboard and other forms) */
+    body {
+        font-family: var(--font-family);
+        line-height: 1.6;
+        color: var(--body-text);
+        background-color: var(--light-bg);
+        min-height: 100vh;
+    }
+
+    .dashboard-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding: 20px;
+        background-color: white;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        flex-wrap: wrap; /* Allow wrapping on small screens */
+        gap: 15px; /* Space between header elements */
+    }
+
+    .dashboard-title-group {
+        flex-grow: 1;
+    }
+
+    .dashboard-title {
+        color: var(--dark-text);
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .dashboard-title i {
+        color: var(--primary-color);
+    }
+
+    .dashboard-subtitle {
+        color: var(--light-text);
+        font-size: 1rem;
+        margin: 0;
+    }
+
+    /* Card Styles (consistent) */
+    .dashboard-card {
+        background-color: white;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        margin-bottom: 30px;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    /* Message Detail Specific Styles */
+    .message-detail-card {
+        padding: 30px; /* More generous padding */
+    }
+
+    .message-subject-heading {
+        font-size: 1.8rem; /* Larger subject heading */
+        font-weight: 700;
+        color: var(--dark-text);
+        margin-bottom: 1.5rem;
+    }
+
+    .message-meta-info {
+        display: flex;
+        flex-direction: column;
+        gap: 10px; /* Space between meta lines */
+        margin-bottom: 1.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .message-meta-info p {
+        margin: 0;
+        font-size: 0.95rem;
+        color: var(--body-text);
+        display: flex;
+        align-items: center;
+        gap: 8px; /* Space between icon and text */
+    }
+
+    .message-meta-info p strong {
+        color: var(--dark-text);
+        font-weight: 600;
+    }
+
+    .message-meta-info i {
+        color: var(--light-text);
+        font-size: 1.1rem;
+    }
+
+    .message-meta-info .role-badge {
+        background-color: var(--primary-light-bg);
+        color: var(--primary-dark);
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        margin-left: 10px;
+    }
+
+    .message-content-body {
+        font-size: 1rem;
+        line-height: 1.8; /* Increased line height for readability */
+        color: var(--body-text);
+        white-space: pre-wrap; /* Preserve whitespace and break lines */
+    }
+
+    /* Button Styles (consistent) */
+    .action-btn {
+        padding: 10px 20px;
+        background-color: var(--primary-color);
+        color: white;
+        border-radius: var(--radius-md);
+        text-decoration: none;
+        font-size: 1rem;
+        font-weight: 600;
+        transition: background-color 0.2s ease, transform 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: var(--shadow-sm);
+        flex-shrink: 0; /* Prevent button from shrinking */
+    }
+
+    .action-btn:hover {
+        background-color: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .action-btn.secondary {
+        background-color: var(--light-text);
+        color: white;
+    }
+
+    .action-btn.secondary:hover {
+        background-color: var(--body-text);
+    }
+
+    .action-btn.small {
+        padding: 8px 15px;
+        font-size: 0.9rem;
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+        .dashboard-header {
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: left;
+        }
+        .dashboard-title {
+            font-size: 1.8rem;
+        }
+        .message-detail-card {
+            padding: 20px;
+        }
+        .message-subject-heading {
+            font-size: 1.5rem;
+        }
+        .message-meta-info p {
+            font-size: 0.9rem;
+        }
+        .action-btn {
+            width: 100%; /* Full width button on small screens */
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .dashboard-container {
+            padding: 10px;
+        }
+        .dashboard-header {
+            padding: 15px;
+        }
+        .dashboard-title {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <div class="dashboard-title-group">
+            <h1 class="dashboard-title"><i class="fas fa-envelope-open-text"></i> Детайли на съобщението</h1>
+            <p class="dashboard-subtitle">{{ message.subject }}</p>
+        </div>
+        <a href="{% url 'messaging:inbox' %}" class="action-btn">
+            {# TODO: FIX HERE #}
+            <i class="fas fa-arrow-left me-2"></i> Обратно към входящи
+        </a>
+    </div>
+
+    <div class="dashboard-card message-detail-card">
+        <h2 class="message-subject-heading">{{ message.subject }}</h2>
+
+        <div class="message-meta-info">
+            <p>
+                <i class="fas fa-user-circle"></i> <strong>От:</strong> {{ message.sender.username }}
+                {% if message.sender.is_teacher %}
+                    <span class="role-badge">Преподавател</span>
+                {% elif message.sender.is_student %}
+                    <span class="role-badge">Студент</span>
+                {% endif %}
+            </p>
+            <p>
+                <i class="fas fa-user-check"></i> <strong>До:</strong> {{ message.receiver.username }}
+                {% if message.receiver.is_teacher %}
+                    <span class="role-badge">Преподавател</span>
+                {% elif message.receiver.is_student %}
+                    <span class="role-badge">Студент</span>
+                {% endif %}
+            </p>
+            <p>
+                <i class="far fa-clock"></i> <strong>Дата:</strong> {{ message.timestamp|date:"d M Y, H:i" }}
+            </p>
+        </div>
+
+        <div class="message-content-body">
+            <p>{{ message.content|linebreaksbr }}</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

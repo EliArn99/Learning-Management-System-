@@ -1,0 +1,299 @@
+{# TODO: Да направя възможност да отг директно на изпратен имейл #}
+{% extends 'base.html' %}
+{% load widget_tweaks %} {# За да стилизираме формата #}
+{% block title %}Изпрати ново съобщение{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Main Color Scheme (consistent with other pages) */
+    :root {
+        --primary-color: #4f46e5; /* Indigo */
+        --primary-dark: #4338ca;
+        --primary-light-bg: #e0e7ff; /* Very light indigo for subtle backgrounds */
+        --secondary-color: #f59e0b; /* Amber for highlights */
+        --accent-color: #ec4899; /* Pink for strong accents */
+        --success-color: #10b981;
+        --error-color: #ef4444; /* Standard red for errors */
+        --light-bg: #f8fafc; /* Very light background */
+        --dark-text: #1e293b; /* Dark text for headings */
+        --body-text: #334155; /* General body text */
+        --light-text: #64748b; /* Lighter text for descriptions/helpers */
+        --border-color: #e2e8f0; /* Subtle borders */
+        --input-bg: #ffffff; /* White input background */
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+        --shadow-md: 0 6px 15px rgba(0, 0, 0, 0.1); /* Softer shadow */
+        --shadow-lg: 0 15px 30px rgba(0, 0, 0, 0.12); /* More prominent but still soft */
+        --radius-sm: 0.375rem;
+        --radius-md: 0.625rem; /* Slightly larger for input/button */
+        --radius-lg: 1rem; /* More rounded card */
+        --transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); /* Smoother transition */
+        --font-family: 'Inter', sans-serif; /* Modern, clean font */
+    }
+
+    /* Import Google Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    /* Base Styles (consistent with dashboard and other forms) */
+    body {
+        font-family: var(--font-family);
+        line-height: 1.6;
+        color: var(--body-text);
+        background-color: var(--light-bg);
+        min-height: 100vh;
+    }
+
+    .dashboard-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding: 20px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: var(--shadow-md);
+    }
+
+    .dashboard-title {
+        color: var(--dark-text);
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .dashboard-subtitle {
+        color: var(--light-text);
+        font-size: 1rem;
+        margin: 0;
+    }
+
+    .dashboard-card {
+        background-color: white;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        margin-bottom: 30px;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 0.6rem;
+        font-weight: 600;
+        color: var(--dark-text);
+        font-size: 0.95rem;
+    }
+
+    .form-control { /* General input/textarea style */
+        width: 100%;
+        padding: 0.85rem 1.1rem;
+        border: 2px solid var(--border-color);
+        border-radius: var(--radius-md);
+        font-size: 1rem;
+        transition: var(--transition);
+        background-color: var(--input-bg);
+        color: var(--body-text);
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15);
+    }
+
+    /* Specific styles for the SELECT element */
+    .custom-select-wrapper {
+        position: relative;
+    }
+
+    .custom-select-wrapper select.form-control {
+        appearance: none; /* Remove default browser arrow */
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-color: var(--input-bg);
+        padding-right: 3rem; /* Make space for custom arrow */
+        cursor: pointer;
+    }
+
+    .custom-select-wrapper::after {
+        content: '\f078'; /* Font Awesome chevron-down icon */
+        font-family: "Font Awesome 5 Free"; /* Ensure Font Awesome is loaded */
+        font-weight: 900; /* For solid icons */
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        pointer-events: none; /* Allow clicks to pass through to select */
+        color: var(--light-text);
+        font-size: 0.9rem;
+        transition: color 0.2s ease;
+    }
+
+    .custom-select-wrapper:hover::after {
+        color: var(--body-text);
+    }
+
+    .custom-select-wrapper select.form-control:focus + .custom-select-wrapper::after {
+        color: var(--primary-color);
+    }
+
+    /* Styling for options - LIMITED BROWSER SUPPORT */
+    /* These styles are highly inconsistent across browsers and OS.
+       Background-color, padding, and font-weight are often ignored for <option> elements.
+       Color might work. For full control, a JS-based custom select is needed. */
+    .custom-select-wrapper select.form-control option {
+        color: var(--body-text);
+        background-color: var(--input-bg); /* May not work */
+        padding: 8px 15px; /* Will likely not work */
+        font-weight: 400; /* Might work */
+    }
+
+    .custom-select-wrapper select.form-control option:checked {
+        background-color: var(--primary-light-bg); /* May not work */
+        color: var(--primary-dark); /* Might work */
+    }
+
+    /* Button Styles (consistent with dashboard) */
+    .view-btn {
+        padding: 10px 20px;
+        background-color: var(--primary-color);
+        color: white;
+        border-radius: var(--radius-md);
+        text-decoration: none;
+        font-size: 1rem;
+        font-weight: 600;
+        transition: background-color 0.2s ease, transform 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .view-btn:hover {
+        background-color: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Messages styling (Django messages) */
+    .messages {
+        list-style: none;
+        padding: 0;
+        margin-bottom: 1.5rem;
+    }
+
+    .messages li {
+        padding: 0.75rem 1rem;
+        margin-bottom: 0.75rem;
+        border-radius: var(--radius-sm);
+        font-weight: 500;
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    .messages li.success { background-color: #d1fae5; color: #065f46; border: 1px solid #34d399; }
+    .messages li.info { background-color: #dbeafe; color: #1e40af; border: 1px solid #60a5fa; }
+    .messages li.warning { background-color: #fef3c7; color: #b45309; border: 1px solid #fcd34d; }
+    .messages li.error { background-color: #fee2e2; color: #991b1b; border: 1px solid #f87171; }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .dashboard-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .dashboard-container {
+            padding: 10px;
+        }
+        .dashboard-header {
+            padding: 15px;
+        }
+        .dashboard-title {
+            font-size: 1.8rem;
+        }
+        .view-btn {
+            padding: 8px 15px;
+            font-size: 0.9rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <div>
+            <h1 class="dashboard-title">Изпрати ново съобщение</h1>
+            <p class="dashboard-subtitle">Изберете получател и напишете вашето съобщение.</p>
+        </div>
+        <a href="{% url 'messaging:home' %}" class="view-btn">
+            <i class="fas fa-arrow-left me-2"></i>Обратно към съобщения
+        </a>
+    </div>
+
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <div class="dashboard-card p-4">
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label for="id_receiver" class="form-label">Получател:</label>
+                <div class="custom-select-wrapper"> {# Wrapper for custom arrow #}
+                    <select name="receiver" id="id_receiver" class="form-control">
+                        {% for user in users %}
+                            <option value="{{ user.id }}">
+                                {{ user.username }}
+                                {% if user.is_teacher %}
+                                    (Преподавател)
+                                {% elif user.is_student %}
+                                    (Студент)
+                                {% endif %}
+                            </option>
+                        {% empty %}
+                            <option value="">Няма налични получатели.</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="id_subject" class="form-label">Относно:</label>
+                <input type="text" name="subject" id="id_subject" class="form-control" placeholder="Тема на съобщението" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="id_content" class="form-label">Съдържание:</label>
+                <textarea name="content" id="id_content" rows="8" class="form-control" placeholder="Напишете вашето съобщение тук..." required></textarea>
+            </div>
+
+            <button type="submit" class="view-btn mt-3">
+                <i class="fas fa-paper-plane me-2"></i> Изпрати съобщение
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

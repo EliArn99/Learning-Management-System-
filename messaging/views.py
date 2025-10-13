@@ -1,4 +1,3 @@
-# messaging/views.py
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
@@ -42,15 +41,23 @@ def send_message_view(request):
     # Филтрирайте потребителите въз основа на ролята на текущия потребител,
     # използвайки is_student и is_teacher булеви полета.
     if request.user.is_student:
-        # Студентът може да изпраща съобщения само на преподаватели
-        # Уверете се, че учителят е одобрен (ако имате такава логика)
-        allowed_recipients = User.objects.filter(is_teacher=True, teacherprofile__is_approved=True).order_by('username')
+        # Студентът може да изпраща съобщения само на одобрени преподаватели
+        allowed_recipients = User.objects.filter(
+            is_teacher=True,
+            teacherprofile__is_approved=True
+        ).order_by('username')
     elif request.user.is_teacher:
-        # Преподавателят може да изпраща съобщения на всички студенти (и може би други одобрени преподаватели)
-        # Уверете се, че студентът е одобрен (ако имате такава логика)
-        allowed_recipients = User.objects.filter(Q(is_student=True, studentprofile__is_approved=True) | Q(is_teacher=True, teacherprofile__is_approved=True)).exclude(id=request.user.id).order_by('username')
-        # Ако преподавателите могат да пишат само на студенти:
-        # allowed_recipients = User.objects.filter(is_student=True, studentprofile__is_approved=True).order_by('username')
+        # Преподавателят може да изпраща съобщения на всички одобрени студенти
+        # и други одобрени преподаватели (без себе си)
+        allowed_recipients = User.objects.filter(
+            Q(is_student=True, studentprofile__is_approved=True) |
+            Q(is_teacher=True, teacherprofile__is_approved=True)
+        ).exclude(id=request.user.id).order_by('username')
+        # Ако преподавателите могат да пишат само на студенти, използвайте:
+        # allowed_recipients = User.objects.filter(
+        #     is_student=True,
+        #     studentprofile__is_approved=True
+        # ).order_by('username')
     else:
         # За други потребители (напр. администратор), може да изпращат до всички
         allowed_recipients = User.objects.exclude(id=request.user.id).order_by('username')
@@ -65,9 +72,10 @@ def send_message_view(request):
             receiver = User.objects.get(id=receiver_id)
             # Допълнителна проверка: Уверете се, че избраният получател е сред разрешените
             # Това е важно, за да се предотврати ръчно въвеждане на ID от недобросъвестен потребител
-            if receiver not in allowed_recipients:
+            # Проверяваме `id` на получателя, защото `allowed_recipients` е QuerySet от User обекти
+            if receiver.id not in allowed_recipients.values_list('id', flat=True):
                 messages.error(request, "Нямате право да изпращате съобщения на този потребител.")
-                return redirect('Messaging_message')
+                return redirect('Messaging_message') # Използвайте правилното име на URL
 
             Message.objects.create(
                 sender=request.user,
@@ -79,6 +87,6 @@ def send_message_view(request):
             return redirect('messaging:sent')
         except User.DoesNotExist:
             messages.error(request, "Избраният получател не съществува.")
-            return redirect('Messaging_message')
+            return redirect('Messaging_message') # Използвайте правилното име на URL
 
     return render(request, 'messaging/messaging_message.html', {'users': allowed_recipients})

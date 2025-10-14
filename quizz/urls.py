@@ -3,7 +3,6 @@ from .views import (
     QuizListView, QuizCreateView, QuizDetailView,
     QuizTakeView, quiz_results, QuizQuestionsUpdateView, QuestionUpdateView
 )
-from . import views
 
 
 app_name = 'quizz'

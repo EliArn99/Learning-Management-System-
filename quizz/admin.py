@@ -7,10 +7,11 @@ class AnswerInline(admin.TabularInline):
 
 class QuestionInline(admin.TabularInline):
     model = Question
+    fields = ['text', 'type', 'points'] 
     extra = 1
 
 class QuestionAdmin(admin.ModelAdmin):
-    list_display = ('text', 'quiz')
+    list_display = ('text', 'quiz', 'type', 'points')
     inlines = [AnswerInline]
 
 class QuizAdmin(admin.ModelAdmin):

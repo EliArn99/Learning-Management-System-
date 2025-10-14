@@ -48,6 +48,8 @@ INSTALLED_APPS = [
     'quizz.apps.QuizzConfig',
     'crispy_forms',
     'crispy_bootstrap5',
+
+
 ]
 
 MIDDLEWARE = [

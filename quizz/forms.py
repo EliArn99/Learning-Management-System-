@@ -1,10 +1,11 @@
 from django import forms
-from .models import Quiz, Question, Answer
+from .models import Quiz, Question, Answer, QUESTION_TYPE_CHOICES
+
 
 class QuizForm(forms.ModelForm):
     class Meta:
         model = Quiz
-        fields = ['title', 'description', 'course', 'available_from', 'available_until']
+        fields = ['title', 'description', 'course', 'available_from', 'available_until', 'time_limit', 'num_questions_to_select']
         widgets = {
             'available_from': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
             'available_until': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
@@ -13,9 +14,9 @@ class QuizForm(forms.ModelForm):
 class QuestionForm(forms.ModelForm):
     class Meta:
         model = Question
-        fields = ['text']
+        fields = ['text', 'points', 'type']
         widgets = {
-            'text': forms.Textarea(attrs={'rows': 3}), # По-голямо поле за текст на въпроса
+            'text': forms.Textarea(attrs={'rows': 3}),
         }
 
 class AnswerForm(forms.ModelForm):

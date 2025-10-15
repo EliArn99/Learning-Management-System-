@@ -1,0 +1,917 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Управление на въпроси и отговори за: {{ quiz.title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-color: #6366f1;
+        --primary-light: #a5b4fc;
+        --primary-dark: #4f46e5;
+        --secondary-color: #8b5cf6;
+        --accent-color: #ec4899;
+        --success-color: #10b981;
+        --warning-color: #f59e0b;
+        --danger-color: #ef4444;
+        --dark-color: #1e293b;
+        --darker-color: #0f172a;
+        --light-color: #f8fafc;
+        --lighter-color: #ffffff;
+        --gray-color: #94a3b8;
+        --border-radius: 12px;
+        --box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .management-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .page-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        border-radius: var(--border-radius);
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: var(--box-shadow);
+    }
+
+    .page-title {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .page-subtitle {
+        font-size: 16px;
+        opacity: 0.9;
+        margin-bottom: 0;
+    }
+
+    .quiz-info {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin: 25px 0;
+    }
+
+    .info-card {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        padding: 15px;
+        text-align: center;
+        backdrop-filter: blur(10px);
+    }
+
+    .info-card i {
+        font-size: 24px;
+        margin-bottom: 8px;
+        opacity: 0.9;
+    }
+
+    .info-card .value {
+        font-size: 20px;
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+    .info-card .label {
+        font-size: 12px;
+        opacity: 0.8;
+        text-transform: uppercase;
+    }
+
+    .navigation-actions {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        border-radius: var(--border-radius);
+        font-weight: 500;
+        text-decoration: none;
+        transition: var(--transition);
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .btn-primary {
+        background: var(--primary-color);
+        color: white;
+        box-shadow: 0 4px 6px rgba(99, 102, 241, 0.2);
+    }
+
+    .btn-primary:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px rgba(99, 102, 241, 0.3);
+    }
+
+    .btn-secondary {
+        background: #f1f5f9;
+        color: var(--dark-color);
+        border: 1px solid #cbd5e1;
+    }
+
+    .btn-secondary:hover {
+        background: #e2e8f0;
+        transform: translateY(-2px);
+    }
+
+    .btn-success {
+        background: var(--success-color);
+        color: white;
+        box-shadow: 0 4px 6px rgba(16, 185, 129, 0.2);
+    }
+
+    .btn-success:hover {
+        background: #059669;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-warning {
+        background: var(--warning-color);
+        color: white;
+        box-shadow: 0 4px 6px rgba(245, 158, 11, 0.2);
+    }
+
+    .btn-warning:hover {
+        background: #d97706;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px rgba(245, 158, 11, 0.3);
+    }
+
+    .btn-danger {
+        background: var(--danger-color);
+        color: white;
+        box-shadow: 0 4px 6px rgba(239, 68, 68, 0.2);
+    }
+
+    .btn-danger:hover {
+        background: #dc2626;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px rgba(239, 68, 68, 0.3);
+    }
+
+    /* Questions Section */
+    .questions-section {
+        background: var(--lighter-color);
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        margin-bottom: 30px;
+        overflow: hidden;
+    }
+
+    .section-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 20px 30px;
+    }
+
+    .section-title {
+        font-size: 20px;
+        font-weight: 600;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .question-form-container {
+        padding: 30px;
+    }
+
+    .question-form-row {
+        background: #f8fafc;
+        border-radius: var(--border-radius);
+        padding: 25px;
+        margin-bottom: 20px;
+        border: 2px solid #e2e8f0;
+        transition: var(--transition);
+        position: relative;
+    }
+
+    .question-form-row:hover {
+        border-color: var(--primary-light);
+        transform: translateY(-2px);
+        box-shadow: var(--box-shadow);
+    }
+
+    .question-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .question-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--dark-color);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .question-number {
+        background: var(--primary-color);
+        color: white;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .question-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        font-weight: 600;
+        color: var(--dark-color);
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .form-group label i {
+        color: var(--primary-color);
+        font-size: 14px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        font-family: 'Poppins', sans-serif;
+        font-size: 15px;
+        transition: var(--transition);
+        background-color: var(--lighter-color);
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+
+    .warning-alert {
+        background: rgba(245, 158, 11, 0.1);
+        border: 1px solid rgba(245, 158, 11, 0.2);
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin-top: 15px;
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .warning-alert i {
+        color: var(--warning-color);
+        margin-top: 2px;
+    }
+
+    .warning-alert p {
+        margin: 0;
+        font-size: 14px;
+        color: #92400e;
+    }
+
+    /* Answers Section */
+    .answers-section {
+        margin-top: 40px;
+    }
+
+    .answers-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    .answers-header h2 {
+        font-size: 24px;
+        font-weight: 600;
+        color: var(--dark-color);
+        margin: 0;
+    }
+
+    .answers-header i {
+        color: var(--primary-color);
+        font-size: 20px;
+    }
+
+    .question-card {
+        background: var(--lighter-color);
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        margin-bottom: 25px;
+        overflow: hidden;
+        border: 2px solid transparent;
+        transition: var(--transition);
+    }
+
+    .question-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
+    .question-card-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 20px 25px;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .question-card-header:hover {
+        background: linear-gradient(135deg, var(--primary-dark), var(--secondary-color));
+    }
+
+    .question-card-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .question-text {
+        font-size: 16px;
+        font-weight: 600;
+        margin: 0;
+        flex: 1;
+    }
+
+    .question-meta {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .meta-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    .badge-type {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .badge-points {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .collapse-icon {
+        transition: var(--transition);
+    }
+
+    .question-card-header[aria-expanded="true"] .collapse-icon {
+        transform: rotate(180deg);
+    }
+
+    .answer-form-container {
+        padding: 25px;
+    }
+
+    .answer-form-row {
+        background: #f8fafc;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 15px;
+        border: 1px solid #e2e8f0;
+        transition: var(--transition);
+    }
+
+    .answer-form-row:hover {
+        border-color: var(--primary-light);
+        background: #f1f5f9;
+    }
+
+    .answer-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+
+    .answer-number {
+        background: var(--primary-color);
+        color: white;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .answer-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--dark-color);
+        margin: 0;
+    }
+
+    .answer-hint {
+        background: rgba(99, 102, 241, 0.1);
+        border: 1px solid rgba(99, 102, 241, 0.2);
+        border-radius: 6px;
+        padding: 10px 12px;
+        margin-top: 10px;
+    }
+
+    .answer-hint p {
+        margin: 0;
+        font-size: 13px;
+        color: var(--primary-dark);
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .answer-hint i {
+        color: var(--primary-color);
+        margin-top: 1px;
+        flex-shrink: 0;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: var(--gray-color);
+    }
+
+    .empty-state i {
+        font-size: 48px;
+        margin-bottom: 15px;
+        opacity: 0.5;
+    }
+
+    .empty-state h3 {
+        font-size: 18px;
+        margin-bottom: 8px;
+        color: var(--dark-color);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .management-container {
+            padding: 15px;
+        }
+
+        .page-header {
+            padding: 20px;
+        }
+
+        .page-title {
+            font-size: 24px;
+        }
+
+        .quiz-info {
+            grid-template-columns: 1fr;
+        }
+
+        .question-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .question-actions {
+            width: 100%;
+            justify-content: flex-start;
+        }
+
+        .question-form-container {
+            padding: 20px;
+        }
+
+        .question-card-title {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .question-meta {
+            width: 100%;
+            justify-content: flex-start;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .navigation-actions {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .question-form-row {
+            padding: 20px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="management-container">
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1 class="page-title">
+            <i class="fas fa-cogs"></i>
+            Управление на въпроси
+        </h1>
+        <p class="page-subtitle">Редактирайте въпросите и отговорите за теста: <strong>{{ quiz.title }}</strong></p>
+
+        <!-- Quiz Statistics -->
+        <div class="quiz-info">
+            <div class="info-card">
+                <i class="fas fa-question-circle"></i>
+                <div class="value">{{ quiz.questions.count }}</div>
+                <div class="label">Общо въпроси</div>
+            </div>
+            <div class="info-card">
+                <i class="fas fa-check-circle"></i>
+                <div class="value">{{ quiz.questions.count }}</div>
+                <div class="label">Активни въпроси</div>
+            </div>
+            <div class="info-card">
+                <i class="fas fa-star"></i>
+                <div class="value">{{ quiz.total_points }}</div>
+                <div class="label">Общо точки</div>
+            </div>
+            <div class="info-card">
+                <i class="fas fa-clock"></i>
+                <div class="value">{{ quiz.time_limit|default:"0" }}</div>
+                <div class="label">Минути лимит</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Actions -->
+    <div class="navigation-actions">
+        <a href="{% url 'quizz:quiz_manage_list' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i>
+            Обратно към тестовете
+        </a>
+        <a href="{% url 'quizz:quiz_detail' quiz.id %}" class="btn btn-primary">
+            <i class="fas fa-eye"></i>
+            Преглед на теста
+        </a>
+        <button class="btn btn-success" id="addQuestionBtn">
+            <i class="fas fa-plus"></i>
+            Добави нов въпрос
+        </button>
+    </div>
+
+    <!-- Questions Management Section -->
+    <div class="questions-section">
+        <div class="section-header">
+            <h2 class="section-title">
+                <i class="fas fa-edit"></i>
+                Редактиране на въпроси
+            </h2>
+        </div>
+
+        <div class="question-form-container">
+            <form method="post" id="question-form">
+                {% csrf_token %}
+                {{ q_formset.management_form }}
+
+                {% for form in q_formset %}
+                    <div class="question-form-row" id="question-{{ forloop.counter0 }}">
+                        <div class="question-header">
+                            <h3 class="question-title">
+                                <span class="question-number">{{ forloop.counter }}</span>
+                                Въпрос #{{ forloop.counter }}
+                            </h3>
+                            <div class="question-actions">
+                                {% if form.instance.pk %}
+                                    <button type="button" class="btn btn-primary btn-sm toggle-answers"
+                                            data-question-id="{{ form.instance.pk }}">
+                                        <i class="fas fa-list"></i>
+                                        Отговори
+                                    </button>
+                                {% endif %}
+                                {% if form.DELETE %}
+                                    <label class="btn btn-danger btn-sm">
+                                        {{ form.DELETE }} <i class="fas fa-trash"></i> Изтрий
+                                    </label>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Form Fields -->
+                        <div class="form-fields">
+                            {% for field in form %}
+                                {% if field.name != 'DELETE' %}
+                                    <div class="form-group">
+                                        <label for="{{ field.id_for_label }}">
+                                            {% if field.name == 'text' %}
+                                                <i class="fas fa-font"></i>
+                                            {% elif field.name == 'type' %}
+                                                <i class="fas fa-tag"></i>
+                                            {% elif field.name == 'points' %}
+                                                <i class="fas fa-star"></i>
+                                            {% elif field.name == 'order' %}
+                                                <i class="fas fa-sort-numeric-down"></i>
+                                            {% else %}
+                                                <i class="fas fa-pen"></i>
+                                            {% endif %}
+                                            {{ field.label }}
+                                        </label>
+                                        {{ field }}
+                                        {% if field.help_text %}
+                                            <small class="form-text text-muted">
+                                                <i class="fas fa-info-circle"></i> {{ field.help_text }}
+                                            </small>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+
+                        {% if form.instance.pk %}
+                            <div class="warning-alert">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <p>
+                                    <strong>Внимание:</strong> Промяната на типа на въпроса след като има добавени отговори
+                                    може да доведе до загуба на данни или несъответствия.
+                                </p>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% empty %}
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <h3>Все още няма въпроси</h3>
+                        <p>Добавете първия въпрос към вашия тест</p>
+                    </div>
+                {% endfor %}
+
+                <div class="form-actions">
+                    <button type="submit" name="questions-submit" class="btn btn-success">
+                        <i class="fas fa-save"></i>
+                        Запази всички въпроси
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Answers Management Section -->
+    {% if question_forms_data %}
+        <div class="answers-section">
+            <div class="answers-header">
+                <i class="fas fa-list-check"></i>
+                <h2>Управление на отговори</h2>
+            </div>
+
+            {% for q_form_data in question_forms_data %}
+                <div class="question-card">
+                    <div class="question-card-header" data-bs-toggle="collapse"
+                         data-bs-target="#answers-{{ q_form_data.question.pk }}"
+                         aria-expanded="false"
+                         aria-controls="answers-{{ q_form_data.question.pk }}">
+                        <div class="question-card-title">
+                            <h4 class="question-text">
+                                {{ q_form_data.question.text|truncatechars:80 }}
+                            </h4>
+                            <div class="question-meta">
+                                <span class="meta-badge badge-type">
+                                    <i class="fas fa-tag"></i>
+                                    {{ q_form_data.question.get_type_display }}
+                                </span>
+                                <span class="meta-badge badge-points">
+                                    <i class="fas fa-star"></i>
+                                    {{ q_form_data.question.points }} точки
+                                </span>
+                                <i class="fas fa-chevron-down collapse-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="answers-{{ q_form_data.question.pk }}" class="collapse">
+                        <div class="answer-form-container">
+                            <form method="post">
+                                {% csrf_token %}
+                                {{ q_form_data.answer_formset.management_form }}
+
+                                {% for form in q_form_data.answer_formset %}
+                                    <div class="answer-form-row">
+                                        <div class="answer-header">
+                                            <span class="answer-number">{{ forloop.counter }}</span>
+                                            <h5 class="answer-title">Отговор #{{ forloop.counter }}</h5>
+                                        </div>
+
+                                        {% for field in form %}
+                                            <div class="form-group">
+                                                <label for="{{ field.id_for_label }}">
+                                                    {% if field.name == 'text' %}
+                                                        <i class="fas fa-font"></i>
+                                                    {% elif field.name == 'is_correct' %}
+                                                        <i class="fas fa-check-circle"></i>
+                                                    {% else %}
+                                                        <i class="fas fa-pen"></i>
+                                                    {% endif %}
+                                                    {{ field.label }}
+                                                </label>
+                                                {{ field }}
+                                            </div>
+                                        {% endfor %}
+
+                                        {% if form.DELETE %}
+                                            <div class="form-group">
+                                                <label class="text-danger">
+                                                    {{ form.DELETE }} <i class="fas fa-trash"></i> Изтрий този отговор
+                                                </label>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                {% empty %}
+                                    <div class="empty-state">
+                                        <i class="fas fa-inbox"></i>
+                                        <h3>Все още няма отговори</h3>
+                                        <p>Добавете отговори към този въпрос</p>
+                                    </div>
+                                {% endfor %}
+
+                                <div class="answer-hint">
+                                    <p>
+                                        <i class="fas fa-lightbulb"></i>
+                                        <strong>Съвет:</strong> Маркирайте всички верни отговори за въпросите с multiple choice,
+                                        multiple select или true/false. За въпроси със свободен текст не се изискват предварителни отговори.
+                                    </p>
+                                </div>
+
+                                <button type="submit" name="answers-submit-{{ q_form_data.question.pk }}"
+                                        class="btn btn-warning">
+                                    <i class="fas fa-save"></i>
+                                    Запази отговорите за този въпрос
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add new question functionality
+        const addQuestionBtn = document.getElementById('addQuestionBtn');
+        const questionForm = document.getElementById('question-form');
+        const totalForms = document.getElementById('id_questions-TOTAL_FORMS');
+
+        if (addQuestionBtn && totalForms) {
+            addQuestionBtn.addEventListener('click', function() {
+                const formCount = parseInt(totalForms.value);
+                const newFormHtml = `
+                    <div class="question-form-row" id="question-${formCount}">
+                        <div class="question-header">
+                            <h3 class="question-title">
+                                <span class="question-number">${formCount + 1}</span>
+                                Нов въпрос
+                            </h3>
+                        </div>
+                        <!-- New form fields would be dynamically added here -->
+                    </div>
+                `;
+
+                // In a real implementation, you would clone the last form and update indices
+                // This is a simplified version
+                alert('В реална имплементация тук ще се добави нов въпрос динамично');
+            });
+        }
+
+        // Smooth scroll to answers section
+        const toggleButtons = document.querySelectorAll('.toggle-answers');
+        toggleButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const questionId = this.dataset.questionId;
+                const answersSection = document.getElementById(`answers-${questionId}`);
+                const collapse = new bootstrap.Collapse(answersSection, {
+                    toggle: true
+                });
+
+                // Scroll to the answers section
+                answersSection.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            });
+        });
+
+        // Form validation and enhancement
+        const questionForms = document.querySelectorAll('.question-form-row');
+        questionForms.forEach((form, index) => {
+            const typeField = form.querySelector('#id_questions-${index}-type');
+            const pointsField = form.querySelector('#id_questions-${index}-points');
+
+            if (typeField && pointsField) {
+                typeField.addEventListener('change', function() {
+                    // Add visual feedback based on question type
+                    const card = form.closest('.question-form-row');
+                    card.style.borderLeftColor = getTypeColor(this.value);
+                });
+            }
+        });
+
+        function getTypeColor(type) {
+            const colors = {
+                'MC': '#6366f1', // Multiple Choice
+                'MS': '#8b5cf6', // Multiple Select
+                'TF': '#10b981', // True/False
+                'OT': '#f59e0b', // Open Text
+            };
+            return colors[type] || '#6366f1';
+        }
+
+        // Auto-save indicators
+        const saveButtons = document.querySelectorAll('button[type="submit"]');
+        saveButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const originalText = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Запазване...';
+                this.disabled = true;
+
+                // Revert after 3 seconds (in case of error)
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                    this.disabled = false;
+                }, 3000);
+            });
+        });
+
+        // Character counters for text fields
+        const textAreas = document.querySelectorAll('textarea');
+        textAreas.forEach(textarea => {
+            const counter = document.createElement('div');
+            counter.className = 'char-counter';
+            counter.innerHTML = `<span>0</span>/1000 знака`;
+            textarea.parentNode.appendChild(counter);
+
+            textarea.addEventListener('input', function() {
+                const length = this.value.length;
+                counter.querySelector('span').textContent = length;
+
+                if (length > 800) {
+                    counter.classList.add('warning');
+                } else {
+                    counter.classList.remove('warning');
+                }
+
+                if (length > 1000) {
+                    counter.classList.add('error');
+                } else {
+                    counter.classList.remove('error');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

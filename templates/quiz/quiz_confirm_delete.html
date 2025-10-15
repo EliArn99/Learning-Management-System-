@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Изтриване на тест{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="alert alert-danger" role="alert">
+        <h4 class="alert-heading">Потвърдете изтриването</h4>
+        <p>Сигурни ли сте, че искате да изтриете теста: <strong>"{{ object.title }}"</strong>?</p>
+        <p class="mb-0">Всички свързани въпроси и отговори на студенти също ще бъдат изтрити.</p>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger me-2">
+            <i class="fas fa-trash-alt me-1"></i> Потвърди изтриването
+        </button>
+        <a href="{% url 'quizz:quiz_manage_list' %}" class="btn btn-secondary">
+            <i class="fas fa-times me-1"></i> Отказ
+        </a>
+    </form>
+</div>
+{% endblock %}

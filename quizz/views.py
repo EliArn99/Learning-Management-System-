@@ -1,9 +1,9 @@
 import json
 from django.shortcuts import render, get_object_or_404, redirect
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.utils import timezone
-from django.views.generic import ListView, DetailView, CreateView, UpdateView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.http import HttpResponseForbidden, JsonResponse
 from .models import Quiz, Answer, Submission, StudentAnswer, Question
 from .forms import QuizForm, QuestionForm, AnswerForm
@@ -11,6 +11,18 @@ from django.forms import inlineformset_factory
 from django.db import transaction
 from django.db.models import Prefetch
 from django.core.exceptions import PermissionDenied
+
+
+
+class TeacherRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.is_authenticated and hasattr(self.request.user, 'teacherprofile')
+
+    def handle_no_permission(self):
+        if self.request.user.is_authenticated:
+            raise PermissionDenied("Нямате права на преподавател за тази операция.")
+        return super().handle_no_permission()
+
 
 QuestionFormSet = inlineformset_factory(
     Quiz,
@@ -22,6 +34,7 @@ QuestionFormSet = inlineformset_factory(
     validate_min=True,
 )
 
+# ... AnswerFormSet остава същият ...
 AnswerFormSet = inlineformset_factory(
     Question,
     Answer,
@@ -33,83 +46,97 @@ AnswerFormSet = inlineformset_factory(
 )
 
 
-class QuizQuestionsUpdateView(LoginRequiredMixin, UpdateView):
+
+class QuizManageListView(TeacherRequiredMixin, ListView):
     model = Quiz
-    template_name = 'quiz/quiz_add_question.html'
-    context_object_name = 'quiz'
-    fields = []
+    template_name = 'quiz/quiz_manage_list.html'
+    context_object_name = 'quizzes'
 
-    def get_object(self, queryset=None):
-        quiz = super().get_object(queryset)
-        if self.request.user.teacherprofile != quiz.created_by:
-            raise HttpResponseForbidden("Нямате право да редактирате този тест.")
-        return quiz
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        quiz = self.get_object()
-
-        if self.request.POST:
-            context['question_formset'] = QuestionFormSet(self.request.POST, instance=quiz)
-        else:
-            context['question_formset'] = QuestionFormSet(instance=quiz)
-
-        return context
-
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        quiz = self.object
-
-        if self.request.user.teacherprofile != quiz.created_by:
-            return HttpResponseForbidden("Нямате право да редактирате този тест.")
-
-        formset = QuestionFormSet(request.POST, instance=quiz)
-
-        if formset.is_valid():
-            with transaction.atomic():
-                formset.save()
-            return redirect('quizz:quiz_detail', pk=quiz.pk)
-        else:
-            return self.render_to_response(self.get_context_data(question_formset=formset))
+    def get_queryset(self):
+        # Връща само тестовете, създадени от текущия учител
+        return Quiz.objects.filter(created_by=self.request.user.teacherprofile).order_by('-id')
 
 
-class QuestionUpdateView(LoginRequiredMixin, UpdateView):
-    model = Question
-    template_name = 'quiz/question_form.html'
-    context_object_name = 'question'
-    fields = ['text', 'points']
 
-    def get_object(self, queryset=None):
-        """Retrieve the question object and check permissions."""
-        question = super().get_object(queryset)
-        if self.request.user.teacherprofile != question.quiz.created_by:
-            raise HttpResponseForbidden("Нямате право да редактирате този въпрос.")
-        return question
+class QuizCreateView(TeacherRequiredMixin, CreateView):
+    model = Quiz
+    form_class = QuizForm
+    template_name = 'quiz/quiz_form.html'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        question = self.get_object()
-
-        if self.request.POST:
-            context['answer_formset'] = AnswerFormSet(self.request.POST, instance=question)
-        else:
-            context['answer_formset'] = AnswerFormSet(instance=question)
-        return context
 
     def form_valid(self, form):
-        with transaction.atomic():
-            question = form.save()
+        form.instance.created_by = self.request.user.teacherprofile
+        return super().form_valid(form)
 
-            answer_formset = AnswerFormSet(self.request.POST, instance=question)
-            if answer_formset.is_valid():
-                answer_formset.save()
-            else:
-                return self.render_to_response(self.get_context_data(form=form, answer_formset=answer_formset))
+    def get_success_url(self):
+        return reverse('quizz:manage_q_a', kwargs={'quiz_pk': self.object.pk})
 
-            return redirect('quizz:quiz_detail', pk=question.quiz.pk)
+    def get_form(self):
+        form = super().get_form()
+        form.fields['course'].queryset = self.request.user.teacherprofile.taught_courses.all()
+        return form
 
-    def form_invalid(self, form):
-        return self.render_to_response(self.get_context_data(form=form))
+
+class QuizUpdateView(TeacherRequiredMixin, UpdateView):
+    model = Quiz
+    form_class = QuizForm
+    template_name = 'quiz/quiz_form.html'
+
+    def get_queryset(self):
+        return Quiz.objects.filter(created_by=self.request.user.teacherprofile)
+
+    def get_success_url(self):
+        return reverse_lazy('quizz:quiz_manage_list')
+
+
+class QuizDeleteView(TeacherRequiredMixin, DeleteView):
+    model = Quiz
+    template_name = 'quiz/quiz_confirm_delete.html'  # Трябва да създадете този шаблон
+    success_url = reverse_lazy('quizz:quiz_manage_list')
+
+    def get_queryset(self):
+        return Quiz.objects.filter(created_by=self.request.user.teacherprofile)
+
+
+
+@transaction.atomic
+def manage_questions_and_answers(request, quiz_pk):
+    quiz = get_object_or_404(Quiz, pk=quiz_pk)
+
+    if quiz.created_by != request.user.teacherprofile:
+        raise PermissionDenied("Нямате право да редактирате този тест.")
+
+    if request.method == 'POST' and 'questions-submit' in request.POST:
+        q_formset = QuestionFormSet(request.POST, instance=quiz, prefix='question')
+        if q_formset.is_valid():
+            q_formset.save()
+            return redirect('quizz:manage_q_a', quiz_pk=quiz.pk)
+    else:
+        q_formset = QuestionFormSet(instance=quiz, prefix='question')
+
+    # 2. ANSWER FORMSETS (Динамично за всеки въпрос)
+    question_forms_data = []
+    for question in quiz.questions.all():
+        if request.method == 'POST' and f'answers-submit-{question.pk}' in request.POST:
+            a_formset = AnswerFormSet(request.POST, instance=question, prefix=f'answer-{question.pk}')
+            if a_formset.is_valid():
+                a_formset.save()
+                return redirect('quizz:manage_q_a', quiz_pk=quiz.pk)
+        else:
+            a_formset = AnswerFormSet(instance=question, prefix=f'answer-{question.pk}')
+
+        question_forms_data.append({
+            'question': question,
+            'answer_formset': a_formset
+        })
+
+    context = {
+        'quiz': quiz,
+        'q_formset': q_formset,
+        'question_forms_data': question_forms_data,
+    }
+    return render(request, 'quiz/manage_questions_and_answers.html', context)
+
 
 
 class QuizListView(ListView):
@@ -118,82 +145,21 @@ class QuizListView(ListView):
     context_object_name = 'quizzes'
 
 
-class QuizCreateView(LoginRequiredMixin, CreateView):
-    model = Quiz
-    form_class = QuizForm
-    template_name = 'quiz/quiz_form.html'
-    success_url = reverse_lazy('quizz:quiz_list')
-
-    def form_valid(self, form):
-        form.instance.created_by = self.request.user.teacherprofile
-        response = super().form_valid(form)
-        return redirect('quizz:quiz_add_questions', pk=form.instance.pk)
-
-    def get_form(self):
-        form = super().get_form()
-        form.fields['course'].queryset = self.request.user.teacherprofile.taught_courses.all()
-        return form
-
-
 class QuizDetailView(DetailView):
     model = Quiz
     template_name = 'quiz/quiz_detail.html'
     context_object_name = 'quiz'
 
 
+
 class QuizTakeView(LoginRequiredMixin, DetailView):
     model = Quiz
-    template_name = 'quiz/quiz_take.html'
-    context_object_name = 'quiz'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        quiz = self.get_object()
-
-        if not quiz.is_active():
-            raise PermissionDenied("Този тест не е активен в момента.")
-
-        session_key = f'quiz_{quiz.pk}_start_time'
-        if session_key not in self.request.session:
-            self.request.session[session_key] = timezone.now().timestamp()
-
-        context['time_limit'] = quiz.time_limit
-        context['start_time'] = self.request.session[session_key]
-
-        all_questions = quiz.questions.all().prefetch_related('answers')
-
-        num_select = quiz.num_questions_to_select
-        if num_select > 0 and num_select < all_questions.count():
-            questions = all_questions.order_by('?')[:num_select]
-        else:
-            questions = all_questions.order_by('id')
-
-        quiz_data = []
-        for q_obj in questions:
-            options_data = []
-            if q_obj.type != 'OT':
-                for a_obj in q_obj.answers.all().order_by('id'):
-                    options_data.append({
-                        'id': a_obj.id,
-                        'text': a_obj.text
-                    })
-
-            quiz_data.append({
-                'id': q_obj.id,
-                'question': q_obj.text,
-                'options': options_data,
-                'type': q_obj.type,
-            })
-
-        context['quiz_data_json'] = json.dumps(quiz_data)
-        return context
+    template_name = 'quiz/quiz_take.html' # <--- ДОБАВЕТЕ ТОВА!
 
     def post(self, request, *args, **kwargs):
         quiz = self.get_object()
         student = request.user
 
-        if not quiz.is_active():
-            return JsonResponse({'error': 'Този тест не е активен.'}, status=403)
 
         session_key = f'quiz_{quiz.pk}_start_time'
         start_time_stamp = self.request.session.get(session_key)
@@ -201,7 +167,7 @@ class QuizTakeView(LoginRequiredMixin, DetailView):
         if start_time_stamp:
             start_time = timezone.datetime.fromtimestamp(start_time_stamp, tz=timezone.get_current_timezone())
             time_difference = timezone.now() - start_time
-            if time_difference.total_seconds() > (quiz.time_limit * 60 + 5):  # Добавете толеранс от 5 секунди
+            if time_difference.total_seconds() > (quiz.time_limit * 60 + 5):
                 del self.request.session[session_key]
                 return JsonResponse({'error': 'Времето за теста изтече!'}, status=403)
 
@@ -215,7 +181,6 @@ class QuizTakeView(LoginRequiredMixin, DetailView):
         if session_key in self.request.session:
             del self.request.session[session_key]
 
-        score = 0
         total_points_earned = 0
         total_possible_points = 0
 
@@ -237,44 +202,15 @@ class QuizTakeView(LoginRequiredMixin, DetailView):
                 continue
 
             total_possible_points += question_obj.points
-
             question_points_earned = 0
 
             if question_obj.type in ['MC', 'MM', 'TF']:
                 correct_answer_ids = {a.id for a in question_obj.all_answers if a.is_correct}
                 selected_ids = {id for id in selected_answer_ids if id is not None}
 
-                is_correct = False
                 if selected_ids == correct_answer_ids and correct_answer_ids:
-                    is_correct = True
                     question_points_earned = question_obj.points
 
-                sa_instance = StudentAnswer.objects.create(
-                    submission=submission,
-                    question=question_obj,
-                    text_response=f"Selected IDs: {selected_ids}",  
-                    points_awarded=question_points_earned, 
-                    selected_answer=None  
-                )
-
-                if selected_ids:
-
-                    sa_instance.delete()
-
-                    for selected_id in selected_ids:
-                        selected_answer_obj = next((a for a in question_obj.all_answers if a.id == selected_id), None)
-                        if selected_answer_obj:
-                            StudentAnswer.objects.create(
-                                submission=submission,
-                                question=question_obj,
-                                selected_answer=selected_answer_obj,  
-                                points_awarded=question_points_earned if question_obj.type in ['MC',
-                                                                                               'TF'] and is_correct else 0
-                            )
-
-
-                
-                StudentAnswer.objects.filter(submission=submission, question=question_obj).delete()
 
                 if selected_ids:
                     is_first_answer = True
@@ -282,14 +218,13 @@ class QuizTakeView(LoginRequiredMixin, DetailView):
                         selected_answer_obj = next((a for a in question_obj.all_answers if a.id == selected_id), None)
 
                         if selected_answer_obj:
-                            # Точките се записват САМО на първия SA запис, за да не се дублират.
                             points_to_award = question_points_earned if is_first_answer else 0
 
                             StudentAnswer.objects.create(
                                 submission=submission,
                                 question=question_obj,
                                 selected_answer=selected_answer_obj,
-                                points_awarded=points_to_award  
+                                points_awarded=points_to_award  # Записва точките (само на първия)
                             )
                             is_first_answer = False
                 else:
@@ -300,11 +235,10 @@ class QuizTakeView(LoginRequiredMixin, DetailView):
                         points_awarded=0
                     )
 
-                if is_correct:
-                    total_points_earned += question_obj.points
-                    score += 1
+                total_points_earned += question_points_earned  # Добавяме общите точки за въпроса към резултата
 
             elif question_obj.type == 'OT':
+                # Записваме свободния текст. Точките са 0 до ръчна оценка.
                 StudentAnswer.objects.create(
                     submission=submission,
                     question=question_obj,
@@ -312,7 +246,6 @@ class QuizTakeView(LoginRequiredMixin, DetailView):
                     selected_answer=None,
                     points_awarded=0
                 )
-                pass
 
         if total_possible_points > 0:
             submission.score = round((total_points_earned / total_possible_points) * 100, 2)
@@ -338,14 +271,3 @@ def quiz_results(request, pk):
         'submission': submission
     })
 
-
-def quiz_form_view(request):
-    form = QuizForm()
-    if request.method == 'POST':
-        form = QuizForm(request.POST)
-        if form.is_valid():
-            quiz = form.save(commit=False)
-            quiz.created_by = request.user.teacherprofile
-            quiz.save()
-            return redirect('quizz:quiz_detail', pk=quiz.pk)
-    return render(request, 'quiz/quiz_form.html', {'form': form})

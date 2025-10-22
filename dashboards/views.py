@@ -1,5 +1,4 @@
-# TODO: Да оправя имейлите между студент и преподавател и да подобря изледа така че да показва че има съобщение при студента и да могат до отговарят
-from users.models import StudentProfile, TeacherProfile # Make sure TeacherProfile is imported
+from users.models import StudentProfile
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
@@ -40,7 +39,6 @@ def teacher_dashboard_view(request):
     total_submissions = assignment_submissions.count()
     graded_submissions = assignment_submissions.filter(grade__isnull=False).count()
 
-    # recent_submissions = assignment_submissions.order_by('-submitted_at')[:5]
     recent_submissions = assignment_submissions.order_by('-submitted_at')[:5].select_related(
         'student__user',
         'assignment',
@@ -50,19 +48,15 @@ def teacher_dashboard_view(request):
     if selected_course_id:
         assignment_submissions = assignment_submissions.filter(assignment__course__id=selected_course_id)
 
-    # --- Messaging Integration ---
-    # Fetch unread messages for the current teacher
-    # Order by timestamp descending and get the latest 5
     unread_messages = Message.objects.filter(
         receiver=request.user,
         is_read=False
     ).select_related(
         'sender'
     ).prefetch_related(
-        'sender__studentprofile', # Prefetch student profile for sender
-        'sender__teacherprofile'  # Prefetch teacher profile for sender
+        'sender__studentprofile',
+        'sender__teacherprofile'
     ).order_by('-timestamp')[:5]
-    # --- End Messaging Integration ---
 
     return render(request, 'dashboards/teacher_dashboard.html', {
         'courses': courses,
@@ -73,7 +67,7 @@ def teacher_dashboard_view(request):
         'graded_submissions': graded_submissions,
         'selected_course_id': selected_course_id,
         'total_students': total_students,
-        'unread_messages': unread_messages, # Add unread messages to the context
+        'unread_messages': unread_messages,
     })
 
 
@@ -124,9 +118,20 @@ def student_dashboard_view(request):
 
     quiz_progress = int((submitted_quizzes / total_quizzes) * 100) if total_quizzes else 0
 
+    unread_messages = Message.objects.filter(
+        receiver=current_user,
+        is_read=False
+    ).select_related(
+        'sender'
+    ).prefetch_related(
+        'sender__teacherprofile'
+    ).order_by('-timestamp')[:5]
+
     context = {
         'courses': courses,
         'upcoming_assignments': upcoming_items_sorted[:5],
         'progress': quiz_progress,
+        'unread_messages': unread_messages,
     }
     return render(request, 'dashboards/student_dashboard.html', context)
+

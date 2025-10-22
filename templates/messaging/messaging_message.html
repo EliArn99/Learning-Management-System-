@@ -1,6 +1,7 @@
 {# TODO: Да направя възможност да отг директно на изпратен имейл #}
+{# TODO: This one works  #}
 {% extends 'base.html' %}
-{% load widget_tweaks %} {# За да стилизираме формата #}
+{% load widget_tweaks %}
 {% block title %}Изпрати ново съобщение{% endblock %}
 
 {% block extra_css %}
@@ -262,7 +263,7 @@
 
             <div class="mb-3">
                 <label for="id_receiver" class="form-label">Получател:</label>
-                <div class="custom-select-wrapper"> {# Wrapper for custom arrow #}
+                <div class="custom-select-wrapper"> {# Wrapper for custom arrow
                     <select name="receiver" id="id_receiver" class="form-control">
                         {% for user in users %}
                             <option value="{{ user.id }}">

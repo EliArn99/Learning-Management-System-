@@ -1,4 +1,5 @@
 {# TODO: Да добавя секция за съобщенията #}
+{# TODO: Да добавя секция за оценки #}
 {% extends 'base.html' %}
 {% load static %}
 
@@ -355,12 +356,15 @@
             align-items: center; /* Центриране на елементите в хедъра */
             padding: 15px;
         }
+
         .dashboard-title-group {
             order: 2; /* Премества заглавията под аватара на малки екрани */
         }
+
         .student-avatar {
             order: 1; /* Аватарът първи */
         }
+
         .send-message-btn-wrapper {
             order: 3; /* Бутонът последен */
             width: 100%; /* Заема цяла ширина */
@@ -389,7 +393,8 @@
             <h1 class="dashboard-title">Student Dashboard</h1>
             <p class="dashboard-subtitle">Welcome back! Here's what's happening today.</p>
         </div>
-        <img src="{% static 'images/avatar-of-a-student-character-free-vector.jpg' %}" alt="Student Avatar" class="student-avatar">
+        <img src="{% static 'images/avatar-of-a-student-character-free-vector.jpg' %}" alt="Student Avatar"
+             class="student-avatar">
 
         {# Conditionally display "Send Message to Teacher" button for students #}
         {% if request.user.is_authenticated and request.user.is_student %}
@@ -420,95 +425,147 @@
     </div>
 
     <div class="row">
-        <div class="col-lg-6">
-            <div class="dashboard-card">
-                <div class="card-header">
-                    <h2 class="card-title">📝 Предстоящи задачи и тестове</h2>
-                    <span class="status-badge" style="background-color: rgba(59, 21, 58, 0.1); color: var(--primary-dark);">
-                        {{ upcoming_assignments|length }} предстоящи
+    <div class="col-lg-6">
+        <div class="dashboard-card" id="messages-section">
+            <div class="card-header">
+                <h2 class="card-title">📨 Съобщения от преподаватели</h2>
+                {% if unread_messages %}
+                    <span class="status-badge urgent-badge">
+                        {{ unread_messages|length }} непрочетени
                     </span>
-                </div>
-
-                {% if upcoming_assignments %}
-                    <ul class="assignment-list">
-                        {% for item in upcoming_assignments %}
-                            <li class="assignment-item">
-                                <div class="d-flex align-items-center">
-                                    <div class="assignment-icon">
-                                        {% if item.type == 'assignment' %}
-                                            <i class="fas fa-book-open"></i>
-                                        {% elif item.type == 'quiz' %}
-                                            <i class="fas fa-question-circle"></i>
-                                        {% endif %}
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <h3 class="assignment-title">{{ item.title }}</h3>
-                                        <div class="d-flex align-items-center">
-                                            <span class="assignment-due">
-                                                <i class="far fa-calendar-alt me-1"></i>
-                                                {{ item.due_date|date:"M d, Y H:i" }}
-                                            </span>
-                                            {% if item.is_urgent %}
-                                                <span class="urgent-badge ms-2">Спешно</span>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                    {% if item.type == 'assignment' %}
-                                        <a href="{% url 'assignments:assignment_detail' item.pk %}" class="view-btn">
-                                            Виж задача
-                                        </a>
-                                    {% elif item.type == 'quiz' %}
-                                        <a href="{% url 'quizz:quiz_take' pk=item.pk %}" class="view-btn">
-                                            Направи тест
-                                        </a>
-                                    {% endif %}
-                                </div>
-                            </li>
-                        {% endfor %}
-                    </ul>
                 {% else %}
-                    <div class="empty-state">
-                        <p class="text-muted">Няма предстоящи задачи или тестове. Насладете се на свободното си време!</p>
-                    </div>
+                    <span class="status-badge" style="background-color: rgba(59, 21, 58, 0.1); color: var(--primary-dark);">
+                        Няма нови
+                    </span>
                 {% endif %}
             </div>
-        </div>
 
-        <div class="col-lg-6">
-            <div class="dashboard-card">
-                <div class="card-header">
-                    <h2 class="card-title">🎓 Your Courses</h2>
-                    <span class="status-badge" style="background-color: rgba(240, 201, 135, 0.2); color: var(--primary-dark);">
-                        {{ courses|length }} enrolled
-                    </span>
-                </div>
-
-                {% if courses %}
-                    <div class="courses-grid">
-                        {% for course in courses %}
-                            <div class="course-card">
-                                <div class="card-body" style="padding: 1.5rem;">
-                                    <div class="course-icon">
-                                        <i class="fas fa-graduation-cap"></i>
-                                    </div>
-                                    <h3 class="course-name">{{ course.name }}</h3>
-                                    <p class="course-description">{{ course.description|truncatewords:12 }}</p>
-                                    <a href="{% url 'courses:course_detail' course.pk %}" class="continue-btn">
-                                        Continue Learning
-                                    </a>
+            {% if unread_messages %}
+                <ul class="assignment-list">
+                    {% for message in unread_messages %}
+                        <li class="assignment-item d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center flex-grow-1">
+                                <div class="assignment-icon" style="background-color: var(--primary-light);">
+                                    <i class="fas fa-comment-dots"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h3 class="assignment-title mb-0">{{ message.subject|default:"Без тема"|truncatechars:40 }}</h3>
+                                    <span class="assignment-due">
+                                        <i class="fas fa-user-tie me-1"></i>
+                                        От: {{ message.sender.teacherprofile.get_full_name_or_username }}
+                                    </span>
+                                    <span class="assignment-due ms-3">
+                                        <i class="far fa-clock me-1"></i>
+                                        {{ message.timestamp|date:"M d, H:i" }}
+                                    </span>
                                 </div>
                             </div>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    <div class="empty-state">
-                        <img src="{% static 'images/no-courses.svg' %}" alt="No courses" class="empty-state-img">
-                        <p class="text-muted">You're not enrolled in any courses yet.</p>
-                        {# TODO: redirect to courses #}
-                        <a href="#" class="browse-btn">Browse Courses</a>
-                    </div>
-                {% endif %}
+                            <a href="{% url 'messaging:message_detail' message.pk %}" class="view-btn ms-2">
+                                <i class="fas fa-eye"></i> Виж
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+                <div class="card-header" style="border-top: 1px solid #eee;">
+                    <a href="{% url 'messaging:inbox' %}" class="view-btn" style="background-color: transparent; color: var(--primary-dark);">
+                        <i class="fas fa-inbox me-1"></i> Към всички съобщения
+                    </a>
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <p class="text-muted">Всички съобщения са прочетени. Входящата ви кутия е чиста! ✨</p>
+                    <a href="{% url 'messaging:inbox' %}" class="browse-btn">Към входящата кутия</a>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h2 class="card-title">📝 Предстоящи задачи и тестове</h2>
+                <span class="status-badge" style="background-color: rgba(59, 21, 58, 0.1); color: var(--primary-dark);">
+                    {{ upcoming_assignments|length }} предстоящи
+                </span>
             </div>
+
+            {% if upcoming_assignments %}
+                <ul class="assignment-list">
+                    {% for item in upcoming_assignments %}
+                        <li class="assignment-item">
+                            <div class="d-flex align-items-center">
+                                <div class="assignment-icon">
+                                    {% if item.type == 'assignment' %}
+                                        <i class="fas fa-book-open"></i>
+                                    {% elif item.type == 'quiz' %}
+                                        <i class="fas fa-question-circle"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h3 class="assignment-title">{{ item.title }}</h3>
+                                    <div class="d-flex align-items-center">
+                                        <span class="assignment-due">
+                                            <i class="far fa-calendar-alt me-1"></i>
+                                            {{ item.due_date|date:"M d, Y H:i" }}
+                                        </span>
+                                        {% if item.is_urgent %}
+                                            <span class="urgent-badge ms-2">Спешно</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% if item.type == 'assignment' %}
+                                    <a href="{% url 'assignments:assignment_detail' item.pk %}" class="view-btn">
+                                        Виж задача
+                                    </a>
+                                {% elif item.type == 'quiz' %}
+                                    <a href="{% url 'quizz:quiz_take' pk=item.pk %}" class="view-btn">
+                                        Направи тест
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <div class="empty-state">
+                    <p class="text-muted">Няма предстоящи задачи или тестове. Насладете се на свободното си време!</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h2 class="card-title">🎓 Your Courses</h2>
+                <span class="status-badge" style="background-color: rgba(240, 201, 135, 0.2); color: var(--primary-dark);">
+                    {{ courses|length }} enrolled
+                </span>
+            </div>
+
+            {% if courses %}
+                <div class="courses-grid">
+                    {% for course in courses %}
+                        <div class="course-card">
+                            <div class="card-body" style="padding: 1.5rem;">
+                                <div class="course-icon">
+                                    <i class="fas fa-graduation-cap"></i>
+                                </div>
+                                <h3 class="course-name">{{ course.name }}</h3>
+                                <p class="course-description">{{ course.description|truncatewords:12 }}</p>
+                                <a href="{% url 'courses:course_detail' course.pk %}" class="continue-btn">
+                                    Continue Learning
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <img src="{% static 'images/no-courses.svg' %}" alt="No courses" class="empty-state-img">
+                    <p class="text-muted">You're not enrolled in any courses yet.</p>
+                    {# TODO: redirect to courses #}
+                    <a href="#" class="browse-btn">Browse Courses</a>
+                </div>
+            {% endif %}
         </div>
     </div>
 </div>

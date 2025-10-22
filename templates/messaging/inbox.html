@@ -1,22 +1,914 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+
+{% block title %}Входящи съобщения{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-color: #6366f1;
+        --primary-light: #a5b4fc;
+        --primary-dark: #4f46e5;
+        --secondary-color: #8b5cf6;
+        --accent-color: #ec4899;
+        --success-color: #10b981;
+        --warning-color: #f59e0b;
+        --danger-color: #ef4444;
+        --dark-color: #1e293b;
+        --darker-color: #0f172a;
+        --light-color: #f8fafc;
+        --lighter-color: #ffffff;
+        --gray-color: #94a3b8;
+        --border-radius: 12px;
+        --box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .inbox-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .inbox-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        border-radius: var(--border-radius);
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: var(--box-shadow);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .inbox-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+        animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-10px) rotate(180deg); }
+    }
+
+    .header-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .inbox-title {
+        font-size: 36px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .inbox-title i {
+        font-size: 32px;
+        opacity: 0.9;
+    }
+
+    .inbox-subtitle {
+        font-size: 16px;
+        opacity: 0.9;
+        margin-bottom: 20px;
+    }
+
+    .inbox-stats {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 20px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        backdrop-filter: blur(10px);
+    }
+
+    .stat-item i {
+        font-size: 18px;
+        opacity: 0.9;
+    }
+
+    .inbox-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        padding: 20px;
+        background: var(--lighter-color);
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .search-box {
+        position: relative;
+        flex: 1;
+        min-width: 300px;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 12px 45px 12px 16px;
+        border: 2px solid #e2e8f0;
+        border-radius: var(--border-radius);
+        font-size: 15px;
+        transition: var(--transition);
+        background: var(--lighter-color);
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+
+    .search-icon {
+        position: absolute;
+        right: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--gray-color);
+    }
+
+    .filter-controls {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .filter-select {
+        padding: 10px 16px;
+        border: 2px solid #e2e8f0;
+        border-radius: var(--border-radius);
+        background: var(--lighter-color);
+        font-size: 14px;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .filter-select:focus {
+        outline: none;
+        border-color: var(--primary-color);
+    }
+
+    .messages-container {
+        background: var(--lighter-color);
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        overflow: hidden;
+    }
+
+    .messages-list {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .message-item {
+        padding: 25px;
+        border-bottom: 1px solid #e2e8f0;
+        transition: var(--transition);
+        cursor: pointer;
+        position: relative;
+    }
+
+    .message-item:last-child {
+        border-bottom: none;
+    }
+
+    .message-item:hover {
+        background: #f8fafc;
+        transform: translateX(5px);
+    }
+
+    .message-item.unread {
+        background: linear-gradient(90deg, rgba(99, 102, 241, 0.05) 0%, transparent 100%);
+        border-left: 4px solid var(--primary-color);
+    }
+
+    .message-item.unread:hover {
+        background: linear-gradient(90deg, rgba(99, 102, 241, 0.1) 0%, #f8fafc 100%);
+    }
+
+    .message-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 12px;
+        gap: 15px;
+    }
+
+    .message-subject {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--dark-color);
+        margin: 0;
+        flex: 1;
+    }
+
+    .message-meta {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .message-time {
+        font-size: 14px;
+        color: var(--gray-color);
+        white-space: nowrap;
+    }
+
+    .message-preview {
+        color: var(--gray-color);
+        margin-bottom: 15px;
+        line-height: 1.5;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .message-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .sender-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex: 1;
+    }
+
+    .sender-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 16px;
+        flex-shrink: 0;
+    }
+
+    .sender-avatar.teacher {
+        background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+    }
+
+    .sender-avatar.student {
+        background: linear-gradient(135deg, #10b981, #34d399);
+    }
+
+    .sender-avatar:not(.teacher):not(.student) {
+        background: linear-gradient(135deg, #6366f1, #818cf8);
+    }
+
+    .sender-details {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .sender-name {
+        font-weight: 600;
+        color: var(--dark-color);
+        margin-bottom: 2px;
+        font-size: 14px;
+    }
+
+    .sender-meta {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .sender-role {
+        font-size: 12px;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-weight: 500;
+    }
+
+    .sender-role.teacher {
+        background: rgba(139, 92, 246, 0.1);
+        color: #7c3aed;
+    }
+
+    .sender-role.student {
+        background: rgba(16, 185, 129, 0.1);
+        color: #059669;
+    }
+
+    .sender-role:not(.teacher):not(.student) {
+        background: rgba(99, 102, 241, 0.1);
+        color: #4f46e5;
+    }
+
+    .sender-status {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        color: var(--gray-color);
+    }
+
+    .status-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+    }
+
+    .status-dot.online {
+        background: var(--success-color);
+    }
+
+    .status-dot.offline {
+        background: var(--gray-color);
+    }
+
+    .message-actions {
+        display: flex;
+        gap: 8px;
+        flex-shrink: 0;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        border-radius: var(--border-radius);
+        font-weight: 500;
+        text-decoration: none;
+        transition: var(--transition);
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .btn-primary {
+        background: var(--primary-color);
+        color: white;
+        box-shadow: 0 2px 4px rgba(99, 102, 241, 0.2);
+    }
+
+    .btn-primary:hover {
+        background: var(--primary-dark);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(99, 102, 241, 0.3);
+    }
+
+    .btn-outline {
+        background: transparent;
+        color: var(--primary-color);
+        border: 1px solid var(--primary-color);
+    }
+
+    .btn-outline:hover {
+        background: var(--primary-color);
+        color: white;
+    }
+
+    .new-indicator {
+        background: var(--danger-color);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 700;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+    }
+
+    .priority-indicator {
+        width: 4px;
+        height: 20px;
+        border-radius: 2px;
+        margin-right: 10px;
+    }
+
+    .priority-high {
+        background: var(--danger-color);
+    }
+
+    .priority-medium {
+        background: var(--warning-color);
+    }
+
+    .priority-low {
+        background: var(--success-color);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--gray-color);
+    }
+
+    .empty-state i {
+        font-size: 64px;
+        margin-bottom: 20px;
+        opacity: 0.5;
+    }
+
+    .empty-state h3 {
+        font-size: 24px;
+        margin-bottom: 12px;
+        color: var(--dark-color);
+    }
+
+    .empty-state p {
+        font-size: 16px;
+        margin-bottom: 25px;
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        padding: 25px;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .page-btn {
+        padding: 8px 16px;
+        border: 1px solid #e2e8f0;
+        background: white;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .page-btn:hover {
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+    }
+
+    .page-btn.active {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+
+    /* Quick actions */
+    .quick-actions {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        background: var(--lighter-color);
+        border: 1px solid #e2e8f0;
+        border-radius: var(--border-radius);
+        text-decoration: none;
+        color: var(--dark-color);
+        font-size: 14px;
+        transition: var(--transition);
+    }
+
+    .action-btn:hover {
+        background: #f1f5f9;
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .inbox-container {
+            padding: 15px;
+        }
+
+        .inbox-header {
+            padding: 20px;
+        }
+
+        .inbox-title {
+            font-size: 28px;
+        }
+
+        .inbox-controls {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .search-box {
+            min-width: 100%;
+        }
+
+        .message-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .message-meta {
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .message-footer {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .message-actions {
+            width: 100%;
+            justify-content: flex-end;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .inbox-header {
+            padding: 15px;
+        }
+
+        .inbox-title {
+            font-size: 24px;
+            flex-direction: column;
+            gap: 8px;
+            text-align: center;
+        }
+
+        .inbox-stats {
+            justify-content: center;
+        }
+
+        .sender-info {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .sender-meta {
+            width: 100%;
+            justify-content: flex-start;
+        }
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <h2>📥 Inbox</h2>
-    {% if messages %}
-        <ul class="list-group">
-            {% for message in messages %}
-                <li class="list-group-item d-flex justify-content-between align-items-center {% if not message.is_read %}fw-bold{% endif %}">
-                    <div>
-                        <strong>{{ message.subject|default:"(No subject)" }}</strong><br>
-                        <small>From: {{ message.sender.username }} | {{ message.timestamp|date:"M d, Y H:i" }}</small>
+<div class="inbox-container">
+    <!-- Header Section -->
+    <div class="inbox-header">
+        <div class="header-content">
+            <h1 class="inbox-title">
+                <i class="fas fa-inbox"></i>
+                Входяща кутия
+            </h1>
+            <p class="inbox-subtitle">Управлявайте получените съобщения от преподаватели и колеги</p>
+
+            <div class="inbox-stats">
+                <div class="stat-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>Общо: {{ messages|length }}</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-envelope-open"></i>
+                    <span>Прочетени: {{ read_count|default:"0" }}</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-envelope-circle-check"></i>
+                    <span>Нови: {{ unread_count|default:"0" }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+        <a href="{% url 'messaging:send_message' %}" class="action-btn">
+            <i class="fas fa-edit"></i>
+            Ново съобщение
+        </a>
+        <a href="{% url 'messaging:sent' %}" class="action-btn">
+            <i class="fas fa-paper-plane"></i>
+            Изпратени
+        </a>
+        <button class="action-btn" id="markAllRead">
+            <i class="fas fa-check-double"></i>
+            Маркирай всички като прочетени
+        </button>
+    </div>
+
+    <!-- Controls -->
+    <div class="inbox-controls">
+        <div class="search-box">
+            <input type="text" class="search-input" placeholder="Търсене в съобщения..." id="searchInput">
+            <i class="fas fa-search search-icon"></i>
+        </div>
+        <div class="filter-controls">
+            <select class="filter-select" id="filterStatus">
+                <option value="all">Всички съобщения</option>
+                <option value="unread">Само непрочетени</option>
+                <option value="read">Само прочетени</option>
+            </select>
+            <select class="filter-select" id="filterSender">
+                <option value="all">Всички изпращачи</option>
+                <option value="teachers">Само преподаватели</option>
+                <option value="students">Само студенти</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Messages List -->
+    <div class="messages-container">
+        {% if messages %}
+            <div class="messages-list" id="messagesList">
+                {% for msg in messages %}
+                    <div class="message-item {% if not msg.is_read %}unread{% endif %}"
+                         data-message-id="{{ msg.pk }}"
+                         data-sender-type="{% if msg.sender.is_teacher %}teacher{% elif msg.sender.is_student %}student{% else %}user{% endif %}"
+                         data-read-status="{% if msg.is_read %}read{% else %}unread{% endif %}">
+
+                        <div class="message-header">
+                            <h3 class="message-subject">
+                                {% if not msg.is_read %}
+                                    <span class="priority-indicator priority-high"></span>
+                                {% endif %}
+                                {{ msg.subject|default:"(Без тема)" }}
+                            </h3>
+                            <div class="message-meta">
+                                {% if not msg.is_read %}
+                                    <span class="new-indicator">НОВО</span>
+                                {% endif %}
+                                <span class="message-time">
+                                    <i class="fas fa-clock"></i>
+                                    {{ msg.timestamp|date:"d.m.Y H:i" }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <p class="message-preview">
+                            {{ msg.body|truncatechars:150|default:"(Няма съдържание)" }}
+                        </p>
+
+                        <div class="message-footer">
+                            <div class="sender-info">
+                                <div class="sender-avatar {% if msg.sender.is_teacher %}teacher{% elif msg.sender.is_student %}student{% endif %}">
+                                    {% if msg.sender.is_teacher %}
+                                        <i class="fas fa-chalkboard-teacher"></i>
+                                    {% elif msg.sender.is_student %}
+                                        <i class="fas fa-user-graduate"></i>
+                                    {% else %}
+                                        <i class="fas fa-user"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="sender-details">
+                                    <div class="sender-name">
+                                        {{ msg.sender.get_full_name|default:msg.sender.username }}
+                                    </div>
+                                    <div class="sender-meta">
+                                        <span class="sender-role {% if msg.sender.is_teacher %}teacher{% elif msg.sender.is_student %}student{% endif %}">
+                                            {% if msg.sender.is_teacher %}
+                                                <i class="fas fa-award"></i> Преподавател
+                                            {% elif msg.sender.is_student %}
+                                                <i class="fas fa-graduation-cap"></i> Студент
+                                            {% else %}
+                                                <i class="fas fa-user"></i> Потребител
+                                            {% endif %}
+                                        </span>
+                                        <span class="sender-status">
+                                            <span class="status-dot {% if msg.sender.is_online %}online{% else %}offline{% endif %}"></span>
+                                            {% if msg.sender.is_online %}Online{% else %}Offline{% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="message-actions">
+                                <a href="{% url 'messaging:message_detail' msg.pk %}" class="btn btn-primary">
+                                    <i class="fas fa-eye"></i>
+                                    Виж съобщение
+                                </a>
+                                <button class="btn btn-outline reply-btn" data-sender="{{ msg.sender.username }}">
+                                    <i class="fas fa-reply"></i>
+                                    Отговор
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <a href="#" class="btn btn-sm btn-outline-primary">View</a>
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p class="text-muted">No messages found.</p>
-    {% endif %}
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                <button class="page-btn">‹ Предишна</button>
+                <button class="page-btn active">1</button>
+                <button class="page-btn">2</button>
+                <button class="page-btn">3</button>
+                <button class="page-btn">Следваща ›</button>
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-inbox"></i>
+                <h3>Вашата входяща кутия е празна</h3>
+                <p>Все още нямате получени съобщения. Започнете разговор, като изпратите първото съобщение.</p>
+                <a href="{% url 'messaging:send_message' %}" class="btn btn-primary">
+                    <i class="fas fa-edit"></i>
+                    Напиши първото съобщение
+                </a>
+            </div>
+        {% endif %}
+    </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('searchInput');
+        const filterStatus = document.getElementById('filterStatus');
+        const filterSender = document.getElementById('filterSender');
+        const messagesList = document.getElementById('messagesList');
+        const markAllReadBtn = document.getElementById('markAllRead');
+        const messageItems = document.querySelectorAll('.message-item');
+
+        // Search functionality
+        searchInput.addEventListener('input', filterMessages);
+        filterStatus.addEventListener('change', filterMessages);
+        filterSender.addEventListener('change', filterMessages);
+
+        function filterMessages() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const statusFilter = filterStatus.value;
+            const senderFilter = filterSender.value;
+
+            messageItems.forEach(item => {
+                const subject = item.querySelector('.message-subject').textContent.toLowerCase();
+                const preview = item.querySelector('.message-preview').textContent.toLowerCase();
+                const senderName = item.querySelector('.sender-name').textContent.toLowerCase();
+                const isRead = item.classList.contains('unread') ? 'unread' : 'read';
+                const senderType = item.dataset.senderType;
+
+                const matchesSearch = subject.includes(searchTerm) || preview.includes(searchTerm) || senderName.includes(searchTerm);
+                const matchesStatus = statusFilter === 'all' ||
+                                    (statusFilter === 'unread' && isRead === 'unread') ||
+                                    (statusFilter === 'read' && isRead === 'read');
+                const matchesSender = senderFilter === 'all' ||
+                                    (senderFilter === 'teachers' && senderType === 'teacher') ||
+                                    (senderFilter === 'students' && senderType === 'student');
+
+                if (matchesSearch && matchesStatus && matchesSender) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        // Mark all as read
+        markAllReadBtn.addEventListener('click', function() {
+            if (confirm('Сигурни ли сте, че искате да маркирате всички съобщения като прочетени?')) {
+                // In a real application, this would be an AJAX call
+                messageItems.forEach(item => {
+                    if (item.classList.contains('unread')) {
+                        item.classList.remove('unread');
+                        const newIndicator = item.querySelector('.new-indicator');
+                        const priorityIndicator = item.querySelector('.priority-indicator');
+                        if (newIndicator) newIndicator.remove();
+                        if (priorityIndicator) priorityIndicator.remove();
+                    }
+                });
+
+                // Show success message
+                showNotification('Всички съобщения бяха маркирани като прочетени', 'success');
+            }
+        });
+
+        // Quick reply functionality
+        document.querySelectorAll('.reply-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const sender = this.dataset.sender;
+                window.location.href = `{% url 'messaging:send_message' %}?to=${encodeURIComponent(sender)}`;
+            });
+        });
+
+        // Message item click (mark as read on click)
+        messageItems.forEach(item => {
+            item.addEventListener('click', function(e) {
+                // Don't trigger if clicking on action buttons
+                if (!e.target.closest('.message-actions')) {
+                    if (this.classList.contains('unread')) {
+                        this.classList.remove('unread');
+                        const newIndicator = this.querySelector('.new-indicator');
+                        const priorityIndicator = this.querySelector('.priority-indicator');
+                        if (newIndicator) newIndicator.remove();
+                        if (priorityIndicator) priorityIndicator.remove();
+
+                        // In a real application, make AJAX call to mark as read
+                        const messageId = this.dataset.messageId;
+                        markAsRead(messageId);
+                    }
+
+                    // Navigate to message detail
+                    const link = this.querySelector('a[href*="message_detail"]');
+                    if (link) {
+                        window.location.href = link.href;
+                    }
+                }
+            });
+        });
+
+        function markAsRead(messageId) {
+            // AJAX call to mark message as read
+            fetch(`/messaging/message/${messageId}/mark-read/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json',
+                },
+            }).then(response => {
+                if (!response.ok) {
+                    console.error('Failed to mark message as read');
+                }
+            });
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function showNotification(message, type) {
+            // Create and show notification
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 12px 20px;
+                background: ${type === 'success' ? '#10b981' : '#ef4444'};
+                color: white;
+                border-radius: 8px;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                z-index: 1000;
+                animation: slideIn 0.3s ease-out;
+            `;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 'n':
+                        e.preventDefault();
+                        window.location.href = "{% url 'messaging:send_message' %}";
+                        break;
+                    case 'f':
+                        e.preventDefault();
+                        searchInput.focus();
+                        break;
+                }
+            }
+        });
+    });
+</script>
 {% endblock %}

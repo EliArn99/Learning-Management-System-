@@ -1,3 +1,28 @@
+{#{% extends 'base.html' %}#}
+{##}
+{#{% block content %}#}
+{#<div class="container mt-4">#}
+{#    <h1>Messages Home</h1>#}
+{#    <p>Welcome to your messages dashboard!</p>#}
+{##}
+{#    <div class="list-group">#}
+{#        <a href="{% url 'messaging:inbox' %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">#}
+{#            📥 Inbox#}
+{#            {% if unread_count > 0 %}#}
+{#                <span class="badge bg-danger rounded-pill">{{ unread_count }}</span>#}
+{#            {% endif %}#}
+{#        </a>#}
+{#        <a href="{% url 'messaging:sent' %}" class="list-group-item list-group-item-action">#}
+{#            ✉️ Sent Messages#}
+{#        </a>#}
+{#        <a href="{% url 'messaging:send_message' %}" class="list-group-item list-group-item-action">#}
+{#            ✍️ Send New Message#}
+{#        </a>#}
+{#    </div>#}
+{#</div>#}
+{#{% endblock %}#}
+
+
 {% extends 'base.html' %}
 
 {% block title %}Съобщения{% endblock %}

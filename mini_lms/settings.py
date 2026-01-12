@@ -21,7 +21,7 @@ AUTH_USER_MODEL = 'users.CustomUser'
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-gv1*pj4((*ggxhe)z872@+dsh5vr$0)9925nxa8e+p$twb$)r6'
+SECRET_KEY = '*****'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -89,9 +89,9 @@ WSGI_APPLICATION = 'mini_lms.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "mini_lms",
-        "USER": "Eli",
-        "PASSWORD": "Arnautskaj",
+        "NAME": "***",
+        "USER": "***",
+        "PASSWORD": "***",
         "HOST": "127.0.0.1",
         "PORT": "5432",
     }
@@ -161,3 +161,4 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 PAYPAL_CLIENT_ID = 'YOUR_PAYPAL_CLIENT_ID' #
 PAYPAL_SECRET = 'YOUR_PAYPAL_SECRET'
 PAYPAL_MODE = 'sandbox'
+

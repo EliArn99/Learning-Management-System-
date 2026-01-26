@@ -1,5 +1,3 @@
-{# TODO: Да направя възможност да отг директно на изпратен имейл #}
-{# TODO: This one works  #}
 {% extends 'base.html' %}
 {% load widget_tweaks %}
 {% block title %}Изпрати ново съобщение{% endblock %}
@@ -237,64 +235,862 @@
 </style>
 {% endblock %}
 
+{# TODO: THIS BLOCK WORKS  #}
+{#{% block content %}#}
+{#<div class="dashboard-container">#}
+{#    <div class="dashboard-header">#}
+{#        <div>#}
+{#            <h1 class="dashboard-title">Изпрати ново съобщение</h1>#}
+{#            <p class="dashboard-subtitle">Изберете получател и напишете вашето съобщение.</p>#}
+{#        </div>#}
+{#        <a href="{% url 'messaging:home' %}" class="view-btn">#}
+{#            <i class="fas fa-arrow-left me-2"></i>Обратно към съобщения#}
+{#        </a>#}
+{#    </div>#}
+{##}
+{#    {% if messages %}#}
+{#        <ul class="messages">#}
+{#            {% for message in messages %}#}
+{#                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>#}
+{#            {% endfor %}#}
+{#        </ul>#}
+{#    {% endif %}#}
+{##}
+{#    <div class="dashboard-card p-4">#}
+{#        <form method="post">#}
+{#            {% csrf_token %}#}
+{##}
+{#            <div class="mb-3">#}
+{#                <label for="id_receiver" class="form-label">Получател:</label>#}
+{#                <div class="custom-select-wrapper"> {# Wrapper for custom arrow#}
+{#                    <select name="receiver" id="id_receiver" class="form-control">#}
+{#                        {% for user in users %}#}
+{#                            <option value="{{ user.id }}">#}
+{#                                {{ user.username }}#}
+{#                                {% if user.is_teacher %}#}
+{#                                    (Преподавател)#}
+{#                                {% elif user.is_student %}#}
+{#                                    (Студент)#}
+{#                                {% endif %}#}
+{#                            </option>#}
+{#                        {% empty %}#}
+{#                            <option value="">Няма налични получатели.</option>#}
+{#                        {% endfor %}#}
+{#                    </select>#}
+{#                </div>#}
+{#            </div>#}
+{##}
+{#            <div class="mb-3">#}
+{#                <label for="id_subject" class="form-label">Относно:</label>#}
+{#                <input type="text" name="subject" id="id_subject" class="form-control" placeholder="Тема на съобщението" required>#}
+{#            </div>#}
+{##}
+{#            <div class="mb-3">#}
+{#                <label for="id_content" class="form-label">Съдържание:</label>#}
+{#                <textarea name="content" id="id_content" rows="8" class="form-control" placeholder="Напишете вашето съобщение тук..." required></textarea>#}
+{#            </div>#}
+{##}
+{#            <button type="submit" class="view-btn mt-3">#}
+{#                <i class="fas fa-paper-plane me-2"></i> Изпрати съобщение#}
+{#            </button>#}
+{#        </form>#}
+{#    </div>#}
+{#</div>#}
+{#{% endblock %}#}
+
 {% block content %}
 <div class="dashboard-container">
+    <!-- Header Section -->
     <div class="dashboard-header">
-        <div>
-            <h1 class="dashboard-title">Изпрати ново съобщение</h1>
-            <p class="dashboard-subtitle">Изберете получател и напишете вашето съобщение.</p>
+        <div class="header-content">
+            <h1 class="dashboard-title">
+                <i class="fas fa-paper-plane me-2"></i>Ново съобщение
+            </h1>
+            <p class="dashboard-subtitle">
+                Свържете се с колеги и преподаватели. Съобщенията са защитени и лични.
+            </p>
         </div>
-        <a href="{% url 'messaging:home' %}" class="view-btn">
-            <i class="fas fa-arrow-left me-2"></i>Обратно към съобщения
-        </a>
+        <div class="header-actions">
+            <a href="{% url 'messaging:home' %}" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left me-2"></i>Към всички съобщения
+            </a>
+        </div>
     </div>
 
+    <!-- Flash Messages -->
     {% if messages %}
-        <ul class="messages">
-            {% for message in messages %}
-                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-            {% endfor %}
-        </ul>
+    <div class="alert-messages">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            <div class="d-flex align-items-center">
+                {% if message.tags == 'success' %}
+                <i class="fas fa-check-circle me-3"></i>
+                {% elif message.tags == 'error' %}
+                <i class="fas fa-exclamation-circle me-3"></i>
+                {% elif message.tags == 'warning' %}
+                <i class="fas fa-exclamation-triangle me-3"></i>
+                {% else %}
+                <i class="fas fa-info-circle me-3"></i>
+                {% endif %}
+                <div>{{ message }}</div>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
     {% endif %}
 
-    <div class="dashboard-card p-4">
-        <form method="post">
-            {% csrf_token %}
+    <!-- Main Content -->
+    <div class="row">
+        <!-- Message Form -->
+        <div class="col-lg-8">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-edit me-2"></i>Създаване на съобщение
+                    </h3>
+                    <div class="form-text">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Всички полета са задължителни, освен ако не е указано друго
+                    </div>
+                </div>
 
-            <div class="mb-3">
-                <label for="id_receiver" class="form-label">Получател:</label>
-                <div class="custom-select-wrapper"> {# Wrapper for custom arrow
-                    <select name="receiver" id="id_receiver" class="form-control">
-                        {% for user in users %}
-                            <option value="{{ user.id }}">
-                                {{ user.username }}
-                                {% if user.is_teacher %}
-                                    (Преподавател)
-                                {% elif user.is_student %}
-                                    (Студент)
-                                {% endif %}
-                            </option>
-                        {% empty %}
-                            <option value="">Няма налични получатели.</option>
-                        {% endfor %}
-                    </select>
+                <div class="card-body">
+                    <form method="post" id="messageForm" class="message-form">
+                        {% csrf_token %}
+
+                        <!-- Recipient Field -->
+                        <div class="form-section">
+                            <div class="form-label-wrapper">
+                                <label for="id_receiver" class="form-label">
+                                    <i class="fas fa-user-check me-2"></i>Получател
+                                    <span class="required-indicator">*</span>
+                                </label>
+                                <div class="form-hint">Изберете потребител от списъка</div>
+                            </div>
+
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-light">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                                <select name="receiver" id="id_receiver" class="form-control select-receiver" required>
+                                    <option value="" disabled selected>Изберете получател...</option>
+                                    <optgroup label="Преподаватели">
+                                        {% for user in users %}
+                                            {% if user.is_teacher %}
+                                            <option value="{{ user.id }}"
+                                                    data-user-type="teacher"
+                                                    data-user-fullname="{{ user.get_full_name|default:user.username }}">
+                                                {{ user.get_full_name|default:user.username }}
+                                                <span class="text-muted">({{ user.username }})</span>
+                                            </option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </optgroup>
+                                    <optgroup label="Студенти">
+                                        {% for user in users %}
+                                            {% if user.is_student %}
+                                            <option value="{{ user.id }}"
+                                                    data-user-type="student"
+                                                    data-user-fullname="{{ user.get_full_name|default:user.username }}">
+                                                {{ user.get_full_name|default:user.username }}
+                                                <span class="text-muted">({{ user.username }})</span>
+                                            </option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </optgroup>
+                                    {% if not users %}
+                                    <option value="" disabled>Няма налични получатели.</option>
+                                    {% endif %}
+                                </select>
+                            </div>
+
+                            <!-- Selected User Preview -->
+                            <div id="selectedUserPreview" class="user-preview mt-3" style="display: none;">
+                                <div class="preview-card">
+                                    <div class="preview-header">
+                                        <i class="fas fa-user-circle fa-2x me-3"></i>
+                                        <div>
+                                            <h6 id="selectedUserName" class="mb-0"></h6>
+                                            <small id="selectedUserRole" class="text-muted"></small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Subject Field -->
+                        <div class="form-section">
+                            <div class="form-label-wrapper">
+                                <label for="id_subject" class="form-label">
+                                    <i class="fas fa-heading me-2"></i>Тема
+                                    <span class="required-indicator">*</span>
+                                </label>
+                                <div class="form-hint">Кратко и ясно описание на съобщението</div>
+                            </div>
+
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-light">
+                                    <i class="fas fa-tag"></i>
+                                </span>
+                                <input type="text"
+                                       name="subject"
+                                       id="id_subject"
+                                       class="form-control"
+                                       placeholder="Например: Въпрос относно домашното, Среща, Важна информация..."
+                                       maxlength="150"
+                                       required>
+                            </div>
+                            <div class="form-footer">
+                                <div class="character-counter">
+                                    <span id="subjectCounter">0</span>/150 символа
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Message Content -->
+                        <div class="form-section">
+                            <div class="form-label-wrapper">
+                                <label for="id_content" class="form-label">
+                                    <i class="fas fa-comment-dots me-2"></i>Съдържание
+                                    <span class="required-indicator">*</span>
+                                </label>
+                                <div class="form-hint">Напишете вашето съобщение тук</div>
+                            </div>
+
+                            <div class="message-editor">
+                                <div class="editor-toolbar">
+                                    <button type="button" class="btn btn-sm btn-light" onclick="formatText('bold')">
+                                        <i class="fas fa-bold"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-light" onclick="formatText('italic')">
+                                        <i class="fas fa-italic"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-light" onclick="formatText('underline')">
+                                        <i class="fas fa-underline"></i>
+                                    </button>
+                                    <div class="toolbar-divider"></div>
+                                    <button type="button" class="btn btn-sm btn-light" onclick="insertBullet()">
+                                        <i class="fas fa-list-ul"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-light" onclick="insertNumber()">
+                                        <i class="fas fa-list-ol"></i>
+                                    </button>
+                                </div>
+
+                                <textarea name="content"
+                                          id="id_content"
+                                          rows="8"
+                                          class="form-control message-textarea"
+                                          placeholder="Започнете да пишете вашето съобщение тук... Бъдете ясни и конкретни."
+                                          minlength="10"
+                                          maxlength="5000"
+                                          required></textarea>
+                            </div>
+
+                            <div class="form-footer">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="character-counter">
+                                        <span id="contentCounter">0</span>/5000 символа
+                                        <span id="contentWarning" class="text-warning ms-2" style="display: none;">
+                                            <i class="fas fa-exclamation-triangle"></i> Съобщението е твърде кратко
+                                        </span>
+                                    </div>
+                                    <div class="form-tips">
+                                        <i class="fas fa-lightbulb me-1"></i>
+                                        <small>Минимум 10 символа</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="form-actions mt-4 pt-4 border-top">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <button type="button" class="btn btn-outline-secondary" id="saveDraftBtn">
+                                    <i class="fas fa-save me-2"></i>Запази чернова
+                                </button>
+
+                                <div class="action-buttons">
+                                    <button type="reset" class="btn btn-light me-2">
+                                        <i class="fas fa-eraser me-2"></i>Изчисти
+                                    </button>
+                                    <button type="submit" class="btn btn-primary btn-send" id="submitBtn">
+                                        <i class="fas fa-paper-plane me-2"></i>Изпрати съобщение
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
+        </div>
 
-            <div class="mb-3">
-                <label for="id_subject" class="form-label">Относно:</label>
-                <input type="text" name="subject" id="id_subject" class="form-control" placeholder="Тема на съобщението" required>
+        <!-- Sidebar Help & Tips -->
+        <div class="col-lg-4">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-question-circle me-2"></i>Полезни съвети
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="tips-section">
+                        <div class="tip-item">
+                            <div class="tip-icon">
+                                <i class="fas fa-check-circle text-success"></i>
+                            </div>
+                            <div class="tip-content">
+                                <h6>Бъдете ясни</h6>
+                                <p class="small text-muted">Използвайте конкретна тема и структуриран текст.</p>
+                            </div>
+                        </div>
+
+                        <div class="tip-item">
+                            <div class="tip-icon">
+                                <i class="fas fa-user-check text-info"></i>
+                            </div>
+                            <div class="tip-content">
+                                <h6>Проверете получателя</h6>
+                                <p class="small text-muted">Уверете се, че сте избрали правилния потребител.</p>
+                            </div>
+                        </div>
+
+                        <div class="tip-item">
+                            <div class="tip-icon">
+                                <i class="fas fa-clock text-warning"></i>
+                            </div>
+                            <div class="tip-content">
+                                <h6>Работно време</h6>
+                                <p class="small text-muted">Очаквайте отговор в рамките на 24-48 работни часа.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-warning mt-4">
+                        <div class="d-flex align-items-start">
+                            <i class="fas fa-shield-alt me-3 mt-1"></i>
+                            <div>
+                                <h6 class="alert-heading mb-2">Сигурност и поверителност</h6>
+                                <p class="small mb-0">
+                                    Всички съобщения са шифровани и защитени.
+                                    Не споделяйте лична информация.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Templates (Optional) -->
+                    <div class="quick-templates mt-4">
+                        <h6 class="mb-3">
+                            <i class="fas fa-magic me-2"></i>Бързи шаблони
+                        </h6>
+                        <div class="template-buttons">
+                            <button type="button" class="btn btn-sm btn-outline-primary mb-2" onclick="loadTemplate('question')">
+                                <i class="fas fa-question me-1"></i>Въпрос
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-primary mb-2" onclick="loadTemplate('meeting')">
+                                <i class="fas fa-calendar me-1"></i>Заявка за среща
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-primary mb-2" onclick="loadTemplate('urgent')">
+                                <i class="fas fa-exclamation me-1"></i>Спешно съобщение
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
-
-            <div class="mb-3">
-                <label for="id_content" class="form-label">Съдържание:</label>
-                <textarea name="content" id="id_content" rows="8" class="form-control" placeholder="Напишете вашето съобщение тук..." required></textarea>
-            </div>
-
-            <button type="submit" class="view-btn mt-3">
-                <i class="fas fa-paper-plane me-2"></i> Изпрати съобщение
-            </button>
-        </form>
+        </div>
     </div>
 </div>
+
+<!-- Styles -->
+<style>
+.dashboard-container {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.header-content {
+    flex: 1;
+    min-width: 300px;
+}
+
+.dashboard-title {
+    color: #2c3e50;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.dashboard-subtitle {
+    color: #7f8c8d;
+    font-size: 1.1rem;
+}
+
+.dashboard-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    margin-bottom: 2rem;
+    overflow: hidden;
+    transition: transform 0.2s ease;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-2px);
+}
+
+.card-header {
+    padding: 1.5rem 2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.card-title {
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.25rem;
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+.form-section {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #eee;
+}
+
+.form-section:last-child {
+    border-bottom: none;
+}
+
+.form-label-wrapper {
+    margin-bottom: 0.75rem;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+}
+
+.required-indicator {
+    color: #e74c3c;
+    margin-left: 4px;
+}
+
+.form-hint {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+    margin-top: 0.25rem;
+}
+
+.input-group-lg .input-group-text {
+    padding: 0.75rem 1rem;
+}
+
+.select-receiver {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 16px 12px;
+    padding-right: 2.5rem;
+}
+
+.user-preview {
+    animation: slideIn 0.3s ease;
+}
+
+.preview-card {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.preview-header {
+    display: flex;
+    align-items: center;
+}
+
+.preview-header i {
+    color: #667eea;
+}
+
+.message-editor {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.editor-toolbar {
+    background: #f8f9fa;
+    padding: 0.75rem;
+    border-bottom: 1px solid #dee2e6;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.editor-toolbar .btn {
+    padding: 0.375rem 0.75rem;
+}
+
+.toolbar-divider {
+    width: 1px;
+    background: #dee2e6;
+    margin: 0 0.5rem;
+}
+
+.message-textarea {
+    border: none;
+    border-radius: 0;
+    resize: vertical;
+    min-height: 200px;
+    padding: 1rem;
+    font-family: inherit;
+}
+
+.message-textarea:focus {
+    box-shadow: none;
+    outline: none;
+}
+
+.form-footer {
+    margin-top: 0.75rem;
+}
+
+.character-counter {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+.form-tips {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+.form-actions {
+    background: #f8f9fa;
+    margin: 0 -2rem -2rem;
+    padding: 1.5rem 2rem;
+}
+
+.tips-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.tip-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.tip-icon {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+    margin-top: 0.125rem;
+}
+
+.tip-content h6 {
+    color: #2c3e50;
+    margin-bottom: 0.25rem;
+    font-size: 0.95rem;
+}
+
+.template-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.btn-send {
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    min-width: 180px;
+}
+
+.btn-send:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.alert-messages {
+    margin-bottom: 1.5rem;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .dashboard-container {
+        padding: 1rem;
+    }
+
+    .dashboard-header {
+        flex-direction: column;
+    }
+
+    .card-header,
+    .card-body {
+        padding: 1.25rem;
+    }
+
+    .form-actions {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .action-buttons {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .btn-send {
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .editor-toolbar {
+        flex-wrap: wrap;
+    }
+}
+</style>
+
+<!-- JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const receiverSelect = document.getElementById('id_receiver');
+    const subjectInput = document.getElementById('id_subject');
+    const contentTextarea = document.getElementById('id_content');
+    const submitBtn = document.getElementById('submitBtn');
+    const subjectCounter = document.getElementById('subjectCounter');
+    const contentCounter = document.getElementById('contentCounter');
+    const contentWarning = document.getElementById('contentWarning');
+    const preview = document.getElementById('selectedUserPreview');
+    const userName = document.getElementById('selectedUserName');
+    const userRole = document.getElementById('selectedUserRole');
+
+    // Character counters
+    function updateCounters() {
+        if (subjectInput) {
+            subjectCounter.textContent = subjectInput.value.length;
+        }
+        if (contentTextarea) {
+            const length = contentTextarea.value.length;
+            contentCounter.textContent = length;
+
+            // Show warning if content is too short
+            if (length > 0 && length < 10) {
+                contentWarning.style.display = 'inline';
+                submitBtn.disabled = true;
+                submitBtn.title = 'Съобщението трябва да е поне 10 символа';
+            } else {
+                contentWarning.style.display = 'none';
+                submitBtn.disabled = false;
+                submitBtn.title = '';
+            }
+        }
+    }
+
+    // User selection preview
+    receiverSelect.addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        const userFullName = selectedOption.getAttribute('data-user-fullname');
+        const userType = selectedOption.getAttribute('data-user-type');
+
+        if (userFullName) {
+            userName.textContent = userFullName;
+            userRole.textContent = userType === 'teacher' ? 'Преподавател' : 'Студент';
+            preview.style.display = 'block';
+        } else {
+            preview.style.display = 'none';
+        }
+    });
+
+    // Initialize counters
+    updateCounters();
+    subjectInput?.addEventListener('input', updateCounters);
+    contentTextarea?.addEventListener('input', updateCounters);
+
+    // Save draft functionality
+    document.getElementById('saveDraftBtn')?.addEventListener('click', function() {
+        const draft = {
+            receiver: receiverSelect.value,
+            subject: subjectInput.value,
+            content: contentTextarea.value,
+            timestamp: new Date().toISOString()
+        };
+
+        localStorage.setItem('messageDraft', JSON.stringify(draft));
+
+        // Show success message
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-success alert-dismissible fade show position-fixed top-0 end-0 m-3';
+        alertDiv.style.zIndex = '1050';
+        alertDiv.innerHTML = `
+            <i class="fas fa-check-circle me-2"></i>
+            Черновата е запазена успешно!
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        document.body.appendChild(alertDiv);
+
+        setTimeout(() => {
+            alertDiv.remove();
+        }, 3000);
+    });
+
+    // Load draft if exists
+    const savedDraft = localStorage.getItem('messageDraft');
+    if (savedDraft && confirm('Имате запазена чернова. Желаете ли да я заредите?')) {
+        try {
+            const draft = JSON.parse(savedDraft);
+            receiverSelect.value = draft.receiver || '';
+            subjectInput.value = draft.subject || '';
+            contentTextarea.value = draft.content || '';
+
+            // Trigger change events
+            receiverSelect.dispatchEvent(new Event('change'));
+            updateCounters();
+
+            localStorage.removeItem('messageDraft');
+        } catch (e) {
+            console.error('Error loading draft:', e);
+        }
+    }
+
+    // Form validation
+    document.getElementById('messageForm')?.addEventListener('submit', function(e) {
+        if (!receiverSelect.value) {
+            e.preventDefault();
+            receiverSelect.classList.add('is-invalid');
+            alert('Моля, изберете получател!');
+            return false;
+        }
+
+        if (contentTextarea.value.length < 10) {
+            e.preventDefault();
+            contentTextarea.classList.add('is-invalid');
+            alert('Съобщението трябва да съдържа поне 10 символа!');
+            return false;
+        }
+
+        // Add loading state
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Изпращане...';
+        submitBtn.disabled = true;
+
+        // Clear draft after successful submission
+        localStorage.removeItem('messageDraft');
+    });
+});
+
+// Text formatting functions
+function formatText(command) {
+    const textarea = document.getElementById('id_content');
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = textarea.value.substring(start, end);
+
+    let formattedText = '';
+    switch(command) {
+        case 'bold':
+            formattedText = `**${selectedText}**`;
+            break;
+        case 'italic':
+            formattedText = `*${selectedText}*`;
+            break;
+        case 'underline':
+            formattedText = `__${selectedText}__`;
+            break;
+        default:
+            return;
+    }
+
+    textarea.value = textarea.value.substring(0, start) +
+                     formattedText +
+                     textarea.value.substring(end);
+
+    // Restore cursor position
+    textarea.selectionStart = start + (command === 'bold' ? 2 : 1);
+    textarea.selectionEnd = start + formattedText.length - (command === 'bold' ? 2 : 1);
+    textarea.focus();
+
+    // Trigger input event for counter update
+    textarea.dispatchEvent(new Event('input'));
+}
+
+function insertBullet() {
+    insertAtCursor('• ');
+}
+
+function insertNumber() {
+    const textarea = document.getElementById('id_content');
+    const lines = textarea.value.substring(0, textarea.selectionStart).split('\n');
+    const lineNumber = lines.length;
+    insertAtCursor(`${lineNumber}. `);
+}
+
+function insertAtCursor(text) {
+    const textarea = document.getElementById('id_content');
+    const start = textarea.selectionStart;
+    textarea.value = textarea.value.substring(0, start) +
+                     text +
+                     textarea.value.substring(start);
+    textarea.selectionStart = textarea.selectionEnd = start + text.length;
+    textarea.focus();
+    textarea.dispatchEvent(new Event('input'));
+}
+
+// Template loading
+function loadTemplate(type) {
+    const templates = {
+        question: "Уважаеми,\n\nИмам въпрос относно...\n\nС уважение,\n[Вашето име]",
+        meeting: "Уважаеми,\n\nБих искал/а да се срещнем относно...\n\nПредлагам следните възможни дати:\n1. [Дата 1]\n2. [Дата 2]\n\nС уважение,\n[Вашето име]",
+        urgent: "СПЕШНО СЪОБЩЕНИЕ\n\nУважаеми,\n\nТова съобщение се отнася до спешен въпрос относно...\n\nМоля, отговорете възможно най-скоро.\n\nС уважение,\n[Вашето име]"
+    };
+
+    if (templates[type]) {
+        document.getElementById('id_content').value = templates[type];
+        document.getElementById('id_content').dispatchEvent(new Event('input'));
+
+        // Add appropriate subject
+        if (!document.getElementById('id_subject').value) {
+            const subjects = {
+                question: "Въпрос за уточнение",
+                meeting: "Заявка за среща",
+                urgent: "Спешно съобщение"
+            };
+            document.getElementById('id_subject').value = subjects[type];
+            document.getElementById('id_subject').dispatchEvent(new Event('input'));
+        }
+    }
+}
+</script>
 {% endblock %}
+

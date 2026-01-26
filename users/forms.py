@@ -1,8 +1,18 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
+from django.utils.text import slugify
 
-from assignments.models import Submission
 from .models import CustomUser, StudentProfile, TeacherProfile
+
+
+def generate_unique_username(full_name: str) -> str:
+    base = slugify(full_name)[:30] or "user"
+    candidate = base
+    i = 1
+    while CustomUser.objects.filter(username=candidate).exists():
+        i += 1
+        candidate = f"{base}-{i}"
+    return candidate
 
 
 class StudentRegisterForm(UserCreationForm):
@@ -17,13 +27,17 @@ class StudentRegisterForm(UserCreationForm):
     def save(self, commit=True):
         user = super().save(commit=False)
         user.is_student = True
-        user.username = self.cleaned_data['full_name']
+        user.is_active = True
+
+        user.username = generate_unique_username(self.cleaned_data['full_name'])
+
         if commit:
             user.save()
             StudentProfile.objects.create(
                 user=user,
                 age=self.cleaned_data['age'],
-                achievements=self.cleaned_data.get('achievements', '')
+                achievements=self.cleaned_data.get('achievements', ''),
+                is_approved=False,
             )
         return user
 
@@ -32,6 +46,7 @@ class TeacherRegisterForm(UserCreationForm):
     full_name = forms.CharField(label="Име и фамилия", max_length=100)
     age = forms.IntegerField(min_value=25)
     education = forms.CharField()
+    experience_years = forms.IntegerField(min_value=0, required=False)
 
     class Meta:
         model = CustomUser
@@ -40,42 +55,16 @@ class TeacherRegisterForm(UserCreationForm):
     def save(self, commit=True):
         user = super().save(commit=False)
         user.is_teacher = True
-        user.username = self.cleaned_data['full_name']
+        user.is_active = True
+        user.username = generate_unique_username(self.cleaned_data['full_name'])
+
         if commit:
             user.save()
             TeacherProfile.objects.create(
                 user=user,
-                age=self.cleaned_data['age'],
-                education=self.cleaned_data['education']
+                age=self.cleaned_data.get('age'),
+                education=self.cleaned_data.get('education', ''),
+                experience_years=self.cleaned_data.get('experience_years'),
+                is_approved=False,
             )
         return user
-
-
-class StudentProfileForm(forms.ModelForm):
-    class Meta:
-        model = StudentProfile
-        fields = ['age', 'achievements', 'profile_picture'] # Добави 'profile_picture'
-        widgets = {
-            'age': forms.NumberInput(attrs={'class': 'form-control'}),
-            'achievements': forms.Textarea(attrs={'class': 'form-control'}),
-            'profile_picture': forms.ClearableFileInput(attrs={'class': 'form-control'}), 
-        } 
-
-class TeacherProfileForm(forms.ModelForm):
-    class Meta:
-        model = TeacherProfile
-        fields = ['age', 'education', 'experience_years', 'profile_picture']
-
-
-class SubmissionGradeForm(forms.ModelForm):
-    class Meta:
-        model = Submission
-        fields = ['grade', 'feedback', 'graded_file']
-
-        widgets = {
-            'grade': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'min': 2, 'max': 6}),
-            'feedback': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
-            'graded_file': forms.ClearableFileInput(attrs={'class': 'form-control'}),
-        }
-
-

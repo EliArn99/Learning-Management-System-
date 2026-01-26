@@ -94,21 +94,11 @@ def register_student(request):
     if request.method == 'POST':
         form = StudentRegisterForm(request.POST)
         if form.is_valid():
-            user = form.save(commit=False)
-            user.is_student = True
-            user.is_active = True
-            user.save()
-
-            StudentProfile.objects.create(
-                user=user,
-                age=form.cleaned_data['age'],
-                is_approved=False # <--- THIS IS KEY! New students are NOT approved.
-            )
-            login(request, user) # Log the user in immediately
+            user = form.save()
+            login(request, user)
             messages.success(request, 'Успешна регистрация! Вашият акаунт очаква одобрение.')
-            return redirect('users:approval_pending') # <--- Redirect to the approval pending page
-        else:
-            messages.error(request, 'Възникна грешка при регистрацията. Моля, проверете данните си.')
+            return redirect('users:approval_pending')
+        messages.error(request, 'Възникна грешка при регистрацията. Моля, проверете данните си.')
     else:
         form = StudentRegisterForm()
     return render(request, 'users/register_student.html', {'form': form})
@@ -118,23 +108,15 @@ def register_teacher(request):
     if request.method == 'POST':
         form = TeacherRegisterForm(request.POST)
         if form.is_valid():
-            user = form.save(commit=False)
-            user.is_teacher = True
-            user.is_active = True # Allows user to log in and see the pending page
-            user.save()
-
-            TeacherProfile.objects.create(
-                user=user,
-                is_approved=False # <--- THIS IS KEY! New teachers are NOT approved.
-            )
+            user = form.save()
             login(request, user)
             messages.success(request, 'Успешна регистрация! Вашият акаунт очаква одобрение от администратор.')
             return redirect('users:approval_pending')
-        else:
-            messages.error(request, 'Възникна грешка при регистрацията. Моля, проверете данните си.')
+        messages.error(request, 'Възникна грешка при регистрацията. Моля, проверете данните си.')
     else:
         form = TeacherRegisterForm()
     return render(request, 'users/register_teacher.html', {'form': form})
+
 
 
 def custom_login_view(request):

@@ -1,7 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 from courses.models import Course
-from users.models import StudentProfile, TeacherProfile
+from users.models import StudentProfile
 from django.utils import timezone
 
 
@@ -13,7 +13,6 @@ class Assignment(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     due_date = models.DateTimeField()
 
-
     def clean(self):
         if self.due_date < timezone.now():
             raise ValidationError("Due date cannot be in the past.")
@@ -23,29 +22,33 @@ class Assignment(models.Model):
 
     @property
     def status(self):
-        now = timezone.now()
-        if now < self.due_date:
-            return "Open"
-        return "Closed"
+        return "Open" if timezone.now() < self.due_date else "Closed"
 
 
 class Submission(models.Model):
     assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE)
     student = models.ForeignKey(StudentProfile, on_delete=models.CASCADE)
-    file = models.FileField(upload_to='submissions/')
+
+    file = models.FileField(upload_to="submissions/", null=True, blank=True)
+
     submitted_at = models.DateTimeField(auto_now_add=True)
     grade = models.FloatField(null=True, blank=True)
     feedback = models.TextField(null=True, blank=True)
     graded_at = models.DateTimeField(null=True, blank=True)
-    graded_file = models.FileField(upload_to='graded_files/', null=True, blank=True)
+    graded_file = models.FileField(upload_to="graded_files/", null=True, blank=True)
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['assignment', 'student'], name='unique_submission')
+            models.UniqueConstraint(fields=["assignment", "student"], name="unique_submission")
+        ]
+        indexes = [
+            models.Index(fields=["assignment", "submitted_at"]),
+            models.Index(fields=["student", "submitted_at"]),
+            models.Index(fields=["assignment", "grade"]),
         ]
 
     def __str__(self):
-        return f'{self.assignment.title} - {self.student.user.username}'
+        return f"{self.assignment.title} - {self.student.user.username}"
 
     def save(self, *args, **kwargs):
         if self.grade is not None and self.graded_at is None:

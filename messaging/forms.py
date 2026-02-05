@@ -10,6 +10,7 @@ User = get_user_model()
 
 class MessageForm(forms.ModelForm):
 
+
     class Meta:
         model = Message
         fields = ["receiver", "subject", "content"]

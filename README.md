@@ -120,3 +120,11 @@ High-level apps:
 ```bash
 git clone https://github.com/EliArn99/Learning-Management-System-.git
 cd Learning-Management-System-
+
+
+Create .env
+Create a .env file in the project root (see example below).
+
+Build & run
+docker-compose up --build -d
+

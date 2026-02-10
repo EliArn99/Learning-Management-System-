@@ -1,228 +1,13 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="bg">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}UniLink System{% endblock %}</title>
+
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-</head>
-<body>
-<header id="main-header">
-    <div class="container">
-        <nav>
-            <a href="{% url 'home' %}" class="logo">
-                <i class="fas fa-graduation-cap logo-icon"></i>
-                <span>UniLink</span>
-            </a>
-
-            <div class="nav-links">
-                <a href="{% url 'home' %}">Начало</a>
-                <a href="{% url 'courses:course_list' %}">Курсове</a>
-                <a href="{% url 'dashboards:about' %}">За нас</a>
-                <a href="{% url 'dashboards:contacts' %}">Контакти</a>
-            </div>
-
-            {% if user.is_authenticated %}
-                <div class="nav-links">
-                    <div class="dropdown">
-                        <a href="#" class="dropdown-toggle">
-                            <i class="fas fa-user-circle"></i>
-                            <span>{{ user.get_full_name|default:user.username }}</span>
-                            <i class="fas fa-chevron-down" style="font-size: 12px;"></i>
-                        </a>
-                        <div class="dropdown-menu">
-                            <a href="{% url 'users:profile' %}">
-                                <i class="fas fa-user"></i>
-                                Профил
-                            </a>
-                            {% if user.is_teacher %}
-                                <a href="{% url 'dashboards:teacher_dashboard' %}">
-                                    <i class="fas fa-chalkboard-teacher"></i>
-                                    Моят дашборд
-                                </a>
-                            {% elif user.is_student %}
-                                <a href="{% url 'dashboards:student_dashboard' %}">
-                                    <i class="fas fa-book-open"></i>
-                                    Моят дашборд
-                                </a>
-                            {% endif %}
-                            <a href="{% url 'users:logout' %}">
-                                <i class="fas fa-sign-out-alt"></i>
-                                Изход
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            {% else %}
-                <div class="auth-buttons">
-                    <a href="{% url 'users:login' %}" class="btn btn-outline">
-                        <i class="fas fa-sign-in-alt"></i>
-                        Вход
-                    </a>
-                    <a href="{% url 'users:register_student' %}" class="btn btn-primary">
-                        <i class="fas fa-user-plus"></i>
-                        Регистрация
-                    </a>
-                </div>
-            {% endif %}
-
-            <div class="hamburger" id="hamburger">
-                <i class="fas fa-bars"></i>
-            </div>
-        </nav>
-    </div>
-</header>
-
-<!-- Mobile Menu -->
-<div class="mobile-menu" id="mobileMenu">
-    <div class="nav-links">
-        <a href="{% url 'home' %}">Начало</a>
-        <a href="{% url 'courses:course_list' %}">Курсове</a>
-        <a href="{% url 'dashboards:about' %}">За нас</a>
-        <a href="{% url 'dashboards:contacts' %}">Контакти</a>
-
-        {% if user.is_authenticated %}
-            <div class="dropdown" id="mobileDropdown">
-                <a href="#" class="dropdown-toggle" onclick="toggleMobileDropdown()">
-                    <i class="fas fa-user-circle"></i>
-                    {{ user.get_full_name|default:user.username }}
-                    <i class="fas fa-chevron-down" style="font-size: 12px;"></i>
-                </a>
-                <div class="dropdown-menu">
-                    <a href="{% url 'users:profile' %}">
-                        <i class="fas fa-user"></i>
-                        Профил
-                    </a>
-                    {% if user.is_teacher %}
-                        <a href="{% url 'dashboards:teacher_dashboard' %}">
-                            <i class="fas fa-chalkboard-teacher"></i>
-                            Моят дашборд
-                        </a>
-                    {% elif user.is_student %}
-                        <a href="{% url 'dashboards:student_dashboard' %}">
-                            <i class="fas fa-book-open"></i>
-                            Моят дашборд
-                        </a>
-                    {% endif %}
-                    <a href="{% url 'users:logout' %}">
-                        <i class="fas fa-sign-out-alt"></i>
-                        Изход
-                    </a>
-                </div>
-            </div>
-        {% else %}
-            <div class="auth-buttons">
-                <a href="{% url 'users:login' %}" class="btn btn-outline">
-                    <i class="fas fa-sign-in-alt"></i>
-                    Вход
-                </a>
-                <a href="{% url 'users:register_student' %}" class="btn btn-primary">
-                    <i class="fas fa-user-plus"></i>
-                    Регистрация
-                </a>
-            </div>
-        {% endif %}
-    </div>
-</div>
-
-<main class="fade-in">
-    {% block content %}
-    {% endblock %}
-</main>
-
-<footer class="slide-up">
-    <div class="container">
-        <div class="footer-content">
-            <div class="footer-section">
-                <h3>За UniLink</h3>
-                <p>Нашата иновативна платформа предлага модерни решения за онлайн обучение и управление на курсове.</p>
-                <div class="social-icons">
-                    <a href="#"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-youtube"></i></a>
-                </div>
-            </div>
-
-            <div class="footer-section">
-                <h3>Курсове</h3>
-                <a href="#">Програмиране</a>
-                <a href="#">Дизайн</a>
-                <a href="#">Бизнес</a>
-                <a href="#">Маркетинг</a>
-                <a href="#">Личностно развитие</a>
-            </div>
-
-            <div class="footer-section">
-                <h3>Бързи връзки</h3>
-                <a href="{% url 'home' %}">Начало</a>
-                <a href="{% url 'courses:course_list' %}">Курсове</a>
-                <a href="#">Кандидатствай</a>
-                <a href="#">Цени</a>
-                <a href="#">ЧЗВ</a>
-            </div>
-
-            <div class="footer-section footer-contact">
-                <h3>Контакти</h3>
-                <p><i class="fas fa-envelope"></i> info@UniLink.com</p>
-                <p><i class="fas fa-phone"></i> +359 888 123 456</p>
-                <p><i class="fas fa-map-marker-alt"></i> София, България</p>
-                <p><i class="fas fa-clock"></i> Пон-Пет: 9:00 - 18:00</p>
-            </div>
-        </div>
-
-        <div class="copyright">
-            <p>&copy; 2023 <strong>UniLink System</strong>. Всички права запазени.</p>
-        </div>
-    </div>
-</footer>
-
-<script>
-    // Mobile menu toggle
-    const hamburger = document.getElementById('hamburger');
-    const mobileMenu = document.getElementById('mobileMenu');
-
-    hamburger.addEventListener('click', function() {
-        mobileMenu.classList.toggle('active');
-        hamburger.innerHTML = mobileMenu.classList.contains('active')
-            ? '<i class="fas fa-times"></i>'
-            : '<i class="fas fa-bars"></i>';
-    });
-
-    // Mobile dropdown toggle
-    function toggleMobileDropdown() {
-        const dropdown = document.getElementById('mobileDropdown');
-        dropdown.classList.toggle('active');
-    }
-
-    // Header scroll effect
-    const header = document.getElementById('main-header');
-    window.addEventListener('scroll', function() {
-        if (window.scrollY > 50) {
-            header.classList.add('scrolled');
-        } else {
-            header.classList.remove('scrolled');
-        }
-    });
-
-    // Close mobile menu when clicking outside
-    document.addEventListener('click', function(event) {
-        if (!hamburger.contains(event.target) {
-            mobileMenu.classList.remove('active');
-            hamburger.innerHTML = '<i class="fas fa-bars"></i>';
-        }
-    }));
-</script>
-
-{% block extra_js %}{% endblock %}
-</body>
-</html>
-
-
-
 
     <style>
         :root {
@@ -243,11 +28,7 @@
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Poppins', sans-serif;
@@ -274,9 +55,7 @@
             transition: var(--transition);
         }
 
-        header.scrolled {
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
+        header.scrolled { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
 
         nav {
             display: flex;
@@ -297,14 +76,8 @@
             transition: var(--transition);
         }
 
-        .logo:hover {
-            color: var(--secondary-color);
-            transform: translateY(-2px);
-        }
-
-        .logo-icon {
-            font-size: 32px;
-        }
+        .logo:hover { color: var(--secondary-color); transform: translateY(-2px); }
+        .logo-icon { font-size: 32px; }
 
         .nav-links {
             display: flex;
@@ -332,13 +105,8 @@
             transition: var(--transition);
         }
 
-        .nav-links a:hover:not(.dropdown-toggle):after {
-            width: 100%;
-        }
-
-        .nav-links a:hover {
-            color: var(--primary-color);
-        }
+        .nav-links a:hover:not(.dropdown-toggle):after { width: 100%; }
+        .nav-links a:hover { color: var(--primary-color); }
 
         .auth-buttons {
             display: flex;
@@ -384,18 +152,6 @@
             transform: translateY(-2px);
         }
 
-        .btn-accent {
-            background-color: var(--accent-color);
-            color: white;
-            box-shadow: 0 4px 6px rgba(236, 72, 153, 0.2);
-        }
-
-        .btn-accent:hover {
-            background-color: #db2777;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px rgba(236, 72, 153, 0.3);
-        }
-
         .hamburger {
             display: none;
             cursor: pointer;
@@ -404,17 +160,14 @@
             transition: var(--transition);
             padding: 8px;
             border-radius: 6px;
+            background: transparent;
+            border: 0;
         }
 
-        .hamburger:hover {
-            background-color: #f1f5f9;
-            color: var(--primary-color);
-        }
+        .hamburger:hover { background-color: #f1f5f9; color: var(--primary-color); }
 
         /* Dropdown Styles */
-        .dropdown {
-            position: relative;
-        }
+        .dropdown { position: relative; }
 
         .dropdown-toggle {
             cursor: pointer;
@@ -426,9 +179,7 @@
             gap: 4px;
         }
 
-        .dropdown-toggle:hover {
-            color: var(--primary-color);
-        }
+        .dropdown-toggle:hover { color: var(--primary-color); }
 
         .dropdown-menu {
             display: none;
@@ -449,9 +200,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .dropdown:hover .dropdown-menu {
-            display: block;
-        }
+        .dropdown:hover .dropdown-menu { display: block; }
 
         .dropdown-menu a {
             display: flex;
@@ -470,10 +219,7 @@
             padding-left: 20px;
         }
 
-        .dropdown-menu i {
-            width: 20px;
-            text-align: center;
-        }
+        .dropdown-menu i { width: 20px; text-align: center; }
 
         /* Main Content */
         main {
@@ -525,10 +271,7 @@
             transition: var(--transition);
         }
 
-        .footer-section a:hover {
-            color: white;
-            transform: translateX(5px);
-        }
+        .footer-section a:hover { color: white; transform: translateX(5px); }
 
         .footer-contact p {
             display: flex;
@@ -555,10 +298,7 @@
             transition: var(--transition);
         }
 
-        .social-icons a:hover {
-            background-color: var(--primary-color);
-            transform: translateY(-3px);
-        }
+        .social-icons a:hover { background-color: var(--primary-color); transform: translateY(-3px); }
 
         .copyright {
             text-align: center;
@@ -584,9 +324,7 @@
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
 
-        .mobile-menu.active {
-            transform: translateX(0);
-        }
+        .mobile-menu.active { transform: translateX(0); }
 
         .mobile-menu .nav-links {
             flex-direction: column;
@@ -622,33 +360,19 @@
             border-radius: 8px;
         }
 
-        .mobile-menu .dropdown.active .dropdown-menu {
-            display: block;
-        }
+        .mobile-menu .dropdown.active .dropdown-menu { display: block; }
 
         /* Responsive Styles */
         @media (max-width: 1024px) {
-            .nav-links {
-                gap: 20px;
-            }
+            .nav-links { gap: 20px; }
         }
 
         @media (max-width: 768px) {
-            .nav-links, .auth-buttons {
-                display: none;
-            }
+            .nav-links, .auth-buttons { display: none; }
+            .hamburger { display: block; }
 
-            .hamburger {
-                display: block;
-            }
-
-            .logo {
-                font-size: 24px;
-            }
-
-            .logo-icon {
-                font-size: 28px;
-            }
+            .logo { font-size: 24px; }
+            .logo-icon { font-size: 28px; }
 
             main {
                 margin-top: 70px;
@@ -657,30 +381,234 @@
         }
 
         @media (max-width: 480px) {
-            .container {
-                padding: 0 16px;
-            }
-
-            .footer-content {
-                grid-template-columns: 1fr;
-            }
+            .container { padding: 0 16px; }
+            .footer-content { grid-template-columns: 1fr; }
         }
 
         /* Animation Classes */
-        .fade-in {
-            animation: fadeIn 0.5s ease-out;
-        }
-
-        .slide-up {
-            animation: slideUp 0.5s ease-out;
-        }
+        .fade-in { animation: fadeIn 0.5s ease-out; }
+        .slide-up { animation: slideUp 0.5s ease-out; }
 
         @keyframes slideUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
     </style>
+
     {% block extra_css %}{% endblock %}
+</head>
 
+<body>
+<header id="main-header">
+    <div class="container">
+        <nav>
+            <a href="{% url 'home' %}" class="logo">
+                <i class="fas fa-graduation-cap logo-icon"></i>
+                <span>UniLink</span>
+            </a>
 
+            <div class="nav-links">
+                <a href="{% url 'home' %}">Начало</a>
+                <a href="{% url 'courses:course_list' %}">Курсове</a>
+                <a href="{% url 'dashboards:about' %}">За нас</a>
+                <a href="{% url 'dashboards:contacts' %}">Контакти</a>
+            </div>
 
+            {% if user.is_authenticated %}
+                <div class="nav-links">
+                    <div class="dropdown">
+                        <a href="#" class="dropdown-toggle" id="userMenuToggle"
+                           aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-user-circle"></i>
+                            <span>{{ user.get_full_name|default:user.username }}</span>
+                            <i class="fas fa-chevron-down" style="font-size: 12px;"></i>
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="userMenuToggle">
+                            <a href="{% url 'users:profile' %}"><i class="fas fa-user"></i>Профил</a>
+
+                            {% if user.is_teacher %}
+                                <a href="{% url 'dashboards:teacher_dashboard' %}">
+                                    <i class="fas fa-chalkboard-teacher"></i>Моят дашборд
+                                </a>
+                            {% elif user.is_student %}
+                                <a href="{% url 'dashboards:student_dashboard' %}">
+                                    <i class="fas fa-book-open"></i>Моят дашборд
+                                </a>
+                            {% endif %}
+
+                            <a href="{% url 'users:logout' %}"><i class="fas fa-sign-out-alt"></i>Изход</a>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="auth-buttons">
+                    <a href="{% url 'users:login' %}" class="btn btn-outline">
+                        <i class="fas fa-sign-in-alt"></i>Вход
+                    </a>
+                    <a href="{% url 'users:register_student' %}" class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i>Регистрация
+                    </a>
+                </div>
+            {% endif %}
+
+            <button class="hamburger" id="hamburger" type="button" aria-controls="mobileMenu" aria-expanded="false">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+    </div>
+</header>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+    <div class="nav-links">
+        <a href="{% url 'home' %}">Начало</a>
+        <a href="{% url 'courses:course_list' %}">Курсове</a>
+        <a href="{% url 'dashboards:about' %}">За нас</a>
+        <a href="{% url 'dashboards:contacts' %}">Контакти</a>
+
+        {% if user.is_authenticated %}
+            <div class="dropdown" id="mobileDropdown">
+                <a href="#" class="dropdown-toggle" id="mobileDropdownToggle"
+                   aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-user-circle"></i>
+                    {{ user.get_full_name|default:user.username }}
+                    <i class="fas fa-chevron-down" style="font-size: 12px;"></i>
+                </a>
+                <div class="dropdown-menu" aria-labelledby="mobileDropdownToggle">
+                    <a href="{% url 'users:profile' %}"><i class="fas fa-user"></i>Профил</a>
+
+                    {% if user.is_teacher %}
+                        <a href="{% url 'dashboards:teacher_dashboard' %}">
+                            <i class="fas fa-chalkboard-teacher"></i>Моят дашборд
+                        </a>
+                    {% elif user.is_student %}
+                        <a href="{% url 'dashboards:student_dashboard' %}">
+                            <i class="fas fa-book-open"></i>Моят дашборд
+                        </a>
+                    {% endif %}
+
+                    <a href="{% url 'users:logout' %}"><i class="fas fa-sign-out-alt"></i>Изход</a>
+                </div>
+            </div>
+        {% else %}
+            <div class="auth-buttons">
+                <a href="{% url 'users:login' %}" class="btn btn-outline">
+                    <i class="fas fa-sign-in-alt"></i>Вход
+                </a>
+                <a href="{% url 'users:register_student' %}" class="btn btn-primary">
+                    <i class="fas fa-user-plus"></i>Регистрация
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<main class="fade-in">
+    {% block content %}{% endblock %}
+</main>
+
+<footer class="slide-up">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>За UniLink</h3>
+                <p>Нашата иновативна платформа предлага модерни решения за онлайн обучение и управление на курсове.</p>
+                <div class="social-icons">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h3>Курсове</h3>
+                <a href="#">Програмиране</a>
+                <a href="#">Дизайн</a>
+                <a href="#">Бизнес</a>
+                <a href="#">Маркетинг</a>
+                <a href="#">Личностно развитие</a>
+            </div>
+
+            <div class="footer-section">
+                <h3>Бързи връзки</h3>
+                <a href="{% url 'home' %}">Начало</a>
+                <a href="{% url 'courses:course_list' %}">Курсове</a>
+                <a href="#">Кандидатствай</a>
+                <a href="#">Цени</a>
+                <a href="#">ЧЗВ</a>
+            </div>
+
+            <div class="footer-section footer-contact">
+                <h3>Контакти</h3>
+                <p><i class="fas fa-envelope"></i> info@UniLink.com</p>
+                <p><i class="fas fa-phone"></i> +359 888 123 456</p>
+                <p><i class="fas fa-map-marker-alt"></i> София, България</p>
+                <p><i class="fas fa-clock"></i> Пон-Пет: 9:00 - 18:00</p>
+            </div>
+        </div>
+
+        <div class="copyright">
+            <p>&copy; 2023 <strong>UniLink System</strong>. Всички права запазени.</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Mobile menu toggle
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const mobileDropdown = document.getElementById('mobileDropdown');
+    const mobileDropdownToggle = document.getElementById('mobileDropdownToggle');
+
+    function setMobileMenu(open) {
+        mobileMenu.classList.toggle('active', open);
+        hamburger.setAttribute('aria-expanded', open ? 'true' : 'false');
+        mobileMenu.setAttribute('aria-hidden', open ? 'false' : 'true');
+        hamburger.innerHTML = open ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+    }
+
+    hamburger.addEventListener('click', function() {
+        const open = !mobileMenu.classList.contains('active');
+        setMobileMenu(open);
+    });
+
+    // Mobile dropdown toggle
+    if (mobileDropdownToggle) {
+        mobileDropdownToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            mobileDropdown.classList.toggle('active');
+            const expanded = mobileDropdown.classList.contains('active');
+            mobileDropdownToggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+        });
+    }
+
+    // Header scroll effect
+    const header = document.getElementById('main-header');
+    window.addEventListener('scroll', function() {
+        if (window.scrollY > 50) header.classList.add('scrolled');
+        else header.classList.remove('scrolled');
+    });
+
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', function(event) {
+        const clickInsideMenu = mobileMenu.contains(event.target);
+        const clickHamburger = hamburger.contains(event.target);
+        if (!clickInsideMenu && !clickHamburger) {
+            setMobileMenu(false);
+        }
+    });
+
+    // Prevent "#" jumps on dropdown toggles
+    const userMenuToggle = document.getElementById('userMenuToggle');
+    if (userMenuToggle) {
+        userMenuToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+        });
+    }
+</script>
+
+{% block extra_js %}{% endblock %}
+</body>
+</html>

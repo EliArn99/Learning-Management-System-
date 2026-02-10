@@ -128,3 +128,201 @@ Create a .env file in the project root (see example below).
 **Build & run**
 docker-compose up --build -d
 
+
+Run migrations
+
+docker-compose exec web python manage.py migrate
+
+
+Create admin user
+
+docker-compose exec web python manage.py createsuperuser
+
+
+Open
+
+App: http://127.0.0.1:8000/
+
+Admin: http://127.0.0.1:8000/admin/
+
+Option B: Local Setup (venv)
+
+Clone repository
+
+git clone https://github.com/EliArn99/Learning-Management-System-.git
+cd Learning-Management-System-
+
+
+Create and activate venv
+
+python -m venv venv
+
+
+Windows:
+
+.\venv\Scripts\activate
+
+
+macOS/Linux:
+
+source venv/bin/activate
+
+
+Install dependencies
+
+pip install -r requirements.txt
+
+
+Set environment variables
+Create .env (example below) or export variables in your shell.
+
+Migrate + run
+
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py runserver
+
+
+Open: http://127.0.0.1:8000/
+
+Usage
+Registration
+
+Student registration: /register/student/
+
+Teacher registration: /register/teacher/
+
+After registration, users can log in but remain restricted until approved.
+
+Admin
+
+Login to /admin/
+
+Approve profiles:
+
+StudentProfile.is_approved = True
+
+TeacherProfile.is_approved = True
+
+Teacher (Approved)
+
+Create/manage courses
+
+Create assignments and grade submissions
+
+Create quizzes and manage questions/answers
+
+View teacher dashboard
+
+Student (Approved)
+
+Access paid/enrolled courses
+
+Submit assignments
+
+Take quizzes
+
+View student dashboard
+
+Administrative Approval Flow
+
+User registers (Student/Teacher) → profile created with is_approved=False
+
+User can log in but is redirected to Approval Pending
+
+Admin approves the profile via Django Admin
+
+User gets full access on next login
+
+Environment Variables
+
+Example .env:
+
+SECRET_KEY=your_secret_key
+DEBUG=True
+ALLOWED_HOSTS=127.0.0.1,localhost
+
+DB_NAME=lms_db
+DB_USER=postgres
+DB_PASSWORD=postgres
+DB_HOST=db
+DB_PORT=5432
+
+EMAIL_HOST=smtp.yourprovider.com
+EMAIL_PORT=587
+EMAIL_USE_TLS=True
+EMAIL_HOST_USER=your_email@example.com
+EMAIL_HOST_PASSWORD=your_email_password
+DEFAULT_FROM_EMAIL=no-reply@lms.local
+
+Production Notes
+
+Before deploying:
+
+Set DEBUG=False
+
+Configure ALLOWED_HOSTS, CSRF_TRUSTED_ORIGINS
+
+Use secure cookies + HTTPS:
+
+SESSION_COOKIE_SECURE=True
+
+CSRF_COOKIE_SECURE=True
+
+Store secrets in environment variables (never commit .env)
+
+Add proper logging (avoid logging sensitive payloads)
+
+Add tests (especially for permissions/enrollment/payment gating)
+
+Add monitoring (Sentry/Prometheus optional)
+
+Roadmap
+
+ Add pagination to inbox/sent and submissions lists
+
+ Add notifications (email + in-app) for grades/quizzes/assignments
+
+ Add course catalog search & filters
+
+ Add discussion threads per course/module
+
+ Improve quiz reporting/analytics for teachers
+
+ Add CI (lint + tests) via GitHub Actions
+
+ Harden payment flow with webhook verification (if payments are enabled)
+
+Contributing
+
+Fork the repo
+
+Create branch:
+
+git checkout -b feature/your-feature
+
+
+Commit using conventional messages (feat:, fix:, refactor:)
+
+Push and open PR
+
+License
+
+MIT License. See LICENSE.
+
+Contact
+
+Eli Arnautska
+Email: eli_arnaytska@abv.bg
+
+Repository: https://github.com/EliArn99/Learning-Management-System-
+
+
+### Какво да добавиш, за да стане още по-силно (но не е задължително)
+- 3–4 screenshots в README (`/docs/screenshots/...`)
+- `docker-compose.yml` пример в README (ако е по-сложно)
+- CI badge (ако добавиш GitHub Actions)
+
+Ако искаш, прати ми `docker-compose.yml` + `settings.py` частта за env, и ще ти направя **точно** `.env.example` + секция “Production Deployment” (Gunicorn + Nginx) в README.
+
+

@@ -318,11 +318,3 @@ Email: eli_arnaytska@abv.bg
 Repository: https://github.com/EliArn99/Learning-Management-System-
 
 
-### Какво да добавиш, за да стане още по-силно (но не е задължително)
-- 3–4 screenshots в README (`/docs/screenshots/...`)
-- `docker-compose.yml` пример в README (ако е по-сложно)
-- CI badge (ако добавиш GitHub Actions)
-
-Ако искаш, прати ми `docker-compose.yml` + `settings.py` частта за env, и ще ти направя **точно** `.env.example` + секция “Production Deployment” (Gunicorn + Nginx) в README.
-
-

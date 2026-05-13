@@ -9,4 +9,6 @@ urlpatterns = [
     path('about/', views.about, name='about'),
     path('contacts/', views.contacts, name='contacts'),
     path('student/', views.student_dashboard_view, name='student_dashboard'),
+    path("notifications/", views.notifications_view, name="notifications"),
+    path("notifications/<int:pk>/read/", views.mark_notification_read_view, name="mark_notification_read"),
 ]

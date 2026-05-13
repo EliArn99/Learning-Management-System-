@@ -57,6 +57,10 @@ def teacher_dashboard_view(request):
         .select_related("student__user", "assignment", "assignment__course")
         .order_by("-submitted_at")
     )
+    notifications = DashboardNotification.objects.filter(
+        user=request.user,
+        is_read=False,
+    )[:5]
 
     selected_course_id = request.GET.get("course")
     if selected_course_id and courses.filter(id=selected_course_id).exists():
@@ -148,6 +152,10 @@ def student_dashboard_view(request):
         .prefetch_related("sender__teacherprofile", "sender__studentprofile")
         .order_by("-timestamp")[:5]
     )
+    notifications = DashboardNotification.objects.filter(
+        user=request.user,
+        is_read=False,
+    )[:5]
 
     return render(
         request,
@@ -159,3 +167,33 @@ def student_dashboard_view(request):
             "unread_messages": unread_messages,
         },
     )
+
+
+
+from django.shortcuts import get_object_or_404, redirect
+from .models import DashboardNotification
+
+
+@login_required
+def notifications_view(request):
+    notifications = DashboardNotification.objects.filter(user=request.user)
+
+    return render(
+        request,
+        "dashboards/notifications.html",
+        {
+            "notifications": notifications,
+            "unread_count": notifications.filter(is_read=False).count(),
+        },
+    )
+
+
+@login_required
+def mark_notification_read_view(request, pk):
+    notification = get_object_or_404(
+        DashboardNotification,
+        pk=pk,
+        user=request.user,
+    )
+    notification.mark_as_read()
+    return redirect(notification.url or "dashboards:notifications")

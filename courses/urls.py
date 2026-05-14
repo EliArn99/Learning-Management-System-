@@ -19,5 +19,6 @@ urlpatterns = [
         name="payment_confirm",
     ),
 
+    path("<slug:slug>/enroll/", views.course_detail_view, name="course_enroll"),
     path("<slug:slug>/", views.course_detail_view, name="course_detail"),
 ]

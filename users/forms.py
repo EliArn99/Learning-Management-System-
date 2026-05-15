@@ -8,10 +8,12 @@ from .models import CustomUser, StudentProfile, TeacherProfile
 def generate_unique_username(full_name: str) -> str:
     base = slugify(full_name)[:30] or "user"
     candidate = base
-    i = 1
+    counter = 1
+
     while CustomUser.objects.filter(username=candidate).exists():
-        i += 1
-        candidate = f"{base}-{i}"
+        counter += 1
+        candidate = f"{base}-{counter}"
+
     return candidate
 
 
@@ -22,23 +24,23 @@ class StudentRegisterForm(UserCreationForm):
 
     class Meta:
         model = CustomUser
-        fields = ['full_name', 'email', 'password1', 'password2']
+        fields = ["full_name", "email", "password1", "password2"]
 
     def save(self, commit=True):
         user = super().save(commit=False)
         user.is_student = True
         user.is_active = True
-
-        user.username = generate_unique_username(self.cleaned_data['full_name'])
+        user.username = generate_unique_username(self.cleaned_data["full_name"])
 
         if commit:
             user.save()
             StudentProfile.objects.create(
                 user=user,
-                age=self.cleaned_data['age'],
-                achievements=self.cleaned_data.get('achievements', ''),
+                age=self.cleaned_data["age"],
+                achievements=self.cleaned_data.get("achievements", ""),
                 is_approved=False,
             )
+
         return user
 
 
@@ -50,21 +52,34 @@ class TeacherRegisterForm(UserCreationForm):
 
     class Meta:
         model = CustomUser
-        fields = ['full_name', 'email', 'password1', 'password2']
+        fields = ["full_name", "email", "password1", "password2"]
 
     def save(self, commit=True):
         user = super().save(commit=False)
         user.is_teacher = True
         user.is_active = True
-        user.username = generate_unique_username(self.cleaned_data['full_name'])
+        user.username = generate_unique_username(self.cleaned_data["full_name"])
 
         if commit:
             user.save()
             TeacherProfile.objects.create(
                 user=user,
-                age=self.cleaned_data.get('age'),
-                education=self.cleaned_data.get('education', ''),
-                experience_years=self.cleaned_data.get('experience_years'),
+                age=self.cleaned_data.get("age"),
+                education=self.cleaned_data.get("education", ""),
+                experience_years=self.cleaned_data.get("experience_years"),
                 is_approved=False,
             )
+
         return user
+
+
+class StudentProfileForm(forms.ModelForm):
+    class Meta:
+        model = StudentProfile
+        fields = ["age", "achievements", "profile_picture"]
+
+
+class TeacherProfileForm(forms.ModelForm):
+    class Meta:
+        model = TeacherProfile
+        fields = ["age", "education", "experience_years", "profile_picture"]

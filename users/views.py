@@ -1,12 +1,18 @@
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
-from django.shortcuts import render, redirect, get_object_or_404
-
-from quizz.models import Quiz
-from .forms import StudentRegisterForm, TeacherRegisterForm, StudentProfileForm, TeacherProfileForm
-from .models import StudentProfile, TeacherProfile, CustomUser
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, redirect, render
+
+from .forms import (
+    StudentProfileForm,
+    StudentRegisterForm,
+    TeacherProfileForm,
+    TeacherRegisterForm,
+)
+from .models import StudentProfile, TeacherProfile
+from .selectors import get_upcoming_quizzes_for_student
+from .services import get_user_profile, redirect_user_after_login
 
 
 @login_required
@@ -14,32 +20,18 @@ def student_profile_view(request):
     profile = get_object_or_404(StudentProfile, user=request.user)
 
     if not profile.is_approved:
-        return redirect('users:approval_pending')
+        return redirect("users:approval_pending")
 
-    if request.method == 'POST':
-        form = StudentProfileForm(request.POST, request.FILES, instance=profile)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Профилът е успешно обновен!')
-            return redirect('users:profile')
-        else:
-            messages.error(request, 'Възникна грешка при обновяване на профила. Моля, проверете данните.')
-    else:
-        form = StudentProfileForm(instance=profile)
+    upcoming_quizzes = get_upcoming_quizzes_for_student(request.user)
 
-    upcoming_quizzes = []
-    try:
-        if profile.is_approved:
-            upcoming_quizzes = Quiz.objects.filter(course__students=request.user, is_active=True)
-    except Exception as e:
-        print("❗️Грешка при извличане на тестове:", e)
-
-
-    return render(request, 'users/student_profile.html', {
-        'form': form,
-        'student': profile,
-        'upcoming_quizzes': upcoming_quizzes
-    })
+    return render(
+        request,
+        "users/student_profile.html",
+        {
+            "student": profile,
+            "upcoming_quizzes": upcoming_quizzes,
+        },
+    )
 
 
 @login_required
@@ -47,182 +39,182 @@ def teacher_profile_view(request):
     profile = get_object_or_404(TeacherProfile, user=request.user)
 
     if not profile.is_approved:
-        return redirect('users:approval_pending')
+        return redirect("users:approval_pending")
 
-    if request.method == 'POST':
-        form = TeacherProfileForm(request.POST, request.FILES, instance=profile)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Профилът е успешно обновен!')
-            return redirect('users:profile')
-        else:
-            messages.error(request, 'Възникна грешка при обновяване на профила. Моля, проверете данните.')
-    else:
-        form = TeacherProfileForm(instance=profile)
-
-    return render(request, 'users/teacher_profile.html', {'form': form, 'teacher': profile})
+    return render(
+        request,
+        "users/teacher_profile.html",
+        {
+            "teacher": profile,
+        },
+    )
 
 
 @login_required
 def approval_pending_view(request):
-
-    user = request.user
-    profile = None
-
-    if user.is_student:
-        try:
-            profile = StudentProfile.objects.get(user=user)
-        except StudentProfile.DoesNotExist:
-
-            pass
-    elif user.is_teacher:
-        try:
-            profile = TeacherProfile.objects.get(user=user)
-        except TeacherProfile.DoesNotExist:
-            pass
+    profile = get_user_profile(request.user)
 
     if profile and profile.is_approved:
-        if user.is_student:
-            return redirect('dashboards:student_dashboard')
-        elif user.is_teacher:
-            return redirect('dashboards:teacher_dashboard')
+        return redirect_user_after_login(request.user)
 
-    return render(request, 'users/account_approval_pending.html')
+    return render(request, "users/account_approval_pending.html")
 
 
 def register_student(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = StudentRegisterForm(request.POST)
+
         if form.is_valid():
             user = form.save()
             login(request, user)
-            messages.success(request, 'Успешна регистрация! Вашият акаунт очаква одобрение.')
-            return redirect('users:approval_pending')
-        messages.error(request, 'Възникна грешка при регистрацията. Моля, проверете данните си.')
+            messages.success(
+                request,
+                "Успешна регистрация! Вашият акаунт очаква одобрение.",
+            )
+            return redirect("users:approval_pending")
+
+        messages.error(
+            request,
+            "Възникна грешка при регистрацията. Моля, проверете данните си.",
+        )
     else:
         form = StudentRegisterForm()
-    return render(request, 'users/register_student.html', {'form': form})
+
+    return render(
+        request,
+        "users/register_student.html",
+        {
+            "form": form,
+        },
+    )
 
 
 def register_teacher(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = TeacherRegisterForm(request.POST)
+
         if form.is_valid():
             user = form.save()
             login(request, user)
-            messages.success(request, 'Успешна регистрация! Вашият акаунт очаква одобрение от администратор.')
-            return redirect('users:approval_pending')
-        messages.error(request, 'Възникна грешка при регистрацията. Моля, проверете данните си.')
+            messages.success(
+                request,
+                "Успешна регистрация! Вашият акаунт очаква одобрение от администратор.",
+            )
+            return redirect("users:approval_pending")
+
+        messages.error(
+            request,
+            "Възникна грешка при регистрацията. Моля, проверете данните си.",
+        )
     else:
         form = TeacherRegisterForm()
-    return render(request, 'users/register_teacher.html', {'form': form})
 
+    return render(
+        request,
+        "users/register_teacher.html",
+        {
+            "form": form,
+        },
+    )
 
 
 def custom_login_view(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = AuthenticationForm(request, data=request.POST)
+
         if form.is_valid():
             user = form.get_user()
             login(request, user)
 
-            if user.is_student:
-                try:
-                    profile = StudentProfile.objects.get(user=user)
-                    if not profile.is_approved:
-                        messages.warning(request, 'Вашият акаунт очаква одобрение от администратор.')
-                        return redirect('users:approval_pending')
-                    return redirect('dashboards:student_dashboard')
-                except StudentProfile.DoesNotExist:
-                    messages.error(request, 'Възникна грешка с профила ви. Моля, свържете се с администратор.')
-                    return redirect('users:approval_pending')
+            if user.is_student or user.is_teacher:
+                profile = get_user_profile(user)
 
-            elif user.is_teacher:
-                try:
-                    profile = TeacherProfile.objects.get(user=user)
-                    if not profile.is_approved:
-                        messages.warning(request, 'Вашият акаунт очаква одобрение от администратор.')
-                        return redirect('users:approval_pending')
-                    return redirect('dashboards:teacher_dashboard')
-                except TeacherProfile.DoesNotExist:
-                    messages.error(request, 'Възникна грешка с профила ви. Моля, свържете се с администратор.')
-                    return redirect('users:approval_pending')
-            else:
-                messages.info(request, 'Добре дошли!')
-                return redirect('home')
+                if not profile:
+                    messages.error(
+                        request,
+                        "Възникна грешка с профила ви. Моля, свържете се с администратор.",
+                    )
+                    return redirect("users:approval_pending")
+
+                if not profile.is_approved:
+                    messages.warning(
+                        request,
+                        "Вашият акаунт очаква одобрение от администратор.",
+                    )
+                    return redirect("users:approval_pending")
+
+            messages.success(request, "Добре дошли!")
+            return redirect_user_after_login(user)
 
     else:
         form = AuthenticationForm()
-    return render(request, 'users/login.html', {'form': form})
+
+    return render(
+        request,
+        "users/login.html",
+        {
+            "form": form,
+        },
+    )
 
 
 def custom_logout_view(request):
     logout(request)
-    messages.info(request, 'Успешно излязохте от профила си.')
-    return render(request, 'users/logout.html')
+    messages.info(request, "Успешно излязохте от профила си.")
+    return render(request, "users/logout.html")
 
 
 @login_required
 def profile_view(request):
-    user = request.user
+    if request.user.is_student:
+        return student_profile_view(request)
 
-    profile = None
-    if user.is_student:
-        profile = get_object_or_404(StudentProfile, user=user)
-        if not profile.is_approved:
-            return redirect('users:approval_pending')
-        # If approved, proceed to render student profile
-        try:
-            upcoming_quizzes = Quiz.objects.filter(course__students=user, is_active=True)
-        except Exception as e:
-            print("❗️Грешка при извличане на тестове:", e)
-            upcoming_quizzes = []
-        return render(request, 'users/student_profile.html', {
-            'student': profile,
-            'upcoming_quizzes': upcoming_quizzes
-        })
+    if request.user.is_teacher:
+        return teacher_profile_view(request)
 
-    elif user.is_teacher:
-        profile = get_object_or_404(TeacherProfile, user=user)
-        if not profile.is_approved:
-            return redirect('users:approval_pending')
-        return render(request, 'users/teacher_profile.html', {
-            'teacher': profile
-        })
-
-    messages.error(request, 'Невалиден тип потребител или профил не е намерен.')
-    return redirect('home')
+    messages.error(request, "Невалиден тип потребител или профил не е намерен.")
+    return redirect("home")
 
 
 @login_required
 def edit_profile_view(request):
-    user = request.user
-    profile = None
-    ProfileForm = None
+    profile = get_user_profile(request.user)
 
-    if user.is_student:
-        profile = get_object_or_404(StudentProfile, user=user)
-        if not profile.is_approved: # Prevent editing unapproved profile
-            return redirect('users:approval_pending')
-        ProfileForm = StudentProfileForm
-    elif user.is_teacher:
-        profile = get_object_or_404(TeacherProfile, user=user)
-        if not profile.is_approved: # Prevent editing unapproved profile
-            return redirect('users:approval_pending')
-        ProfileForm = TeacherProfileForm
+    if not profile:
+        messages.error(request, "Профилът не е намерен.")
+        return redirect("home")
+
+    if not profile.is_approved:
+        return redirect("users:approval_pending")
+
+    if request.user.is_student:
+        form_class = StudentProfileForm
+    elif request.user.is_teacher:
+        form_class = TeacherProfileForm
     else:
-        messages.error(request, 'Нямате право да редактирате профил.')
-        return redirect('home')
+        messages.error(request, "Нямате право да редактирате профил.")
+        return redirect("home")
 
-    if request.method == 'POST':
-        form = ProfileForm(request.POST, request.FILES, instance=profile)
+    if request.method == "POST":
+        form = form_class(request.POST, request.FILES, instance=profile)
+
         if form.is_valid():
             form.save()
-            messages.success(request, 'Профилът е успешно обновен!')
-            return redirect('users:profile')
-        else:
-            messages.error(request, 'Възникна грешка при обновяване на профила. Моля, проверете данните.')
-    else:
-        form = ProfileForm(instance=profile)
+            messages.success(request, "Профилът е успешно обновен!")
+            return redirect("users:profile")
 
-    return render(request, 'users/edit_profile.html', {'form': form, 'profile': profile})
+        messages.error(
+            request,
+            "Възникна грешка при обновяване на профила. Моля, проверете данните.",
+        )
+    else:
+        form = form_class(instance=profile)
+
+    return render(
+        request,
+        "users/edit_profile.html",
+        {
+            "form": form,
+            "profile": profile,
+        },
+    )

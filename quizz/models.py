@@ -1,196 +1,206 @@
-import logging
-import random
-
-from django.db import transaction
+from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
+from django.db import models
 from django.utils import timezone
 
-from .models import Answer, Question, StudentAnswer, StudentQuizAttempt, Submission
-from .selectors import selected_questions_with_answers
-
-logger = logging.getLogger(__name__)
+from courses.models import Course
+from users.models import TeacherProfile
 
 
-def get_or_reset_attempt(quiz, student_user):
-    attempt, _ = StudentQuizAttempt.objects.get_or_create(
-        quiz=quiz,
-        student=student_user,
-        defaults={
-            "start_time": timezone.now(),
-            "is_complete": False,
-            "selected_question_ids": [],
-        },
+User = get_user_model()
+
+
+QUESTION_TYPE_CHOICES = (
+    ("MC", "Множествен избор (Един верен)"),
+    ("MM", "Множествен избор (Множество верни)"),
+    ("OT", "Свободен текст (Ръчна оценка)"),
+    ("TF", "Вярно/Грешно"),
+)
+
+
+class Quiz(models.Model):
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+    course = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        related_name="quizzes",
+    )
+    created_by = models.ForeignKey(
+        TeacherProfile,
+        on_delete=models.CASCADE,
+        related_name="quizzes",
+    )
+    available_from = models.DateTimeField(null=True, blank=True)
+    available_until = models.DateTimeField(null=True, blank=True)
+    time_limit = models.IntegerField(
+        default=60,
+        help_text="Времеви лимит за теста в минути.",
+    )
+    num_questions_to_select = models.IntegerField(
+        default=0,
+        help_text="Брой въпроси за случаен избор. 0 означава всички.",
     )
 
-    if attempt.is_complete:
-        attempt.is_complete = False
-        attempt.start_time = timezone.now()
-        attempt.selected_question_ids = []
-        attempt.save(
-            update_fields=[
-                "is_complete",
-                "start_time",
-                "selected_question_ids",
-            ]
+    class Meta:
+        ordering = ("-id",)
+        indexes = [
+            models.Index(fields=["course", "available_from", "available_until"]),
+            models.Index(fields=["created_by"]),
+        ]
+
+    def clean(self):
+        if self.time_limit is not None and self.time_limit <= 0:
+            raise ValidationError({"time_limit": "Времевият лимит трябва да е положително число."})
+
+        if self.num_questions_to_select is not None and self.num_questions_to_select < 0:
+            raise ValidationError({"num_questions_to_select": "Броят въпроси не може да е отрицателен."})
+
+        if self.available_from and self.available_until and self.available_until <= self.available_from:
+            raise ValidationError("Крайната дата трябва да е след началната дата.")
+
+    def is_active(self):
+        now = timezone.now()
+        return (
+            self.available_from is None or self.available_from <= now
+        ) and (
+            self.available_until is None or self.available_until >= now
         )
 
-    return attempt
+    def __str__(self):
+        return self.title
 
 
-def select_questions_for_attempt(quiz, attempt):
-    if attempt.selected_question_ids:
-        return selected_questions_with_answers(quiz, attempt.selected_question_ids)
-
-    all_question_ids = list(
-        quiz.questions.values_list("id", flat=True).order_by("id")
+class Question(models.Model):
+    quiz = models.ForeignKey(
+        Quiz,
+        on_delete=models.CASCADE,
+        related_name="questions",
+    )
+    text = models.CharField(max_length=500)
+    points = models.IntegerField(
+        default=1,
+        help_text="Points awarded for a correct answer.",
+    )
+    type = models.CharField(
+        max_length=2,
+        choices=QUESTION_TYPE_CHOICES,
+        default="MC",
     )
 
-    number_to_select = quiz.num_questions_to_select or 0
+    class Meta:
+        ordering = ("id",)
+        indexes = [
+            models.Index(fields=["quiz", "type"]),
+        ]
 
-    if number_to_select > 0 and number_to_select < len(all_question_ids):
-        selected_ids = random.sample(all_question_ids, number_to_select)
-    else:
-        selected_ids = all_question_ids
+    def clean(self):
+        if self.points is not None and self.points <= 0:
+            raise ValidationError({"points": "Точките трябва да са положително число."})
 
-    attempt.selected_question_ids = selected_ids
-    attempt.save(update_fields=["selected_question_ids"])
+        if not self.pk:
+            return
 
-    return selected_questions_with_answers(quiz, selected_ids)
+        correct_count = self.answers.filter(is_correct=True).count()
 
+        if self.type in ("MC", "TF") and correct_count != 1:
+            raise ValidationError("За този тип въпрос трябва да има точно 1 верен отговор.")
 
-def quiz_time_expired(quiz, attempt) -> bool:
-    if not quiz.time_limit:
-        return False
+        if self.type == "MM" and correct_count < 1:
+            raise ValidationError("За този тип въпрос трябва да има поне 1 верен отговор.")
 
-    elapsed = timezone.now() - attempt.start_time
-    return elapsed.total_seconds() > quiz.time_limit * 60
+        if self.type == "OT" and correct_count != 0:
+            raise ValidationError("При свободен текст не трябва да има верни отговори.")
 
-
-def complete_attempt(attempt):
-    attempt.is_complete = True
-    attempt.save(update_fields=["is_complete"])
-    return attempt
-
-
-def evaluate_closed_question(question, selected_answer_ids):
-    correct_answer_ids = {
-        answer.id
-        for answer in question.all_answers
-        if answer.is_correct
-    }
-
-    selected_ids = {
-        answer_id
-        for answer_id in selected_answer_ids
-        if answer_id is not None
-    }
-
-    if selected_ids == correct_answer_ids and correct_answer_ids:
-        return question.points
-
-    return 0
+    def __str__(self):
+        return self.text
 
 
-@transaction.atomic
-def process_quiz_submission(quiz, student_user, attempt, user_answers_raw):
-    allowed_question_ids = set(attempt.selected_question_ids or [])
-
-    questions = selected_questions_with_answers(
-        quiz,
-        attempt.selected_question_ids or [],
+class Answer(models.Model):
+    question = models.ForeignKey(
+        Question,
+        on_delete=models.CASCADE,
+        related_name="answers",
     )
+    text = models.CharField(max_length=255)
+    is_correct = models.BooleanField(default=False)
 
-    question_map = {
-        question.id: question
-        for question in questions
-    }
+    class Meta:
+        ordering = ("id",)
 
-    submission = Submission.objects.create(
-        quiz=quiz,
-        student=student_user,
+    def __str__(self):
+        return self.text
+
+
+class StudentQuizAttempt(models.Model):
+    quiz = models.ForeignKey(
+        Quiz,
+        on_delete=models.CASCADE,
     )
-
-    total_points_earned = 0
-    total_possible_points = sum(question.points for question in questions)
-
-    for answer_data in user_answers_raw:
-        question_id = answer_data.get("questionId")
-
-        if question_id not in allowed_question_ids:
-            logger.warning(
-                "User attempted to submit answer for unseen question. user_id=%s quiz_id=%s question_id=%s",
-                student_user.id,
-                quiz.id,
-                question_id,
-            )
-            continue
-
-        question = question_map.get(question_id)
-
-        if not question:
-            continue
-
-        selected_answer_ids = answer_data.get("selectedAnswerIds", [])
-        text_answer = answer_data.get("textAnswer", "")
-
-        if question.type in ["MC", "MM", "TF"]:
-            points_awarded = evaluate_closed_question(
-                question,
-                selected_answer_ids,
-            )
-
-            selected_ids = {
-                answer_id
-                for answer_id in selected_answer_ids
-                if answer_id is not None
-            }
-
-            if selected_ids:
-                is_first_answer = True
-
-                for selected_id in selected_ids:
-                    selected_answer = next(
-                        (
-                            answer
-                            for answer in question.all_answers
-                            if answer.id == selected_id
-                        ),
-                        None,
-                    )
-
-                    if selected_answer:
-                        StudentAnswer.objects.create(
-                            submission=submission,
-                            question=question,
-                            selected_answer=selected_answer,
-                            points_awarded=points_awarded if is_first_answer else 0,
-                        )
-                        is_first_answer = False
-            else:
-                StudentAnswer.objects.create(
-                    submission=submission,
-                    question=question,
-                    selected_answer=None,
-                    points_awarded=0,
-                )
-
-            total_points_earned += points_awarded
-
-        elif question.type == "OT":
-            StudentAnswer.objects.create(
-                submission=submission,
-                question=question,
-                text_response=text_answer,
-                selected_answer=None,
-                points_awarded=0,
-            )
-
-    submission.score = (
-        round((total_points_earned / total_possible_points) * 100, 2)
-        if total_possible_points
-        else 0
+    student = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
     )
-    submission.save(update_fields=["score"])
+    start_time = models.DateTimeField(default=timezone.now)
+    is_complete = models.BooleanField(default=False)
+    selected_question_ids = models.JSONField(default=list, blank=True)
 
-    complete_attempt(attempt)
+    class Meta:
+        unique_together = ("quiz", "student")
+        indexes = [
+            models.Index(fields=["quiz", "student"]),
+            models.Index(fields=["student", "is_complete"]),
+        ]
 
-    return submission
+    def __str__(self):
+        return f"{self.student.username} - {self.quiz.title} - Attempt"
+
+
+class Submission(models.Model):
+    quiz = models.ForeignKey(
+        Quiz,
+        on_delete=models.CASCADE,
+        related_name="submissions",
+    )
+    student = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="submissions",
+    )
+    submitted_at = models.DateTimeField(auto_now_add=True)
+    score = models.FloatField(default=0)
+
+    class Meta:
+        ordering = ("-submitted_at",)
+        indexes = [
+            models.Index(fields=["quiz", "student"]),
+            models.Index(fields=["student", "submitted_at"]),
+        ]
+
+    def __str__(self):
+        return f"{self.student.username} - {self.quiz.title}"
+
+
+class StudentAnswer(models.Model):
+    submission = models.ForeignKey(
+        Submission,
+        on_delete=models.CASCADE,
+        related_name="student_answers",
+    )
+    question = models.ForeignKey(
+        Question,
+        on_delete=models.CASCADE,
+    )
+    selected_answer = models.ForeignKey(
+        Answer,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
+    text_response = models.TextField(blank=True, null=True)
+    points_awarded = models.IntegerField(default=0)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["submission", "question"]),
+        ]

@@ -11,8 +11,18 @@ from django.utils import timezone
 from courses.models import Course, Enrollment
 from users.models import StudentProfile, TeacherProfile
 
-from .models import Answer, Question, Quiz, StudentQuizAttempt, Submission
-from .services import get_or_reset_attempt, process_quiz_submission, select_questions_for_attempt
+from .models import (
+    Answer,
+    Question,
+    Quiz,
+    StudentQuizAttempt,
+    Submission,
+)
+from .services import (
+    get_or_reset_attempt,
+    process_quiz_submission,
+    select_questions_for_attempt,
+)
 
 
 User = get_user_model()
@@ -26,13 +36,14 @@ class QuizTestMixin:
             password="testpass123",
             is_teacher=True,
         )
-        self.teacher_profile = TeacherProfile.objects.create(
-            user=self.teacher_user,
-            age=30,
-            education="Computer Science",
-            experience_years=5,
-            is_approved=True,
-        )
+
+        # SIGNAL CREATED PROFILE
+        self.teacher_profile = self.teacher_user.teacherprofile
+        self.teacher_profile.age = 30
+        self.teacher_profile.education = "Computer Science"
+        self.teacher_profile.experience_years = 5
+        self.teacher_profile.is_approved = True
+        self.teacher_profile.save()
 
         self.student_user = User.objects.create_user(
             username="student",
@@ -40,11 +51,12 @@ class QuizTestMixin:
             password="testpass123",
             is_student=True,
         )
-        self.student_profile = StudentProfile.objects.create(
-            user=self.student_user,
-            age=20,
-            is_approved=True,
-        )
+
+        # SIGNAL CREATED PROFILE
+        self.student_profile = self.student_user.studentprofile
+        self.student_profile.age = 20
+        self.student_profile.is_approved = True
+        self.student_profile.save()
 
         self.course = Course.objects.create(
             name="Django Course",
@@ -76,6 +88,7 @@ class QuizTestMixin:
             text="Web framework",
             is_correct=True,
         )
+
         self.wrong_answer = Answer.objects.create(
             question=self.question,
             text="Operating system",
@@ -84,6 +97,7 @@ class QuizTestMixin:
 
 
 class QuizModelTests(QuizTestMixin, TestCase):
+
     def test_quiz_is_active(self):
         self.assertTrue(self.quiz.is_active())
 
@@ -111,6 +125,7 @@ class QuizModelTests(QuizTestMixin, TestCase):
 
 
 class QuizServiceTests(QuizTestMixin, TestCase):
+
     def test_get_or_reset_attempt_creates_attempt(self):
         attempt = get_or_reset_attempt(
             quiz=self.quiz,
@@ -151,13 +166,17 @@ class QuizServiceTests(QuizTestMixin, TestCase):
         attempt.refresh_from_db()
 
         self.assertEqual(len(questions), 1)
-        self.assertEqual(attempt.selected_question_ids, [self.question.id])
+        self.assertEqual(
+            attempt.selected_question_ids,
+            [self.question.id],
+        )
 
     def test_process_quiz_submission_scores_correct_answer(self):
         attempt = get_or_reset_attempt(
             self.quiz,
             self.student_user,
         )
+
         attempt.selected_question_ids = [self.question.id]
         attempt.save(update_fields=["selected_question_ids"])
 
@@ -174,13 +193,17 @@ class QuizServiceTests(QuizTestMixin, TestCase):
         )
 
         self.assertEqual(submission.score, 100)
-        self.assertEqual(submission.student_answers.count(), 1)
+        self.assertEqual(
+            submission.student_answers.count(),
+            1,
+        )
 
     def test_process_quiz_submission_scores_wrong_answer(self):
         attempt = get_or_reset_attempt(
             self.quiz,
             self.student_user,
         )
+
         attempt.selected_question_ids = [self.question.id]
         attempt.save(update_fields=["selected_question_ids"])
 
@@ -200,30 +223,49 @@ class QuizServiceTests(QuizTestMixin, TestCase):
 
 
 class QuizViewTests(QuizTestMixin, TestCase):
+
     def test_quiz_list_returns_200(self):
-        response = self.client.get(reverse("quizz:quiz_list"))
+        response = self.client.get(
+            reverse("quizz:quiz_list")
+        )
 
         self.assertEqual(response.status_code, 200)
 
     def test_teacher_can_access_manage_list(self):
-        self.client.login(username="teacher", password="testpass123")
+        self.client.login(
+            username="teacher",
+            password="testpass123",
+        )
 
-        response = self.client.get(reverse("quizz:quiz_manage_list"))
+        response = self.client.get(
+            reverse("quizz:quiz_manage_list")
+        )
 
         self.assertEqual(response.status_code, 200)
 
     def test_student_cannot_access_manage_list(self):
-        self.client.login(username="student", password="testpass123")
+        self.client.login(
+            username="student",
+            password="testpass123",
+        )
 
-        response = self.client.get(reverse("quizz:quiz_manage_list"))
+        response = self.client.get(
+            reverse("quizz:quiz_manage_list")
+        )
 
         self.assertEqual(response.status_code, 403)
 
     def test_student_without_paid_enrollment_cannot_take_quiz(self):
-        self.client.login(username="student", password="testpass123")
+        self.client.login(
+            username="student",
+            password="testpass123",
+        )
 
         response = self.client.get(
-            reverse("quizz:quiz_take", kwargs={"pk": self.quiz.pk})
+            reverse(
+                "quizz:quiz_take",
+                kwargs={"pk": self.quiz.pk},
+            )
         )
 
         self.assertEqual(response.status_code, 403)
@@ -235,10 +277,16 @@ class QuizViewTests(QuizTestMixin, TestCase):
             is_paid=True,
         )
 
-        self.client.login(username="student", password="testpass123")
+        self.client.login(
+            username="student",
+            password="testpass123",
+        )
 
         response = self.client.get(
-            reverse("quizz:quiz_take", kwargs={"pk": self.quiz.pk})
+            reverse(
+                "quizz:quiz_take",
+                kwargs={"pk": self.quiz.pk},
+            )
         )
 
         self.assertEqual(response.status_code, 200)
@@ -254,13 +302,20 @@ class QuizViewTests(QuizTestMixin, TestCase):
             self.quiz,
             self.student_user,
         )
+
         attempt.selected_question_ids = [self.question.id]
         attempt.save(update_fields=["selected_question_ids"])
 
-        self.client.login(username="student", password="testpass123")
+        self.client.login(
+            username="student",
+            password="testpass123",
+        )
 
         response = self.client.post(
-            reverse("quizz:quiz_take", kwargs={"pk": self.quiz.pk}),
+            reverse(
+                "quizz:quiz_take",
+                kwargs={"pk": self.quiz.pk},
+            ),
             data=json.dumps(
                 {
                     "userAnswers": [
@@ -275,6 +330,7 @@ class QuizViewTests(QuizTestMixin, TestCase):
         )
 
         self.assertEqual(response.status_code, 200)
+
         self.assertTrue(
             Submission.objects.filter(
                 quiz=self.quiz,
@@ -290,10 +346,16 @@ class QuizViewTests(QuizTestMixin, TestCase):
             is_paid=True,
         )
 
-        self.client.login(username="student", password="testpass123")
+        self.client.login(
+            username="student",
+            password="testpass123",
+        )
 
         response = self.client.get(
-            reverse("quizz:quiz_results", kwargs={"pk": self.quiz.pk})
+            reverse(
+                "quizz:quiz_results",
+                kwargs={"pk": self.quiz.pk},
+            )
         )
 
         self.assertEqual(response.status_code, 403)

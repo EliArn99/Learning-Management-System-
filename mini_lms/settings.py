@@ -32,7 +32,7 @@ SECRET_KEY = env("SECRET_KEY")
 if not SECRET_KEY:
     raise RuntimeError("SECRET_KEY is not set")
 
-DEBUG = env_bool("DEBUG", True)
+DEBUG = env_bool("DEBUG", False)
 
 ALLOWED_HOSTS = env_list(
     "ALLOWED_HOSTS",
@@ -166,17 +166,87 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 
 if not DEBUG:
-    SECURE_SSL_REDIRECT = env_bool("SECURE_SSL_REDIRECT", True)
+
+    SECURE_SSL_REDIRECT = env_bool(
+        "SECURE_SSL_REDIRECT",
+        True,
+    )
+
+    SECURE_PROXY_SSL_HEADER = (
+        "HTTP_X_FORWARDED_PROTO",
+        "https",
+    )
+
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
 
-    SECURE_HSTS_SECONDS = int(env("SECURE_HSTS_SECONDS", "31536000"))
+    SECURE_HSTS_SECONDS = int(
+        env("SECURE_HSTS_SECONDS", "31536000")
+    )
+
     SECURE_HSTS_INCLUDE_SUBDOMAINS = env_bool(
         "SECURE_HSTS_INCLUDE_SUBDOMAINS",
         True,
     )
-    SECURE_HSTS_PRELOAD = env_bool("SECURE_HSTS_PRELOAD", True)
+
+    SECURE_HSTS_PRELOAD = env_bool(
+        "SECURE_HSTS_PRELOAD",
+        True,
+    )
 
     X_FRAME_OPTIONS = "DENY"
 
-    CSRF_TRUSTED_ORIGINS = env_list("CSRF_TRUSTED_ORIGINS", "")
+    CSRF_TRUSTED_ORIGINS = env_list(
+        "CSRF_TRUSTED_ORIGINS",
+        ""
+    )
+
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+
+    "formatters": {
+        "verbose": {
+            "format": (
+                "{levelname} "
+                "{asctime} "
+                "{module} "
+                "{message}"
+            ),
+            "style": "{",
+        },
+    },
+
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+
+        "file": {
+            "level": "WARNING",
+            "class": "logging.FileHandler",
+            "filename": BASE_DIR / "django.log",
+            "formatter": "verbose",
+        },
+    },
+
+    "root": {
+        "handlers": [
+            "console",
+            "file",
+        ],
+        "level": "WARNING",
+    },
+
+    "loggers": {
+        "django": {
+            "handlers": [
+                "console",
+                "file",
+            ],
+            "level": "WARNING",
+            "propagate": False,
+        },
+    },
+}

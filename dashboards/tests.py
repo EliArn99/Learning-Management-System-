@@ -1,226 +1,289 @@
 from datetime import timedelta
+from decimal import Decimal
 
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
-from django.db.models import Q
-from django.shortcuts import get_object_or_404, redirect, render
+from django.test import TestCase
+from django.urls import reverse
 from django.utils import timezone
 
 from assignments.models import Assignment, Submission as AssignmentSubmission
 from courses.models import Course, Enrollment
 from messaging.models import Message
 from quizz.models import Quiz, Submission as QuizSubmission
-from users.models import StudentProfile
 
 from .models import DashboardNotification
 
 
-def require_student(user):
-    if not hasattr(user, "studentprofile"):
-        raise PermissionDenied("Само студенти имат достъп до тази страница.")
-    return user.studentprofile
+User = get_user_model()
 
 
-def require_teacher(user):
-    if not hasattr(user, "teacherprofile"):
-        raise PermissionDenied("Само преподаватели имат достъп до тази страница.")
-    return user.teacherprofile
-
-
-def home(request):
-    return render(request, "dashboards/home.html")
-
-
-def about(request):
-    return render(request, "dashboards/about.html")
-
-
-def contacts(request):
-    return render(request, "dashboards/contacts.html")
-
-
-def dashboard_home_view(request):
-    return render(request, "dashboards/dashboard_home.html")
-
-
-@login_required
-def teacher_dashboard_view(request):
-    teacher_profile = require_teacher(request.user)
-
-    courses = Course.objects.filter(teacher=teacher_profile)
-
-    total_students = (
-        StudentProfile.objects.filter(
-            pk__in=Enrollment.objects.filter(
-                course__in=courses,
-                is_paid=True,
-            ).values("student_id")
+class DashboardTestMixin:
+    def setUp(self):
+        self.student_user = User.objects.create_user(
+            username="dashboard_student",
+            email="dashboard_student@example.com",
+            password="testpass123",
+            is_student=True,
         )
-        .distinct()
-        .count()
-    )
+        self.student_profile = self.student_user.studentprofile
+        self.student_profile.age = 20
+        self.student_profile.is_approved = True
+        self.student_profile.save()
 
-    assignments = Assignment.objects.filter(course__in=courses)
-
-    submissions_qs = (
-        AssignmentSubmission.objects.filter(assignment__in=assignments)
-        .select_related("student__user", "assignment", "assignment__course")
-        .order_by("-submitted_at")
-    )
-
-    selected_course_id = request.GET.get("course")
-    if selected_course_id and courses.filter(id=selected_course_id).exists():
-        submissions_qs = submissions_qs.filter(
-            assignment__course__id=selected_course_id
+        self.teacher_user = User.objects.create_user(
+            username="dashboard_teacher",
+            email="dashboard_teacher@example.com",
+            password="testpass123",
+            is_teacher=True,
         )
-    else:
-        selected_course_id = None
+        self.teacher_profile = self.teacher_user.teacherprofile
+        self.teacher_profile.age = 30
+        self.teacher_profile.education = "Computer Science"
+        self.teacher_profile.experience_years = 5
+        self.teacher_profile.is_approved = True
+        self.teacher_profile.save()
 
-    total_submissions = submissions_qs.count()
-    graded_submissions = submissions_qs.filter(grade__isnull=False).count()
-    pending_submissions = submissions_qs.filter(grade__isnull=True).count()
-    recent_submissions = submissions_qs[:5]
-
-    unread_messages = (
-        Message.objects.filter(receiver=request.user, is_read=False)
-        .select_related("sender")
-        .prefetch_related("sender__studentprofile", "sender__teacherprofile")
-        .order_by("-timestamp")[:5]
-    )
-
-    notifications = DashboardNotification.objects.filter(
-        user=request.user,
-        is_read=False,
-    )[:5]
-
-    return render(
-        request,
-        "dashboards/teacher_dashboard.html",
-        {
-            "courses": courses,
-            "assignments": assignments,
-            "submissions": submissions_qs,
-            "recent_submissions": recent_submissions,
-            "total_submissions": total_submissions,
-            "graded_submissions": graded_submissions,
-            "pending_submissions": pending_submissions,
-            "selected_course_id": selected_course_id,
-            "total_students": total_students,
-            "unread_messages": unread_messages,
-            "notifications": notifications,
-        },
-    )
-
-
-@login_required
-def student_dashboard_view(request):
-    student_profile = require_student(request.user)
-    current_user = request.user
-    now = timezone.now()
-
-    courses = Course.objects.filter(
-        enrollments__student=student_profile,
-        enrollments__is_paid=True,
-    ).distinct()
-
-    all_assignments = Assignment.objects.filter(
-        course__in=courses
-    ).select_related("course")
-
-    all_quizzes = Quiz.objects.filter(
-        course__in=courses
-    ).select_related("course")
-
-    upcoming_assignments = all_assignments.filter(due_date__gt=now)
-
-    upcoming_quizzes = (
-        all_quizzes.filter(
-            Q(available_from__isnull=True) | Q(available_from__lte=now)
+        self.other_user = User.objects.create_user(
+            username="other_user",
+            email="other@example.com",
+            password="testpass123",
         )
-        .filter(
-            Q(available_until__isnull=True) | Q(available_until__gt=now)
+
+        self.course = Course.objects.create(
+            name="Dashboard Course",
+            description="Test course",
+            teacher=self.teacher_profile,
+            price=Decimal("10.00"),
         )
-        .exclude(submissions__student=current_user)
-    )
 
-    combined = [
-        {
-            "type": "assignment",
-            "pk": assignment.pk,
-            "title": assignment.title,
-            "due_date": assignment.due_date,
-            "is_urgent": (assignment.due_date - now).days < 3,
-        }
-        for assignment in upcoming_assignments
-    ] + [
-        {
-            "type": "quiz",
-            "pk": quiz.pk,
-            "title": quiz.title,
-            "due_date": quiz.available_until or (now + timedelta(days=3650)),
-            "is_urgent": bool(
-                quiz.available_until and (quiz.available_until - now).days < 3
-            ),
-        }
-        for quiz in upcoming_quizzes
-    ]
+        self.enrollment = Enrollment.objects.create(
+            student=self.student_profile,
+            course=self.course,
+            is_paid=True,
+        )
 
-    combined_sorted = sorted(combined, key=lambda item: item["due_date"])
+        self.assignment = Assignment.objects.create(
+            course=self.course,
+            title="Dashboard Assignment",
+            description="Test assignment",
+            topic="Django",
+            due_date=timezone.now() + timedelta(days=3),
+        )
 
-    total_quizzes = all_quizzes.count()
-    submitted_quizzes = QuizSubmission.objects.filter(
-        student=current_user,
-        quiz__in=all_quizzes,
-    ).count()
-
-    quiz_progress = int((submitted_quizzes / total_quizzes) * 100) if total_quizzes else 0
-
-    unread_messages = (
-        Message.objects.filter(receiver=current_user, is_read=False)
-        .select_related("sender")
-        .prefetch_related("sender__teacherprofile", "sender__studentprofile")
-        .order_by("-timestamp")[:5]
-    )
-
-    notifications = DashboardNotification.objects.filter(
-        user=request.user,
-        is_read=False,
-    )[:5]
-
-    return render(
-        request,
-        "dashboards/student_dashboard.html",
-        {
-            "courses": courses,
-            "upcoming_assignments": combined_sorted[:5],
-            "progress": quiz_progress,
-            "unread_messages": unread_messages,
-            "notifications": notifications,
-        },
-    )
+        self.quiz = Quiz.objects.create(
+            title="Dashboard Quiz",
+            description="Test quiz",
+            course=self.course,
+            created_by=self.teacher_profile,
+            available_from=timezone.now() - timedelta(days=1),
+            available_until=timezone.now() + timedelta(days=2),
+            time_limit=30,
+            num_questions_to_select=0,
+        )
 
 
-@login_required
-def notifications_view(request):
-    notifications = DashboardNotification.objects.filter(user=request.user)
+class DashboardPublicViewTests(TestCase):
+    def test_home_returns_200(self):
+        response = self.client.get(reverse("home"))
 
-    return render(
-        request,
-        "dashboards/notifications.html",
-        {
-            "notifications": notifications,
-            "unread_count": notifications.filter(is_read=False).count(),
-        },
-    )
+        self.assertEqual(response.status_code, 200)
+
+    def test_about_returns_200(self):
+        response = self.client.get(reverse("dashboards:about"))
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_contacts_returns_200(self):
+        response = self.client.get(reverse("dashboards:contacts"))
+
+        self.assertEqual(response.status_code, 200)
 
 
-@login_required
-def mark_notification_read_view(request, pk):
-    notification = get_object_or_404(
-        DashboardNotification,
-        pk=pk,
-        user=request.user,
-    )
-    notification.mark_as_read()
+class TeacherDashboardTests(DashboardTestMixin, TestCase):
+    def test_teacher_dashboard_requires_login(self):
+        response = self.client.get(reverse("dashboards:teacher_dashboard"))
 
-    return redirect(notification.url or "dashboards:notifications")
+        self.assertEqual(response.status_code, 302)
+
+    def test_teacher_can_access_teacher_dashboard(self):
+        self.client.login(
+            username="dashboard_teacher",
+            password="testpass123",
+        )
+
+        response = self.client.get(reverse("dashboards:teacher_dashboard"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Dashboard Course")
+
+    def test_student_cannot_access_teacher_dashboard(self):
+        self.client.login(
+            username="dashboard_student",
+            password="testpass123",
+        )
+
+        response = self.client.get(reverse("dashboards:teacher_dashboard"))
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_teacher_dashboard_context_counts_submissions(self):
+        AssignmentSubmission.objects.create(
+            assignment=self.assignment,
+            student=self.student_profile,
+            grade=5.5,
+        )
+
+        self.client.login(
+            username="dashboard_teacher",
+            password="testpass123",
+        )
+
+        response = self.client.get(reverse("dashboards:teacher_dashboard"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["total_submissions"], 1)
+        self.assertEqual(response.context["graded_submissions"], 1)
+        self.assertEqual(response.context["pending_submissions"], 0)
+
+    def test_teacher_dashboard_shows_unread_messages(self):
+        Message.objects.create(
+            sender=self.student_user,
+            receiver=self.teacher_user,
+            subject="Question",
+            content="Hello teacher",
+            is_read=False,
+        )
+
+        self.client.login(
+            username="dashboard_teacher",
+            password="testpass123",
+        )
+
+        response = self.client.get(reverse("dashboards:teacher_dashboard"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["unread_messages"]), 1)
+
+
+class StudentDashboardTests(DashboardTestMixin, TestCase):
+    def test_student_dashboard_requires_login(self):
+        response = self.client.get(reverse("dashboards:student_dashboard"))
+
+        self.assertEqual(response.status_code, 302)
+
+    def test_student_can_access_student_dashboard(self):
+        self.client.login(
+            username="dashboard_student",
+            password="testpass123",
+        )
+
+        response = self.client.get(reverse("dashboards:student_dashboard"))
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_teacher_cannot_access_student_dashboard(self):
+        self.client.login(
+            username="dashboard_teacher",
+            password="testpass123",
+        )
+
+        response = self.client.get(reverse("dashboards:student_dashboard"))
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_student_dashboard_progress_is_zero_without_submissions(self):
+        self.client.login(
+            username="dashboard_student",
+            password="testpass123",
+        )
+
+        response = self.client.get(reverse("dashboards:student_dashboard"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["progress"], 0)
+
+    def test_student_dashboard_progress_after_quiz_submission(self):
+        QuizSubmission.objects.create(
+            quiz=self.quiz,
+            student=self.student_user,
+            score=100,
+        )
+
+        self.client.login(
+            username="dashboard_student",
+            password="testpass123",
+        )
+
+        response = self.client.get(reverse("dashboards:student_dashboard"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["progress"], 100)
+
+
+class DashboardNotificationTests(DashboardTestMixin, TestCase):
+    def test_notifications_require_login(self):
+        response = self.client.get(reverse("dashboards:notifications"))
+
+        self.assertEqual(response.status_code, 302)
+
+    def test_user_can_view_own_notifications(self):
+        DashboardNotification.objects.create(
+            user=self.student_user,
+            title="Test Notification",
+            message="Hello student",
+        )
+
+        self.client.login(
+            username="dashboard_student",
+            password="testpass123",
+        )
+
+        response = self.client.get(reverse("dashboards:notifications"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Test Notification")
+        self.assertEqual(response.context["unread_count"], 1)
+
+    def test_user_can_mark_own_notification_as_read(self):
+        notification = DashboardNotification.objects.create(
+            user=self.student_user,
+            title="Read me",
+            message="Mark this as read",
+            url="dashboards:notifications",
+        )
+
+        self.client.login(
+            username="dashboard_student",
+            password="testpass123",
+        )
+
+        response = self.client.get(
+            reverse(
+                "dashboards:mark_notification_read",
+                kwargs={"pk": notification.pk},
+            )
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+        notification.refresh_from_db()
+        self.assertTrue(notification.is_read)
+
+    def test_user_can_view_own_notifications(self):
+        notification = DashboardNotification.objects.create(
+            user=self.student_user,
+            title="Test Notification",
+            message="Hello student",
+        )
+
+        self.client.login(
+            username="dashboard_student",
+            password="testpass123",
+        )
+
+        response = self.client.get(reverse("dashboards:notifications"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["unread_count"], 1)
+        self.assertIn(notification, response.context["notifications"])

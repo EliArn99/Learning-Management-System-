@@ -18,56 +18,101 @@ def generate_unique_username(full_name: str) -> str:
 
 
 class StudentRegisterForm(UserCreationForm):
-    full_name = forms.CharField(label="Име и фамилия", max_length=100)
+    full_name = forms.CharField(
+        label="Име и фамилия",
+        max_length=100,
+    )
     age = forms.IntegerField(min_value=18)
-    achievements = forms.CharField(widget=forms.Textarea, required=False)
+    achievements = forms.CharField(
+        widget=forms.Textarea,
+        required=False,
+    )
 
     class Meta:
         model = CustomUser
-        fields = ["full_name", "email", "password1", "password2"]
+        fields = [
+            "full_name",
+            "email",
+            "password1",
+            "password2",
+        ]
 
     def save(self, commit=True):
         user = super().save(commit=False)
+
         user.is_student = True
+        user.is_teacher = False
         user.is_active = True
-        user.username = generate_unique_username(self.cleaned_data["full_name"])
+        user.username = generate_unique_username(
+            self.cleaned_data["full_name"]
+        )
 
         if commit:
             user.save()
-            StudentProfile.objects.create(
-                user=user,
-                age=self.cleaned_data["age"],
-                achievements=self.cleaned_data.get("achievements", ""),
-                is_approved=False,
+
+            profile = user.studentprofile
+            profile.age = self.cleaned_data["age"]
+            profile.achievements = self.cleaned_data.get("achievements", "")
+            profile.is_approved = False
+            profile.save(
+                update_fields=[
+                    "age",
+                    "achievements",
+                    "is_approved",
+                ]
             )
 
         return user
 
 
 class TeacherRegisterForm(UserCreationForm):
-    full_name = forms.CharField(label="Име и фамилия", max_length=100)
+    full_name = forms.CharField(
+        label="Име и фамилия",
+        max_length=100,
+    )
     age = forms.IntegerField(min_value=25)
     education = forms.CharField()
-    experience_years = forms.IntegerField(min_value=0, required=False)
+    experience_years = forms.IntegerField(
+        min_value=0,
+        required=False,
+    )
 
     class Meta:
         model = CustomUser
-        fields = ["full_name", "email", "password1", "password2"]
+        fields = [
+            "full_name",
+            "email",
+            "password1",
+            "password2",
+        ]
 
     def save(self, commit=True):
         user = super().save(commit=False)
+
         user.is_teacher = True
+        user.is_student = False
         user.is_active = True
-        user.username = generate_unique_username(self.cleaned_data["full_name"])
+        user.username = generate_unique_username(
+            self.cleaned_data["full_name"]
+        )
 
         if commit:
             user.save()
-            TeacherProfile.objects.create(
-                user=user,
-                age=self.cleaned_data.get("age"),
-                education=self.cleaned_data.get("education", ""),
-                experience_years=self.cleaned_data.get("experience_years"),
-                is_approved=False,
+
+            profile = user.teacherprofile
+            profile.age = self.cleaned_data["age"]
+            profile.education = self.cleaned_data.get("education", "")
+            profile.experience_years = (
+                self.cleaned_data.get("experience_years") or 0
+            )
+            profile.is_approved = False
+            profile.save(
+                update_fields=[
+                    "age",
+                    "education",
+                    "experience_years",
+                    "is_approved",
+                ]
             )
 
         return user
@@ -76,10 +121,19 @@ class TeacherRegisterForm(UserCreationForm):
 class StudentProfileForm(forms.ModelForm):
     class Meta:
         model = StudentProfile
-        fields = ["age", "achievements", "profile_picture"]
+        fields = [
+            "age",
+            "achievements",
+            "profile_picture",
+        ]
 
 
 class TeacherProfileForm(forms.ModelForm):
     class Meta:
         model = TeacherProfile
-        fields = ["age", "education", "experience_years", "profile_picture"]
+        fields = [
+            "age",
+            "education",
+            "experience_years",
+            "profile_picture",
+        ]

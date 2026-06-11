@@ -3,12 +3,12 @@ from decimal import Decimal
 
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
 from courses.models import Course, Enrollment
-from users.models import StudentProfile, TeacherProfile
 
 from .models import Assignment, Submission
 
@@ -19,18 +19,19 @@ User = get_user_model()
 class AssignmentModelTests(TestCase):
     def setUp(self):
         self.teacher_user = User.objects.create_user(
-            username="teacher",
-            email="teacher@example.com",
+            username="teacher_model",
+            email="teacher_model@example.com",
             password="testpass123",
             is_teacher=True,
         )
-        self.teacher_profile = TeacherProfile.objects.create(
-            user=self.teacher_user,
-            age=30,
-            education="Computer Science",
-            experience_years=5,
-            is_approved=True,
-        )
+
+        self.teacher_profile = self.teacher_user.teacherprofile
+        self.teacher_profile.age = 30
+        self.teacher_profile.education = "Computer Science"
+        self.teacher_profile.experience_years = 5
+        self.teacher_profile.is_approved = True
+        self.teacher_profile.save()
+
         self.course = Course.objects.create(
             name="Django Course",
             description="Test course",
@@ -65,30 +66,30 @@ class AssignmentModelTests(TestCase):
 class SubmissionModelTests(TestCase):
     def setUp(self):
         self.student_user = User.objects.create_user(
-            username="student",
-            email="student@example.com",
+            username="student_model",
+            email="student_model@example.com",
             password="testpass123",
             is_student=True,
         )
-        self.student_profile = StudentProfile.objects.create(
-            user=self.student_user,
-            age=20,
-            is_approved=True,
-        )
+
+        self.student_profile = self.student_user.studentprofile
+        self.student_profile.age = 20
+        self.student_profile.is_approved = True
+        self.student_profile.save()
 
         self.teacher_user = User.objects.create_user(
-            username="teacher",
-            email="teacher@example.com",
+            username="teacher_submission",
+            email="teacher_submission@example.com",
             password="testpass123",
             is_teacher=True,
         )
-        self.teacher_profile = TeacherProfile.objects.create(
-            user=self.teacher_user,
-            age=30,
-            education="Computer Science",
-            experience_years=5,
-            is_approved=True,
-        )
+
+        self.teacher_profile = self.teacher_user.teacherprofile
+        self.teacher_profile.age = 30
+        self.teacher_profile.education = "Computer Science"
+        self.teacher_profile.experience_years = 5
+        self.teacher_profile.is_approved = True
+        self.teacher_profile.save()
 
         self.course = Course.objects.create(
             name="Python Course",
@@ -129,30 +130,30 @@ class SubmissionModelTests(TestCase):
 class AssignmentViewTests(TestCase):
     def setUp(self):
         self.student_user = User.objects.create_user(
-            username="student",
-            email="student@example.com",
+            username="student_view",
+            email="student_view@example.com",
             password="testpass123",
             is_student=True,
         )
-        self.student_profile = StudentProfile.objects.create(
-            user=self.student_user,
-            age=20,
-            is_approved=True,
-        )
+
+        self.student_profile = self.student_user.studentprofile
+        self.student_profile.age = 20
+        self.student_profile.is_approved = True
+        self.student_profile.save()
 
         self.teacher_user = User.objects.create_user(
-            username="teacher",
-            email="teacher@example.com",
+            username="teacher_view",
+            email="teacher_view@example.com",
             password="testpass123",
             is_teacher=True,
         )
-        self.teacher_profile = TeacherProfile.objects.create(
-            user=self.teacher_user,
-            age=30,
-            education="Computer Science",
-            experience_years=5,
-            is_approved=True,
-        )
+
+        self.teacher_profile = self.teacher_user.teacherprofile
+        self.teacher_profile.age = 30
+        self.teacher_profile.education = "Computer Science"
+        self.teacher_profile.experience_years = 5
+        self.teacher_profile.is_approved = True
+        self.teacher_profile.save()
 
         self.course = Course.objects.create(
             name="Django Course",
@@ -175,7 +176,10 @@ class AssignmentViewTests(TestCase):
         self.assertEqual(response.status_code, 302)
 
     def test_teacher_can_view_assignment_list(self):
-        self.client.login(username="teacher", password="testpass123")
+        self.client.login(
+            username="teacher_view",
+            password="testpass123",
+        )
 
         response = self.client.get(reverse("assignments:assignment_list"))
 
@@ -183,10 +187,16 @@ class AssignmentViewTests(TestCase):
         self.assertContains(response, "Homework 1")
 
     def test_student_without_paid_enrollment_cannot_view_assignment_detail(self):
-        self.client.login(username="student", password="testpass123")
+        self.client.login(
+            username="student_view",
+            password="testpass123",
+        )
 
         response = self.client.get(
-            reverse("assignments:assignment_detail", kwargs={"pk": self.assignment.pk})
+            reverse(
+                "assignments:assignment_detail",
+                kwargs={"pk": self.assignment.pk},
+            )
         )
 
         self.assertEqual(response.status_code, 403)
@@ -198,10 +208,37 @@ class AssignmentViewTests(TestCase):
             is_paid=True,
         )
 
-        self.client.login(username="student", password="testpass123")
+        self.client.login(
+            username="student_view",
+            password="testpass123",
+        )
 
         response = self.client.get(
-            reverse("assignments:assignment_detail", kwargs={"pk": self.assignment.pk})
+            reverse(
+                "assignments:assignment_detail",
+                kwargs={"pk": self.assignment.pk},
+            )
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_student_can_open_submit_page_with_paid_enrollment(self):
+        Enrollment.objects.create(
+            student=self.student_profile,
+            course=self.course,
+            is_paid=True,
+        )
+
+        self.client.login(
+            username="student_view",
+            password="testpass123",
+        )
+
+        response = self.client.get(
+            reverse(
+                "assignments:submit",
+                kwargs={"assignment_id": self.assignment.pk},
+            )
         )
 
         self.assertEqual(response.status_code, 200)
@@ -213,14 +250,29 @@ class AssignmentViewTests(TestCase):
             is_paid=True,
         )
 
-        self.client.login(username="student", password="testpass123")
+        self.client.login(
+            username="student_view",
+            password="testpass123",
+        )
+
+        uploaded_file = SimpleUploadedFile(
+            "homework.txt",
+            b"My homework solution",
+            content_type="text/plain",
+        )
 
         response = self.client.post(
-            reverse("assignments:submit", kwargs={"assignment_id": self.assignment.pk}),
-            {},
+            reverse(
+                "assignments:submit",
+                kwargs={"assignment_id": self.assignment.pk},
+            ),
+            {
+                "file": uploaded_file,
+            },
         )
 
         self.assertEqual(response.status_code, 302)
+
         self.assertTrue(
             Submission.objects.filter(
                 assignment=self.assignment,
@@ -229,7 +281,10 @@ class AssignmentViewTests(TestCase):
         )
 
     def test_teacher_can_access_teacher_submissions(self):
-        self.client.login(username="teacher", password="testpass123")
+        self.client.login(
+            username="teacher_view",
+            password="testpass123",
+        )
 
         response = self.client.get(reverse("assignments:teacher_submissions"))
 

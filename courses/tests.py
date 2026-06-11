@@ -5,7 +5,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from courses.models import Course, Enrollment, Module, ModuleCategory
-from users.models import StudentProfile, TeacherProfile
+
 
 User = get_user_model()
 
@@ -61,6 +61,7 @@ class ModuleModelTests(TestCase):
             name="Django Course",
             description="Test description",
         )
+
         category = ModuleCategory.objects.create(name="Backend")
 
         module = Module.objects.create(
@@ -83,6 +84,11 @@ class CourseViewTests(TestCase):
             is_student=True,
         )
 
+        self.student_profile = self.student_user.studentprofile
+        self.student_profile.age = 20
+        self.student_profile.is_approved = True
+        self.student_profile.save()
+
         self.teacher_user = User.objects.create_user(
             username="teacher",
             email="teacher@example.com",
@@ -90,14 +96,12 @@ class CourseViewTests(TestCase):
             is_teacher=True,
         )
 
-        self.student_profile = StudentProfile.objects.create(
-            user=self.student_user,
-            age=20,
-        )
-
-        self.teacher_profile = TeacherProfile.objects.create(
-            user=self.teacher_user,
-        )
+        self.teacher_profile = self.teacher_user.teacherprofile
+        self.teacher_profile.age = 30
+        self.teacher_profile.education = "Computer Science"
+        self.teacher_profile.experience_years = 5
+        self.teacher_profile.is_approved = True
+        self.teacher_profile.save()
 
         self.course = Course.objects.create(
             name="Python Basics",
@@ -168,6 +172,7 @@ class CourseViewTests(TestCase):
         )
 
         self.assertEqual(response.status_code, 302)
+
         self.assertTrue(
             Enrollment.objects.filter(
                 student=self.student_profile,
